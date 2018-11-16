@@ -11,7 +11,9 @@ pip install tifffile tensorboardX
 If installing (locally) on a linux machine, make sure you have all the boost libraries (important for working with torms3's DataTools):
 sudo apt-get install libboost-all-dev (this can take time)
 
-Go to the dataprovider3, datatools, and augmentor directories and run (for each directory):
+In the main repo, git clone https://github.com/torms3/DataTools.git
+
+Go to the dataprovider3, DataTools, and augmentor directories and run (for each directory):
 python setup.py install
 
 The main run scripts are located in the pytorchutils directory.
@@ -19,7 +21,9 @@ The main run scripts are located in the pytorchutils directory.
 Modify parameters in the respective run files.
 
 'run_exp.py' --> training
+
 'run_fwd.py' --> inference
+
 'run_chnk_fwd.py' --> large-scale inference
 
 Contact: zmd@princeton.edu
