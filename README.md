@@ -1,8 +1,8 @@
-### Using nicholasturner1's and torms3's PyTorchUtils, DataProvider3, DataTools, and Augmentor for the Wang lab cerebellar tracing project and Princeton BRAIN COGs histology core.
+### Using nicholasturner1's and torms3's PyTorchUtils, DataProvider3, DataTools, and Augmentor for the Wang lab cerebellar tracing project and the Princeton BRAIN COGs histology core.
 
 ## Installation:
 
-** Suggest you make an environment (in python 3+) for installing the following dependencies **
+**Suggest you make an environment (in python 3+) for installing the following dependencies**
 
 `conda create -n 3dunet python=3.5`
 
