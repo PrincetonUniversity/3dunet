@@ -30,3 +30,12 @@ Go to the dataprovider3, DataTools, and augmentor directories and run (for each 
 3. `run_chnk_fwd.py` --> large-scale inference
 
 Contact: tpisano@princeton.edu, zmd@princeton.edu
+
+## Demo:
+- demo script to run training and large-scale inference
+
+1. navigate to the `demo.py` script in the pytorchutils directory
+2. modify data directories in the parameter directory
+3. initialise a tiff file of shape greater than 20, 192, 192 in z, y, x in a folder called 'input_patches'
+4. on the command line in the pytorchutils directory, type: `python demo.py test models/RSUNet.py samplers/soma.py augmentors/flip_rotate.py 10 test --batch_sz 1 --nobn --noeval --tag demo`
+5. find the output in the 'cnn_patches' subfolder in the specified data directory in parameter dictionary

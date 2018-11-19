@@ -9,7 +9,7 @@ class ForwardScanner(object):
     """
     Forward scanner.
     """
-    def __init__(self, dataset, scan_spec, params):
+    def __init__(self, dataset, scan_spec, **params):
         self._init()
         self.dataset = dataset
         self.scan_spec = dict(scan_spec)
@@ -62,9 +62,7 @@ class ForwardScanner(object):
         self.offset = Vec3d(self.params.get('offset', (0,0,0)))
         self.stride = Vec3d(self.params.get('stride', (0,0,0)))
         self.grid   = Vec3d(self.params.get('grid',   (0,0,0)))
-        
-        print('\nDataProvider reading stride during setup as: {}\n'.format(self.stride))
-        
+                
         self.vmin = self.dataset.valid_range().min() + self.offset
         self.vmax = self.dataset.valid_range().max()
 

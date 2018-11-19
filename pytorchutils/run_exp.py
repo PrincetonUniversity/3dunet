@@ -14,8 +14,6 @@ import collections
 import torch
 import tensorboardX
 
-import models
-import samplers
 import utils
 import train
 import loss
