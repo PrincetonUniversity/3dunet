@@ -24,15 +24,11 @@ Go to the dataprovider3, DataTools, and augmentor directories and run (for each 
 ## Run:
 - main scripts are located in the pytorchutils directory
 - modify parameters in the respective run files
+    - parameter dictionary
+    - read and writing functions for data structures
+    - data and experiment directories
 1. `run_exp.py` --> training
-    - adjust patch/window size for training
-    - adjust read and writing functions for data structures (default is HDF5)
-    - adjust data and experiment directories
 2. `run_fwd.py` --> inference
-    - adjust patch/window size for inference
-    - adjust read and writing functions for data structures (default is HDF5)
 3. `run_chnk_fwd.py` --> large-scale inference
-    - adjust patch/window size for inference
-    - adjust read and writing functions for data structures (default is TIFF)
-  
+
 Contact: tpisano@princeton.edu, zmd@princeton.edu
