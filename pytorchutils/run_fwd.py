@@ -9,7 +9,6 @@ import dataprovider3 as dp
 
 import forward
 import utils
-import models
 
 
 def main(noeval, **args):
@@ -39,15 +38,14 @@ def main(noeval, **args):
 
 
 def fill_params(expt_name, chkpt_num, gpus,
-                nobn, model_name, dset_names, tag):
+                nobn, model_fname, dset_names, tag):
 
     params = {}
 
     #Model params
-    params["in_dim"]      = 1
-    params["output_spec"] = collections.OrderedDict(soma_label=1)
-    params["depth"]       = 4
-    params["batch_norm"]  = not(nobn)
+    params["in_spec"]     = dict(input=(1,20,192,192))
+    params["output_spec"] = collections.OrderedDict(soma=(1,20,192,192))
+    params["width"]       = [32, 40, 80]
     params["activation"]  = F.sigmoid
     params["chkpt_num"]   = chkpt_num
 
@@ -56,7 +54,7 @@ def fill_params(expt_name, chkpt_num, gpus,
 
     #IO/Record params
     params["expt_name"]   = expt_name
-    params["expt_dir"]    = "/jukebox/wang/zahra/conv_net/training/experiment_dirs/{}".format(expt_name)
+    params["expt_dir"]    = "/tigress/zmd/3dunet_data/experiments/{}".format(expt_name)
     params["model_dir"]   = os.path.join(params["expt_dir"], "models")
     params["log_dir"]     = os.path.join(params["expt_dir"], "logs")
     params["fwd_dir"]     = os.path.join(params["expt_dir"], "forward")
@@ -64,24 +62,24 @@ def fill_params(expt_name, chkpt_num, gpus,
     params["output_tag"]  = tag
 
     #Dataset params
-    params["data_dir"]    = "/jukebox/wang/pisano/conv_net/annotations/all_better_res/h129/otsu/inputRawImages"
+    params["data_dir"]    = "/scratch/gpfs/zmd/inputRawImages"
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     params["dsets"]       = dset_names
     params["input_spec"]  = collections.OrderedDict(input=(20,192,192)) #dp dataset spec
-    params["scan_spec"]   = collections.OrderedDict(soma_label=(1,20,192,192))
+    params["scan_spec"]   = collections.OrderedDict(psd=(1,20,192,192))
     params["scan_params"] = dict(stride=(0.75,0.75,0.75), blend="bump")
 
     #Use-specific Module imports
-    params["model_class"]  = utils.load_source('models/RSUNet.py').Model
+    params["model_class"] = utils.load_source(model_fname).Model
 
     #"Schema" for turning the parameters above into arguments
     # for the model class
-    params["model_args"]   = [params["in_dim"], params["output_spec"],
-                             params["depth"] ]
-    params["model_kwargs"] = { "bn" : params["batch_norm"] }
+    params["model_args"]   = [params["in_spec"], params["output_spec"],
+                              params["width"]]
+    params["model_kwargs"] = {}
 
     #Modules used for record-keeping
-    params["modules_used"] = [__file__, 'models/RSUNet.py', "layers.py"]
+    params["modules_used"] = [__file__, model_fname, "layers.py"]
 
     return params
 
@@ -95,13 +93,12 @@ def make_forward_scanner(dset_name, data_dir, input_spec,
     img = (img / 255.).astype("float32")
 
     # Creating DataProvider Dataset
-    vd = dp.Dataset()
+    vd = dp.Dataset(spec=input_spec)
 
     vd.add_data(key="input", data=img)
-    vd.set_spec(input_spec)
 
     # Returning DataProvider ForwardScanner
-    return dp.ForwardScanner(vd, scan_spec, params=scan_params)
+    return dp.ForwardScanner(vd, scan_spec, **scan_params)
 
 
 def save_output(output, dset_name, chkpt_num, fwd_dir, output_tag, **params):
@@ -117,9 +114,9 @@ def save_output(output, dset_name, chkpt_num, fwd_dir, output_tag, **params):
             basename = "{}_{}_{}_{}.h5".format(dset_name, k, 
                                                chkpt_num, output_tag)
 
-        full_fname = os.path.join( fwd_dir, basename )
+        full_fname = os.path.join(fwd_dir, basename)
 
-        utils.write_h5(output_data[0,:,:,:], full_fname)
+        utils.write_h5(output_data, full_fname)
 
 
 #============================================================
@@ -134,7 +131,7 @@ if __name__ == "__main__":
 
     parser.add_argument("expt_name",
                         help="Experiment Name")
-    parser.add_argument("model_name",
+    parser.add_argument("model_fname",
                         help="Model Template Name")
     parser.add_argument("chkpt_num", type=int,
                         help="Checkpoint Number")
