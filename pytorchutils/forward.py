@@ -14,7 +14,7 @@ import numpy as np
 import utils
 
 
-def forward(net, scanner, scan_spec, activation=None, verbose=False):
+def forward(net, scanner, scan_spec, activation=None, verbose=True):
 
     with torch.no_grad():
         

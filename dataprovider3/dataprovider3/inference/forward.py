@@ -17,13 +17,13 @@ class ForwardScanner(object):
         self._setup()
         print(params)
     
-    def pull(self):
+    def pull(self, verbose=True):
         ret = None
         if self.counter < len(self.locs):
             assert(self.current is None)
             idx = self.counter
             loc = self.locs[idx]
-#            print("({}/{}) loc: {}".format(idx+1, len(self.locs), tuple(loc)))
+            if verbose: print("({}/{}) loc: {}".format(idx+1, len(self.locs), tuple(loc))) #zmd added
             ret = self.dataset.get_sample(loc)
             self.current = loc
             self.counter += 1
