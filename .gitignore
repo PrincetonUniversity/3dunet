@@ -1,0 +1,5 @@
+#ignore logs
+*.out
+*.err
+
+#.pyc

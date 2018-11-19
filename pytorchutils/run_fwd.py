@@ -92,7 +92,7 @@ def make_forward_scanner(dset_name, data_dir, input_spec,
 
     # Reading EM image
     img = utils.read_h5(os.path.join(data_dir, dset_name + "_inputRawImages.h5"))
-    img = (img / 2000.).astype("float32")
+    img = (img / 255.).astype("float32")
 
     # Creating DataProvider Dataset
     vd = dp.Dataset()

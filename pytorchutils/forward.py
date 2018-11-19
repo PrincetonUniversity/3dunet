@@ -14,7 +14,7 @@ import numpy as np
 import utils
 
 
-def forward(net, scanner, scan_spec, activation=None):
+def forward(net, scanner, scan_spec, activation=None, verbose=False):
 
     with torch.no_grad():
         
@@ -29,7 +29,7 @@ def forward(net, scanner, scan_spec, activation=None):
             push_outputs(scanner, outputs, scan_spec)
     
             end = time.time()
-            sys.stdout.write("Elapsed: %3f\n" % (end-start)); sys.stdout.flush()
+            if verbose: sys.stdout.write("Elapsed: %3f\n" % (end-start)); sys.stdout.flush()
 
             start = end
             inputs = scanner.pull()

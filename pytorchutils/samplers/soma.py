@@ -37,8 +37,8 @@ class Sampler(object):
         self.dataprovider = dp
 
     def build_dataset(self, datadir, vol):
-        img = read_h5(os.path.join(datadir, os.path.join("inputRawImages", vol + "_inputRawImages.h5")))
-        clf = read_h5(os.path.join(datadir, os.path.join("inputLabelImages", vol + "_inputLabelImages.h5")).astype("float32")
+        img = read_h5(os.path.join(datadir, vol + "_inputRawImages.h5"))
+        clf = read_h5(os.path.join(datadir, vol + "_inputLabelImages-segmentation.h5")).astype("float32")
 
         #Preprocessing
         img = (img / 255.).astype("float32")
