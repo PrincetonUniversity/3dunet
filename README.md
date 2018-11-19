@@ -2,17 +2,19 @@
 
 ## Installation:
 
-**Suggest you make an environment (in python 3+) for installing the following dependencies**
+**Make an environment (in python 3+) and install following dependencies**
 
 `conda create -n 3dunet python=3.5`
 
-`pip install numpy scipy h5py matplotlib scikit-image cython torch torchvision (make sure it is torch 0.4+)`
+`pip install numpy scipy h5py matplotlib scikit-image cython torch torchvision` (make sure it is torch 0.4+)
 
 `pip install tifffile tensorboardX`
 
 If installing (locally) on a linux machine, make sure you have all the boost libraries (important for working with torms3's DataTools):
 
 `sudo apt-get install libboost-all-dev` (this can take time)
+
+Clone the necessary C++ extension scripts for working with DataProvider3:
 
 `git clone https://github.com/torms3/DataTools.git`
 
@@ -27,10 +29,10 @@ Go to the dataprovider3, DataTools, and augmentor directories and run (for each 
     - adjust read and writing functions for data structures (default is HDF5)
     - adjust data and experiment directories
 2. `run_fwd.py` --> inference
-    - adjust patch/window size for inference (try to be consistent with training)
+    - adjust patch/window size for inference
     - adjust read and writing functions for data structures (default is HDF5)
 3. `run_chnk_fwd.py` --> large-scale inference
-    - adjust patch/window size for inference (try to be consistent with training)
+    - adjust patch/window size for inference
     - adjust read and writing functions for data structures (default is TIFF)
   
-Contact: zmd@princeton.edu
+Contact: tpisano@princeton.edu, zmd@princeton.edu
