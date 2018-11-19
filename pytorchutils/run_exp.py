@@ -14,8 +14,6 @@ import collections
 import torch
 import tensorboardX
 
-import models
-import samplers
 import utils
 import train
 import loss
@@ -47,9 +45,10 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
     params = {}
 
     #Model params
-    params["in_spec"]	   = dict(input=(1,20,192,192))
-    params["output_spec"]  = collections.OrderedDict(cleft=(1,20,192,192))
-    params["width"]        = [32, 40, 80]
+    params["in_dim"]       = 1
+    params["output_spec"]  = collections.OrderedDict(synapse_label=1)
+    params["depth"]        = 4
+    params["batch_norm"]   = True
 
     #Training procedure params
     params["max_iter"]    = 1000000
@@ -57,48 +56,26 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
     params["test_intv"]   = 100
     params["test_iter"]   = 10
     params["avgs_intv"]   = 50
-    params["chkpt_intv"]  = 10
+    params["chkpt_intv"]  = 10000
     params["warm_up"]     = 50
     params["chkpt_num"]   = chkpt_num
     params["batch_size"]  = batch_sz
 
     #Sampling params
-    params["data_dir"]     = "/jukebox/wang/zahra/conv_net/training/training_data/inputs/"
+    params["data_dir"]     = os.path.expanduser("~/seungmount/research/Nick/datasets/SNEMI3D/")
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
-    
-    params["train_sets"] = [
-    "20161214_db_bl6_crii_l_53hr_647_010na_z7d5um_75msec_5POVLP_ch00_00", "20161214_db_bl6_crii_l_53hr_647_010na_z7d5um_75msec_5POVLP_ch00_01_500_550", "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_03_500-550", "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_04_500-550", "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_06_500-550", "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_07_500-550", "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_626-675_00", "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_626-675_01", "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_626-675_03", "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_626-675_04", "20170115_tp_bl6_lob6a_500r_01_647_010na_z7d5um_75_msec_10povlp_ch00_C00_425-460_00", "20170116_tp_bl6_lob45_500r_12_647_010na_z7d5um_150msec_10povlp_ch00_C00_275-310_00", "20170116_tp_bl6_lob45_500r_12_647_010na_z7d5um_150msec_10povlp_ch00_C00_275-310_01", "20170116_tp_bl6_lob7_500r_09_647_010na_z7d5um_75msec_10povlp_ch00_z200-400_y1000-1350_x2050-2400", "20170116_tp_bl6_lob7_ml_08_647_010na_z7d5um_150msec_10povlp_ch00_C00_440-475_00", "20170116_tp_bl6_lob7_ml_08_647_010na_z7d5um_150msec_10povlp_ch00_C00_440-475_02", "20170116_tp_bl6_lob7_ml_08_647_010na_z7d5um_150msec_10povlp_ch00_C00_750-785_00", "20170130_tp_bl6_sim_1750r_03_647_010na_1hfds_z7d5um_50msec_10povlp_ch00_z200-400_y2400-2750_x3100-3450",
-    "20170204_tp_bl6_cri_1000r_02_1hfds_647_0010na_25msec_z7d5um_10povlap_ch00_z200-400_y1350-1700_x3100-3450", "20170204_tp_bl6_cri_1000r_02_1hfds_647_0010na_25msec_z7d5um_10povlap_ch00_z200-400_y2400-2750_x4500-4850", "JGANNOTATION_20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_626-675_00", "JGANNOTATION_20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_626-675_04", 
-    "JGANNOTATION_20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_C00_300-375_03", 
-    "JGANNOTATION_20170115_tp_bl6_lob6a_500r_01_647_010na_z7d5um_75_msec_10povlp_ch00_C00_425-460_00", 
-    "JGANNOTATION_20170116_tp_bl6_lob45_500r_12_647_010na_z7d5um_150msec_10povlp_ch00_C00_600-635_00",
-    "JGANNOTATION_20170116_tp_bl6_lob7_500r_09_647_010na_z7d5um_75msec_10povlp_ch00_z200-400_y4150-4500_x3450-3800",
-    "JGANNOTATION_20170116_tp_bl6_lob7_ml_08_647_010na_z7d5um_150msec_10povlp_ch00_C00_440-475_02",
-    "JGANNOTATION_20170116_tp_bl6_lob7_ml_08_647_010na_z7d5um_150msec_10povlp_ch00_C00_750-785_00", "JGANNOTATION_20170130_tp_bl6_sim_1750r_03_647_010na_1hfds_z7d5um_50msec_10povlp_ch00_z200-400_y2400-2750_x3100-3450",
-    "JGANNOTATION_20170204_tp_bl6_cri_1000r_02_1hfds_647_0010na_25msec_z7d5um_10povlap_ch00_z200-400_y2400-2750_x4500-4850"
-    ]
-
-    params["val_sets"] = [
-    "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_C00_300-375_03",
-    "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_C00_300-375_01", "20170116_tp_bl6_lob45_500r_12_647_010na_z7d5um_150msec_10povlp_ch00_C00_600-635_00",
-    "20170204_tp_bl6_cri_1000r_02_1hfds_647_0010na_25msec_z7d5um_10povlap_ch00_z200-400_y2050-2400_x3100-3450",
-    "20170204_tp_bl6_cri_1000r_02_1hfds_647_0010na_25msec_z7d5um_10povlap_ch00_z200-400_y3800-4150_x2400-2750",
-    "20170116_tp_bl6_lob7_500r_09_647_010na_z7d5um_75msec_10povlp_ch00_z200-400_y4150-4500_x3450-3800",
-    "20170116_tp_bl6_lob7_500r_09_647_010na_z7d5um_75msec_10povlp_ch00_z200-400_y4500-4850_x3450-3800",
-    "20170116_tp_bl6_lob7_ml_08_647_010na_z7d5um_150msec_10povlp_ch00_C00_440-475_01"
-    ]
-
-    params["patchsz"]	   = (20,192,192)
-    params["sampler_spec"] = dict(input=params["patchsz"],
-                                  soma_label=params["patchsz"])
+    params["train_sets"]   = ["K_val"]
+    params["val_sets"]     = ["K_val"]
+    params["patchsz"]      = (18,160,160)
+    params["sampler_spec"] = dict(input=params["patchsz"], 
+                                  synapse_label=params["patchsz"])
 
     #GPUS
     params["gpus"] = gpus
 
     #IO/Record params
     params["expt_name"]  = expt_name
-    params["expt_dir"]   = "/jukebox/wang/zahra/conv_net/training/experiment_dirs/{}".format(expt_name)
-
+    params["expt_dir"]   = "experiments/{}".format(expt_name)
     params["model_dir"]  = os.path.join(params["expt_dir"], "models")
     params["log_dir"]    = os.path.join(params["expt_dir"], "logs")
     params["fwd_dir"]    = os.path.join(params["expt_dir"], "forward")
@@ -112,9 +89,9 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
 
     #"Schema" for turning the parameters above into arguments
     # for the model class
-    params["model_args"]     = [params["in_spec"], params["output_spec"],
-                                params["width"]]
-    params["model_kwargs"]   = {}
+    params["model_args"]     = [params["in_dim"], params["output_spec"],
+                                params["depth"]]
+    params["model_kwargs"]   = {"bn" : params["batch_norm"]}
 
     #modules used for record-keeping
     params["modules_used"] = [__file__, model_fname, sampler_fname,
@@ -123,7 +100,7 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
     return params
 
 
-def start_training(model_class, model_args, model_kwargs,
+def start_training(model_class, model_args, model_kwargs, 
                    sampler_class, sampler_spec, augmentor_constr,
                    chkpt_num, lr, train_sets, val_sets, data_dir,
                    model_dir, log_dir, tb_train, tb_val,
@@ -186,4 +163,3 @@ if __name__ == "__main__":
 
 
     main(**vars(args))
-
