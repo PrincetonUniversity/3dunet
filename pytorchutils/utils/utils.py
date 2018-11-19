@@ -91,8 +91,8 @@ def create_network(model_class, model_args, model_kwargs,
 def load_network(model, chkpt_num, model_dir):
 
     chkpt_fname = os.path.join(model_dir, "model{}.chkpt".format(chkpt_num))
-    model.load_state_dict(torch.load(chkpt_fname))
-#    model.module.load_state_dict(torch.load(chkpt_fname))
+ #   model.load_state_dict(torch.load(chkpt_fname)) use if loading python 2 model - zmd
+    model.module.load_state_dict(torch.load(chkpt_fname))
 
     return model
 

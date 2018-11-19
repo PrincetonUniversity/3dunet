@@ -63,7 +63,7 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
     params["batch_size"]  = batch_sz
 
     #Sampling params
-    params["data_dir"]     = "/jukebox/wang/zahra/conv_net/training/training_data/inputs/"
+    params["data_dir"]     = "/tigress/zmd/3dunet_data/training_inputs/"
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     
     params["train_sets"] = [
@@ -97,7 +97,7 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
 
     #IO/Record params
     params["expt_name"]  = expt_name
-    params["expt_dir"]   = "/jukebox/wang/zahra/conv_net/training/experiment_dirs/{}".format(expt_name)
+    params["expt_dir"]   = "/tigress/zmd/3dunet_data/experiments/{}".format(expt_name)
 
     params["model_dir"]  = os.path.join(params["expt_dir"], "models")
     params["log_dir"]    = os.path.join(params["expt_dir"], "logs")
