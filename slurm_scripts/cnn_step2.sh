@@ -17,5 +17,6 @@ cat /proc/$$/status | grep Cpus_allowed_list
 module load anacondapy/5.1.0
 . activate lightsheet
 
-python cell_detect.py /jukebox/LightSheetData/witten-mouse/201810_RetroCre_mCherry_NAc/M9309 2 
+echo "Experiment name:" "$EXPT_NM"
 
+python cell_detect.py "$EXPT_NM" 2

@@ -2,7 +2,7 @@
 #
 #SBATCH -p all                # partition (queue)
 #SBATCH -c 8                      # number of cores
-#SBATCH -t 200                # time (minutes)
+#SBATCH -t 20                # time (minutes)
 #SBATCH -o logs/cnn_step0.out        # STDOUT #add _%a to see each array job
 #SBATCH -e logs/cnn_step0.err        # STDERR #add _%a to see each array job
 #SBATCH --contiguous #used to try and get cpu mem to be contigous
@@ -17,5 +17,7 @@ cat /proc/$$/status | grep Cpus_allowed_list
 module load anacondapy/5.1.0
 . activate lightsheet
 
-python cell_detect.py /jukebox/wang/pisano/tracing_output/antero_4x/20180327_jg42_bl6_lob6a_05 0
+echo "Experiment name:" "$EXPT_NM"
+
+python cell_detect.py "$EXPT_NM" 0
 

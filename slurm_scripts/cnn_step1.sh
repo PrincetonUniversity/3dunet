@@ -17,5 +17,6 @@ cat /proc/$$/status | grep Cpus_allowed_list
 module load anacondapy/5.1.0
 . activate lightsheet
 
-python cell_detect.py /jukebox/wang/pisano/tracing_output/antero_4x/20180327_jg40_bl6_sim_03 1
+echo "Experiment name:" "$EXPT_NM"
 
+python cell_detect.py "$EXPT_NM" 1
