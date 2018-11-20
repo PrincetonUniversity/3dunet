@@ -7,15 +7,15 @@
 #SBATCH --contiguous
 #SBATCH --mem=5000 #5 gbs
 #SBATCH -t 10                # time (minutes)
-#SBATCH -o demo_%j.out
-#SBATCH -e demo_%j.err
+#SBATCH -o tptest_%j.out
+#SBATCH -e tptest_%j.err
 
-module load cudatoolkit/10.0 cudnn/cuda-10.0/7.3.1 anaconda3/5.2.0
-. activate 3dunet
+module load cudatoolkit/10.0 cudnn/cuda-10.0/7.3.1 anaconda/5.2.0
+. activate 3dunet_py3
 
 echo 'Folder to save: '
 demo_folder=$(pwd)$'/demo'
-echo $demo
+echo $demo_folder
 python setup_demo_script.py $demo_folder
 
 cd pytorchutils

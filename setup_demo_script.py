@@ -1,5 +1,5 @@
 import numpy as np, os, sys
-from skimage.external import tifffile
+import tifffile
 import h5py
 
 if __name__ == '__main__':
@@ -28,3 +28,5 @@ if __name__ == '__main__':
         val = g.create_dataset('/main', data=arr.astype('float32'))
     with h5py.File(os.path.join(location_to_save, 'val_lbl.h5'), 'w') as g:
         val = g.create_dataset('/main', data=arr.astype('float32'))
+
+

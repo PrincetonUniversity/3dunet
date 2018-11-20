@@ -111,6 +111,7 @@ def fill_params_train(expt_name, batch_sz, gpus,
     params["batch_size"]  = batch_sz
 
     #Sampling params
+    print("the working directory is: {}\n".format(os.getcwd()))
     params["data_dir"]     = os.path.join(os.path.dirname(os.getcwd()), 'demo')
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     
