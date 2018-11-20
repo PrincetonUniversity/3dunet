@@ -350,12 +350,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     #setup
-    kwargs = load_kwargs(args.expt_name)
-    src = [xx for xx in kwargs['volumes'] if xx.ch_type == 'cellch'][0].full_sizedatafld_vol
+    fsz = os.path.join(args.expt_name, 'full_sizedatafld')
+    vols = os.lisdir(fsz)
+    src = os.path.join(fsz, vols[len(vols)-1]) #hack - try to load param_dict instead?
     
-    #set kwargs to use for reconstruction
-    kwargs['patchsz'] = (64,3840,3328) #cnn window size for lightsheet = typically 20, 192, 192 #patchsize = (64,3840,3136)
-    kwargs['stridesz'] = (44,3648,3136) #stridesize = (44,3648,2944)
+    #set params to use for reconstruction
+    patchsz = (64,3840,3328) #cnn window size for lightsheet = typically 20, 192, 192 #patchsize = (64,3840,3136)
+    stridesz = (44,3648,3136) #stridesize = (44,3648,2944)
 
     #set params    
     dtype = 'float32'    
@@ -363,13 +364,11 @@ if __name__ == '__main__':
     verbose = True 
     cleanup = True #if True, files will be deleted when they aren't needed. Keep false while testing
     mode = 'folder' #'folder' = list of files where each patch is a file, 'memmap' = 4D array of patches by Z by Y by X
-    
-    #save kwargs
-    save_kwargs(**kwargs)
+
     
     #make patches
     inputshape = get_dims_from_folder(src)
-    patchlist = make_indices(inputshape, kwargs['stridesz'])
+    patchlist = make_indices(inputshape, stridesz)
     
     #set scratch directory    
     dst = os.path.join('/jukebox/scratch/zmd', os.path.basename(os.path.abspath(args.expt_name))); makedir(dst)
@@ -389,7 +388,7 @@ if __name__ == '__main__':
         #generate memmap array of patches
         patch_dst = os.path.join(dst, 'input_patches')
         sys.stdout.write('\n making patches...\n'); sys.stdout.flush()
-        patch_dst = generate_patch(in_dst, patch_dst, patchlist, kwargs['stridesz'], kwargs['patchsz'], mode = mode, verbose = verbose)
+        patch_dst = generate_patch(in_dst, patch_dst, patchlist, stridesz, patchsz, mode = mode, verbose = verbose)
 
 
     elif stepid == 2:
@@ -401,7 +400,7 @@ if __name__ == '__main__':
         #reconstruct
         sys.stdout.write('\n starting reconstruction...\n'); sys.stdout.flush()
         recon_dst = os.path.join(args.cnn_src, 'reconst_array.npy')
-        reconstruct_memmap_array_from_tif_dir(cnn_src, recon_dst, inputshape, patchlist, kwargs['patchsz'], verbose = verbose)
+        reconstruct_memmap_array_from_tif_dir(cnn_src, recon_dst, inputshape, patchlist, patchsz, verbose = verbose)
         if cleanup: shutil.rmtree(cnn_src)
 
     elif stepid == 3:
