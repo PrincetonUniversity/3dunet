@@ -4,25 +4,23 @@
 Created on Mon Nov 19 17:20:25 2018
 
 @author: wanglab
+
 """
 
-import os, imp
+import os, numpy as np, sys, time
 import collections
 
 import torch
 import tensorboardX
+import dataprovider3 as dp
 
 import utils
 import train
 import loss
 
-import os, numpy as np, sys, time
-import collections
 import tifffile
 
 from torch.nn import functional as F
-import dataprovider3 as dp
-
 import forward
 
 def main_train(**args):
@@ -102,10 +100,10 @@ def fill_params_train(expt_name, batch_sz, gpus,
     params["width"]        = [32, 40, 80]
 
     #Training procedure params
-    params["max_iter"]    = 11
+    params["max_iter"]    = 51
     params["lr"]          = 0.00001
-    params["test_intv"]   = 10
-    params["test_iter"]   = 5
+    params["test_intv"]   = 25
+    params["test_iter"]   = 10
     params["avgs_intv"]   = 10
     params["chkpt_intv"]  = 10
     params["warm_up"]     = 5
@@ -113,15 +111,15 @@ def fill_params_train(expt_name, batch_sz, gpus,
     params["batch_size"]  = batch_sz
 
     #Sampling params
-    params["data_dir"]     = "/jukebox/wang/zahra/conv_net/training/training_data/inputs"
+    params["data_dir"]     = os.path.join(os.path.dirname(os.getcwd()), 'demo')
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     
     params["train_sets"] = [
-    "20161214_db_bl6_crii_l_53hr_647_010na_z7d5um_75msec_5POVLP_ch00_00"
+    "train"
     ]
 
     params["val_sets"] = [
-    "20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_C00_300-375_03"
+    "train"
     ]
 
     params["patchsz"]	   = (20,192,192)
@@ -133,7 +131,8 @@ def fill_params_train(expt_name, batch_sz, gpus,
 
     #IO/Record params
     params["expt_name"]  = expt_name
-    params["expt_dir"]   = "/home/wanglab/Downloads/experiments/{}".format(expt_name)
+    params["expt_dir"]   = os.path.join(os.path.dirname(os.getcwd()), 'demo')
+
 
     params["model_dir"]  = os.path.join(params["expt_dir"], "models")
     params["log_dir"]    = os.path.join(params["expt_dir"], "logs")
@@ -160,7 +159,7 @@ def fill_params_train(expt_name, batch_sz, gpus,
 
 
 def fill_params_fwd(expt_name, chkpt_num, gpus,
-                nobn, model_fname, dset_name, tag):
+                nobn, model_fname, tag):
 
     params = {}
 
@@ -176,7 +175,7 @@ def fill_params_fwd(expt_name, chkpt_num, gpus,
 
     #IO/Record params
     params["expt_name"]   = expt_name
-    params["expt_dir"]    = "/home/wanglab/Downloads/experiments/{}".format(expt_name)
+    params["expt_dir"]    = os.path.join(os.path.join(os.path.dirname(os.getcwd()), 'demo'), "experiments/{}".format(expt_name))
     params["model_dir"]   = os.path.join(params["expt_dir"], "models")
     params["log_dir"]     = os.path.join(params["expt_dir"], "logs")
     params["fwd_dir"]     = os.path.join(params["expt_dir"], "forward")
@@ -184,9 +183,8 @@ def fill_params_fwd(expt_name, chkpt_num, gpus,
     params["output_tag"]  = tag
 
     #Dataset params
-    params["data_dir"]    = "/home/wanglab/Downloads/"
+    params["data_dir"]    = os.path.join(os.path.dirname(os.getcwd()), 'demo')
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
-    params["dsets"]       = dset_name
     params["input_spec"]  = collections.OrderedDict(input=(20,192,192)) #dp dataset spec
     params["scan_spec"]   = collections.OrderedDict(soma=(1,20,192,192))
     params["scan_params"] = dict(stride=(0.75,0.75,0.75), blend="bump")
@@ -299,8 +297,6 @@ if __name__ == "__main__":
                         help="Data Augmentor module filename")
     parser.add_argument("chkpt_num", type=int,
                         help="Checkpoint Number")
-    parser.add_argument("dset_name", nargs="+",
-                        help="Inference Dataset Name")
     parser.add_argument("--batch_sz",  type=int, default=1,
                         help="Batch size for each sample")
     parser.add_argument("--nobn", action="store_true",
