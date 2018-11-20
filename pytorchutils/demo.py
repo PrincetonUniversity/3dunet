@@ -261,7 +261,7 @@ def make_forward_scanner(dset_name, data_dir, input_spec,
     # Returning DataProvider ForwardScanner
     return dp.ForwardScanner(vd, scan_spec, **scan_params)
 
-def save_output(output, dset, output_fld, output_tag, jobid, chkpt_num, **params):
+def save_output(output, dset, output_fld, jobid, output_tag, chkpt_num):
     """ Saves the volumes within a DataProvider ForwardScanner """
 
     for k in output.outputs.data:
