@@ -34,8 +34,8 @@ def main(noeval, **args):
                              params["log_tag"], params["chkpt_num"])
 
     #lightsheet mods - input folder contains list of our "big" patches
-    input_fld = os.path.join(params["data_dir"], "patches") #set patches directory 
-    output_fld = os.path.join(params["data_dir"], "cnn_patches") #set patches directory 
+    input_fld = os.path.join(params["data_dir"], "input_chnks") #set patches directory 
+    output_fld = os.path.join(params["data_dir"], "cnn_output") #set patches directory 
     
     if not os.path.exists(output_fld): os.mkdir(output_fld)
     jobid = int(params["jobid"]) #set patch no. to run through cnn

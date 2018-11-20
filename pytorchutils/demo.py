@@ -60,7 +60,7 @@ def main_fwd(noeval, **args):
 
     #lightsheet mods - input folder contains list of our "big" patches
     input_fld = os.path.join(params["data_dir"], "input_patches") #set directory 
-    output_fld = os.path.join(params["data_dir"], "cnn_patches") #set patches directory 
+    output_fld = os.path.join(params["data_dir"], "cnn_output") #set patches directory 
     
     if not os.path.exists(output_fld): os.mkdir(output_fld)
     jobid = 0 #for demo only

@@ -351,7 +351,7 @@ if __name__ == '__main__':
     
     #setup
     fsz = os.path.join(args.expt_name, 'full_sizedatafld')
-    vols = os.lisdir(fsz)
+    vols = os.listdir(fsz)
     src = os.path.join(fsz, vols[len(vols)-1]) #hack - try to load param_dict instead?
     
     #set params to use for reconstruction
@@ -364,7 +364,6 @@ if __name__ == '__main__':
     verbose = True 
     cleanup = True #if True, files will be deleted when they aren't needed. Keep false while testing
     mode = 'folder' #'folder' = list of files where each patch is a file, 'memmap' = 4D array of patches by Z by Y by X
-
     
     #make patches
     inputshape = get_dims_from_folder(src)
@@ -373,7 +372,8 @@ if __name__ == '__main__':
     #set scratch directory    
     dst = os.path.join('/jukebox/scratch/zmd', os.path.basename(os.path.abspath(args.expt_name))); makedir(dst)
     in_dst = os.path.join(dst, 'input_memmap_array.npy') 
-      
+    
+    #recover step id from command line args      
     stepid = args.stepid
     
     if stepid == 0:
@@ -386,7 +386,7 @@ if __name__ == '__main__':
         #######################################PRE-PROCESSING FOR CNN INPUT --> PATCHING######################################################
         
         #generate memmap array of patches
-        patch_dst = os.path.join(dst, 'input_patches')
+        patch_dst = os.path.join(dst, 'input_chnks')
         sys.stdout.write('\n making patches...\n'); sys.stdout.flush()
         patch_dst = generate_patch(in_dst, patch_dst, patchlist, stridesz, patchsz, mode = mode, verbose = verbose)
 
@@ -395,7 +395,7 @@ if __name__ == '__main__':
         #######################################POST CNN --> RECONSTRUCTION AFTER RUNNING INFERENCE ON TIGER2#################################
 
         #set cnn patch directory
-        cnn_src = os.path.join(dst, 'cnn_patches')
+        cnn_src = os.path.join(dst, 'cnn_output')
   
         #reconstruct
         sys.stdout.write('\n starting reconstruction...\n'); sys.stdout.flush()
