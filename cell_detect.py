@@ -9,11 +9,32 @@ Created on Mon Nov 19 15:42:12 2018
 import os, numpy as np, sys, multiprocessing as mp, time, shutil
 from scipy import ndimage
 from skimage.external import tifffile
-from utils.io import load_np, load_kwargs, makedir, save_kwargs
 from scipy.ndimage.morphology import generate_binary_structure
 from skimage.util import view_as_windows, regular_grid
 import argparse                   
 
+def load_np(src, mode='r'):
+    '''Function to handle .npy and .npyz files. Assumes only one k,v pair in npz file
+    '''
+    if str(type(src)) == "<type 'numpy.ndarray'>" or str(type(src)) == "<class 'numpy.core.memmap.memmap'>":
+        return src
+    elif src[-4:]=='.npz':
+        fl = np.load(src)
+        #unpack ASSUMES ONLY SINGLE FILE
+        arr = [fl[xx] for xx in fl.keys()][0]
+        return arr
+    elif src[-4:]=='.npy':
+        try:
+            arr=load_memmap_arr(src, mode)
+        except:
+            arr = np.load(src)
+        return arr
+
+def makedir(path):
+    '''Simple function to make directory if path does not exists'''
+    if os.path.exists(path) == False:
+        os.mkdir(path)
+    return
 
 def generate_patch(input_arr, patch_dst, patchlist, stridesize, patchsize, mode = 'folder', verbose = True):
     '''Function to patch up data and make into memory mapped array
@@ -324,8 +345,6 @@ if __name__ == '__main__':
     
     parser.add_argument('expt_name',
                         help='Tracing output directory (aka registration output)')
-    parser.add_argument('cnn_src',
-                        help='Scratch output directory')
     parser.add_argument('stepid', type=int,
                         help='Step ID to run patching, reconstructing, or cell counting')
     args = parser.parse_args()
@@ -351,27 +370,33 @@ if __name__ == '__main__':
     #make patches
     inputshape = get_dims_from_folder(src)
     patchlist = make_indices(inputshape, kwargs['stridesz'])
-        
-    stepid = args.stepid
-    if stepid == 0:
-        #######################################PRE-PROCESSING FOR CNN INPUT######################################################
-        
-        dst = os.path.join('/jukebox/scratch/zmd', os.path.basename(os.path.abspath(args.expt_name))); makedir(dst)
     
-        #convert folder into memmap array
-        in_dst = os.path.join(dst, 'input_memmap_array.npy') 
+    #set scratch directory    
+    dst = os.path.join('/jukebox/scratch/zmd', os.path.basename(os.path.abspath(args.expt_name))); makedir(dst)
+    in_dst = os.path.join(dst, 'input_memmap_array.npy') 
+      
+    stepid = args.stepid
+    
+    if stepid == 0:
+        #######################################PRE-PROCESSING FOR CNN INPUT --> MAKING INPUT ARRAY######################################################
+            
+        #convert full size data folder into memmap array
         input_arr = make_memmap_from_tiff_list(src, in_dst, cores, dtype = dtype)
+            
+    if stepid == 1:
+        #######################################PRE-PROCESSING FOR CNN INPUT --> PATCHING######################################################
         
         #generate memmap array of patches
         patch_dst = os.path.join(dst, 'input_patches')
-        patch_dst = generate_patch(input_arr, patch_dst, patchlist, kwargs['stridesz'], kwargs['patchsz'], mode = mode, verbose = verbose)
+        sys.stdout.write('\n making patches...\n'); sys.stdout.flush()
+        patch_dst = generate_patch(in_dst, patch_dst, patchlist, kwargs['stridesz'], kwargs['patchsz'], mode = mode, verbose = verbose)
+
 
     elif stepid == 2:
-        #######################################RECONSTRUCTION AFTER RUNNING INFERENCE ON TIGER2#################################
+        #######################################POST CNN --> RECONSTRUCTION AFTER RUNNING INFERENCE ON TIGER2#################################
 
-        cnn_src = os.path.join(args.cnn_src, 'cnn_patches') #load patches 
-    
-        sys.stdout.write('\n making patches...\n'); sys.stdout.flush()
+        #set cnn patch directory
+        cnn_src = os.path.join(dst, 'cnn_patches')
   
         #reconstruct
         sys.stdout.write('\n starting reconstruction...\n'); sys.stdout.flush()
@@ -380,8 +405,9 @@ if __name__ == '__main__':
         if cleanup: shutil.rmtree(cnn_src)
 
     elif stepid == 3:
-        ##############################################FINDING CELL CENTERS#####################################################
+        ##############################################POST CNN --> FINDING CELL CENTERS#####################################################
         
+        #FIXME: untested
         #load cnn_src to find shape and iterate
         arr = load_np(cnn_src)    
         

@@ -38,16 +38,16 @@ class Sampler(object):
 
     def build_dataset(self, datadir, vol):
         img = read_h5(os.path.join(datadir, vol + "_inputRawImages.h5"))
-        clf = read_h5(os.path.join(datadir, vol + "_inputLabelImages-segmentation.h5")).astype("float32")
+        soma = read_h5(os.path.join(datadir, vol + "_inputLabelImages-segmentation.h5")).astype("float32")
 
         #Preprocessing
         img = (img / 255.).astype("float32")
-        clf[clf != 0] = 1
+        soma[soma != 0] = 1
 
         # Create Dataset.
         dset = Dataset()
         dset.add_data(key='input', data=img)
-        dset.add_data(key='soma_label', data=clf)
+        dset.add_data(key='soma_label', data=somac)
         return dset
 
 

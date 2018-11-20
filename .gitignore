@@ -2,5 +2,6 @@
 *.out
 *.err
 
-#.pyc
-##__pycache__/
+#ignore pyc binary files
+*.pyc
+*__pycache__/
