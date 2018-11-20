@@ -96,7 +96,7 @@ def fill_params_train(expt_name, batch_sz, gpus,
 
     #Model params
     params["in_spec"]	   = dict(input=(1,20,192,192))
-    params["output_spec"]  = collections.OrderedDict(cleft=(1,20,192,192))
+    params["output_spec"]  = collections.OrderedDict(soma=(1,20,192,192))
     params["width"]        = [32, 40, 80]
 
     #Training procedure params
@@ -120,7 +120,7 @@ def fill_params_train(expt_name, batch_sz, gpus,
     ]
 
     params["val_sets"] = [
-    "train"
+    "val"
     ]
 
     params["patchsz"]	   = (20,192,192)
@@ -132,8 +132,7 @@ def fill_params_train(expt_name, batch_sz, gpus,
 
     #IO/Record params
     params["expt_name"]  = expt_name
-    params["expt_dir"]   = os.path.join(os.path.dirname(os.getcwd()), 'demo')
-
+    params["expt_dir"]   = os.path.join(params["data_dir"], "experiments/{}".format(expt_name))
 
     params["model_dir"]  = os.path.join(params["expt_dir"], "models")
     params["log_dir"]    = os.path.join(params["expt_dir"], "logs")
