@@ -40,4 +40,4 @@ Contact: tpisano@princeton.edu, zmd@princeton.edu
 	1. `python setup_demo_script.py`
 	2. navigate to the pytorchutils directory
 	2. `python demo.py demo models/RSUNet.py samplers/demo_sampler.py augmentors/flip_rotate.py 10 --batch_sz 1 		   		--nobn --noeval --tag demo` 
-5. output will be in a 'demo/cnn_patches' subfolder (as a TIFF)
+5. output will be in a 'demo/cnn_output' subfolder (as a TIFF)
