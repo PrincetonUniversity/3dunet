@@ -83,7 +83,7 @@ def main_fwd(noeval, **args):
         output = forward.forward(net, fs, params["scan_spec"], #runs forward pass
                                  activation=params["activation"])
 
-        save_output(output, dset, output_fld, **params) #saves tif       
+        save_output(output, dset, output_fld, jobid, **params) #saves tif       
         fs._init() #clear out scanner
         
     sys.stdout.write("\patch {}: {} min\n".format(jobid+1, round((time.time()-start)/60, 1))); sys.stdout.flush()
