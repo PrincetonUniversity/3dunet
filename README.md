@@ -34,10 +34,10 @@ Contact: tpisano@princeton.edu, zmd@princeton.edu
 ## Demo:
 - demo script to run training and large-scale inference
 
-1. navigate to the pytorchutils directory
-2. if working with a slurm-based scheduler:
-	- run `sbatch slurm_scripts/run_demo.sh` within the pytorchutils directory
+1. if working with a slurm-based scheduler:
+	1. run `sbatch run_demo.sh` within the main repo directory
 4. else, type:
 	1. `python setup_demo_script.py pwd/demo`
-	2. `python demo.py demo models/RSUNet.py samplers/demo_sampler.py augmentors/flip_rotate.py 10 --batch_sz 1 		--nobn --noeval --tag demo` 
-5. output will be in a 'demo/forward' subfolder (as a TIFF)
+	2. navigate to the pytorchutils directory
+	2. `python demo.py demo models/RSUNet.py samplers/demo_sampler.py augmentors/flip_rotate.py 10 --batch_sz 1 		   		--nobn --noeval --tag demo` 
+5. output will be in a 'demo/cnn_patches' subfolder (as a TIFF)
