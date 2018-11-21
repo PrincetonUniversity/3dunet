@@ -372,9 +372,11 @@ if __name__ == '__main__':
     inputshape = get_dims_from_folder(src)
     patchlist = make_indices(inputshape, stridesz)
     
-    #set scratch directory    
+    #set directories - #FIXME: hack    
     dst = os.path.join('/jukebox/scratch/zmd', os.path.basename(os.path.abspath(args.expt_name))); makedir(dst)
     in_dst = os.path.join(dst, 'input_memmap_array.npy') 
+    cnn_src = os.path.join(dst, 'cnn_output') #set cnn patch directory
+    recon_dst = os.path.join(dst, 'reconst_array.npy') #set reconstructed array directory
     
     #recover step id from command line args      
     stepid = args.stepid
@@ -395,10 +397,7 @@ if __name__ == '__main__':
 
     elif stepid == 2:
         #######################################POST CNN --> RECONSTRUCTION AFTER RUNNING INFERENCE ON TIGER2#################################
-
-        #set cnn patch directory
-        cnn_src = os.path.join(dst, 'cnn_output')
-  
+ 
         #reconstruct
         sys.stdout.write('\n starting reconstruction...\n'); sys.stdout.flush()
         recon_dst = os.path.join(args.cnn_src, 'reconst_array.npy')
