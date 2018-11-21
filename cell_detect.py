@@ -77,9 +77,10 @@ def generate_patch(input_arr, patch_dst, patchlist, stridesize, patchsize, mode 
         if not os.path.exists(patch_dst): os.mkdir(patch_dst)
         #patch
         for i,p in enumerate(patchlist):
-            v = input_arr[p[0]:p[0]+patchsize[0], p[1]:p[1]+patchsize[1], p[2]:p[2]+patchsize[2]]
-            tifffile.imsave(os.path.join(patch_dst, 'patch_{}.tif'.format(str(i).zfill(10))), v.astype('float32'), compress=1)
-            if i%10==0 and verbose: print('{} of {}'.format(i, len(patchlist))); del v
+            if i >= len(os.listdir(patch_dst)-1): #so that you can re-run a job if it was killed halfway (bc of occassional memory issues)
+                v = input_arr[p[0]:p[0]+patchsize[0], p[1]:p[1]+patchsize[1], p[2]:p[2]+patchsize[2]]
+                tifffile.imsave(os.path.join(patch_dst, 'patch_{}.tif'.format(str(i).zfill(10))), v.astype('float32'), compress=1)
+                if i%10==0 and verbose: print('{} of {}'.format(i, len(patchlist))); del v
     #return
     return patch_dst
    
