@@ -35,7 +35,7 @@ def main(noeval, **args):
 
     #lightsheet mods - input folder contains list of our "big" patches
     input_fld = os.path.join(params["data_dir"], "input_chnks") #set patches directory 
-    output_fld = os.path.join(params["data_dir"], "cnn_output") #set patches directory 
+    output_fld = os.path.join(params["data_dir"], "cnn_output") #set output directory 
     
     if not os.path.exists(output_fld): os.mkdir(output_fld)
     jobid = int(params["jobid"]) #set patch no. to run through cnn
@@ -43,9 +43,8 @@ def main(noeval, **args):
     #find files that need to be processed
     fls = [os.path.join(input_fld, xx) for xx in os.listdir(input_fld)]; fls.sort()
     
-    #select the file to process for this batch job
+    #select the file to process for this array job
     if jobid > len(fls):
-        #essentially kill job if too high - doing this to hopefully help with karma score although might not make a difference
         sys.stdout.write("\njobid {} > number of files {}\n".format(jobid, len(fls))); sys.stdout.flush()    
     else:    
         dset = fls[jobid]

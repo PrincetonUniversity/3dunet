@@ -88,8 +88,12 @@ def make_forward_scanner(dset_name, data_dir, input_spec,
                          scan_spec, scan_params, **params):
     """ Creates a DataProvider ForwardScanner from a dset name """
 
-    # Reading EM image
-    img = utils.read_h5(os.path.join(data_dir, dset_name + "_inputRawImages.h5"))
+    # Reading lightsheet image
+    if os.path.isfile(os.path.join(data_dir, dset_name + "_img.h5")):
+        img = utils.read_img(os.path.join(data_dir, dset_name + "_img.h5"))
+    elif os.path.isfile(os.path.join(data_dir, dset_name + "_img.tif")):
+        img = utils.read_img(os.path.join(data_dir, dset_name + "_img.tif"))
+        
     img = (img / 255.).astype("float32")
 
     # Creating DataProvider Dataset
@@ -109,14 +113,14 @@ def save_output(output, dset_name, chkpt_num, fwd_dir, output_tag, **params):
         output_data = output.outputs.get_data(k)
 
         if len(output_tag) == 0:
-            basename = "{}_{}_{}.h5".format(dset_name, k, chkpt_num)
+            basename = "{}_{}_{}.tif".format(dset_name, k, chkpt_num)
         else:
-            basename = "{}_{}_{}_{}.h5".format(dset_name, k, 
+            basename = "{}_{}_{}_{}.tif".format(dset_name, k, 
                                                chkpt_num, output_tag)
 
         full_fname = os.path.join(fwd_dir, basename)
 
-        utils.write_h5(output_data, full_fname)
+        utils.write_img(output_data, full_fname)
 
 
 #============================================================

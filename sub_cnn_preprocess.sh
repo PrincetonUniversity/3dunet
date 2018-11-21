@@ -3,8 +3,8 @@
 #SBATCH -p all                # partition (queue)
 #SBATCH -c 1                      # number of cores
 #SBATCH -t 10                # time (minutes)
-#SBATCH -o logs/cnn_preprocess.out        # STDOUT #add _%a to see each array job
-#SBATCH -e logs/cnn_preprocess.err        # STDERR #add _%a to see each array job
+#SBATCH -o logs/cnn_preprocess_%j.out        # STDOUT #add _%a to see each array job
+#SBATCH -e logs/cnn_preprocess_%j.err        # STDERR #add _%a to see each array job
 
 echo "In the directory: `pwd` "
 echo "As the user: `whoami` "
@@ -23,3 +23,6 @@ echo $OUT0
 #generate chunks for cnn input
 OUT1=$(sbatch --dependency=afterany:${OUT0##* } slurm_scripts/cnn_step1.sh "$@") 
 echo $OUT1
+
+#functionality
+#go to 3dunet main directory and type sbatch sub_cnn_preprocess.sh [path to lightsheet package output directory]

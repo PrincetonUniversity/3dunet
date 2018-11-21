@@ -79,7 +79,7 @@ def generate_patch(input_arr, patch_dst, patchlist, stridesize, patchsize, mode 
         for i,p in enumerate(patchlist):
             v = input_arr[p[0]:p[0]+patchsize[0], p[1]:p[1]+patchsize[1], p[2]:p[2]+patchsize[2]]
             tifffile.imsave(os.path.join(patch_dst, 'patch_{}.tif'.format(str(i).zfill(10))), v.astype('float32'), compress=1)
-            if i%10==0 and verbose: print('{} of {}'.format(i, len(patchlist)))
+            if i%10==0 and verbose: print('{} of {}'.format(i, len(patchlist))); del v
     #return
     return patch_dst
    
@@ -351,8 +351,10 @@ if __name__ == '__main__':
     
     #setup
     fsz = os.path.join(args.expt_name, 'full_sizedatafld')
-    vols = os.listdir(fsz)
+    vols = os.listdir(fsz); vols.sort()
     src = os.path.join(fsz, vols[len(vols)-1]) #hack - try to load param_dict instead?
+    if not os.path.isdir(src): src = os.path.join(fsz, vols[len(vols)-2]) #hack - try to load param_dict instead?
+    sys.stdout.write('\n preprocessing tif directory of: \n{}'.format(src)); sys.stdout.flush()
     
     #set params to use for reconstruction
     patchsz = (64,3840,3328) #cnn window size for lightsheet = typically 20, 192, 192 #patchsize = (64,3840,3136)
@@ -363,7 +365,7 @@ if __name__ == '__main__':
     cores = 8
     verbose = True 
     cleanup = True #if True, files will be deleted when they aren't needed. Keep false while testing
-    mode = 'folder' #'folder' = list of files where each patch is a file, 'memmap' = 4D array of patches by Z by Y by X
+    mode = 'folder' #'folder' = list of files where each patch is a file, 'memmap' = 4D array of patches by Z by Y by X (not recommended)
     
     #make patches
     inputshape = get_dims_from_folder(src)
@@ -389,7 +391,6 @@ if __name__ == '__main__':
         patch_dst = os.path.join(dst, 'input_chnks')
         sys.stdout.write('\n making patches...\n'); sys.stdout.flush()
         patch_dst = generate_patch(in_dst, patch_dst, patchlist, stridesz, patchsz, mode = mode, verbose = verbose)
-
 
     elif stepid == 2:
         #######################################POST CNN --> RECONSTRUCTION AFTER RUNNING INFERENCE ON TIGER2#################################

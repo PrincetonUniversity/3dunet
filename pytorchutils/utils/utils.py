@@ -16,7 +16,7 @@ import re
 import torch
 from torch.autograd import Variable
 import numpy as np
-import h5py
+import h5py, tifffile
 
 
 __all__ = ["timestamp",
@@ -143,18 +143,28 @@ def set_gpus(gpu_list):
     os.environ["CUDA_VISIBLE_DEVICES"] = ",".join(gpu_list)
 
 
-def read_h5(fname):
-
-    with h5py.File(fname) as f:
-        d = f["/main"].value
-
+def read_img(fname):
+    
+    if fname[-3:] == ".h5":
+        with h5py.File(fname) as f:
+            d = f["/main"].value
+    elif fname[-4:] == ".tif":
+        d = tifffile.imread(fname)
+    else:
+        raise RuntimeError("only hdf5 and tiff format is supported")
+        
     return d
 
 
-def write_h5(data, fname):
+def write_img(data, fname):
 
     if os.path.exists(fname):
       os.remove(fname)
 
-    with h5py.File(fname) as f:
-        f.create_dataset("/main",data=data)
+    if fname[-3:] == ".h5":
+        with h5py.File(fname) as f:
+            f.create_dataset("/main",data=data)
+    elif fname[-4:] == ".tif":
+        tifffile.imsave(fname, data)
+    else:
+        raise RuntimeError("only hdf5 and tiff format is supported")
