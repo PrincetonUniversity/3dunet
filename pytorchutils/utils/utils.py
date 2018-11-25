@@ -25,7 +25,7 @@ __all__ = ["timestamp",
            "save_chkpt","load_chkpt","iter_from_chkpt_fname",
            "load_source",
            "to_torch", "masks_empty",
-           "read_h5","write_h5",
+           "read_img","write_img",
            "set_gpus"]
 
 
