@@ -6,7 +6,6 @@ Created on Mon Nov 19 13:53:51 2018
 @author: wanglab
 """
 
-
 import os, numpy as np, sys, time
 import collections
 import tifffile
@@ -60,7 +59,7 @@ def main(noeval, **args):
         save_output(output, dset, output_fld, **params) #saves tif       
         fs._init() #clear out scanner
         
-    sys.stdout.write("\patch {}: {} min\n".format(jobid+1, round((time.time()-start)/60, 1))); sys.stdout.flush()
+    sys.stdout.write("patch {}: {} min\n".format(jobid+1, round((time.time()-start)/60, 1))); sys.stdout.flush()
 
 
 def fill_params(expt_name, chkpt_num, gpus, nobn, model_fname, dset_name, tag, jobid):
