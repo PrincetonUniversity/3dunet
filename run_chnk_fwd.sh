@@ -17,3 +17,8 @@ module load cudatoolkit/10.0 cudnn/cuda-10.0/7.3.1 anaconda3/5.2.0
 
 cd pytorchutils/
 python run_chnk_fwd.py 20181115_zd_train models/RSUNet.py 300000 20180327_jg42_bl6_lob6a_05 --gpus 0 --noeval --tag noeval ${SLURM_ARRAY_TASK_ID}
+
+#FUNCTIONALITY
+#how to use for array jobs on slurm
+#1 array job = 1 chunk (15 mintes per chunk)
+#sbatch --array=0-100 run_chnk_fwd.sh
