@@ -29,7 +29,7 @@ def forward(net, scanner, scan_spec, activation=None, verbose=True):
             push_outputs(scanner, outputs, scan_spec)
     
             end = time.time()
-            if verbose: sys.stdout.write("Elapsed: %3f\n" % (end-start)); sys.stdout.flush()
+            if verbose: sys.stdout.write("Elapsed: %3f\n" % (end-start))
 
             start = end
             inputs = scanner.pull()
