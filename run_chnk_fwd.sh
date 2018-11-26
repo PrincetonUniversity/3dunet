@@ -5,7 +5,7 @@
 #SBATCH --ntasks-per-socket=1
 #SBATCH --gres=gpu:1
 #SBATCH --contiguous
-#SBATCH --mem=3000 #30gbs
+#SBATCH --mem=30000 #30gbs
 #SBATCH -t 5                # time (minutes)
 #SBATCH -o /scratch/gpfs/zmd/logs/chnk_%a_%j.out
 #SBATCH -e /scratch/gpfs/zmd/logs/chnk_%a_%j.err
