@@ -36,7 +36,7 @@ def makedir(path):
         os.mkdir(path)
     return
 
-def generate_patch(input_arr, patch_dst, patchlist, stridesize, patchsize, mode = 'folder', verbose = True):
+def generate_patch(input_arr, patch_dst, patchlist, stridesize, patchsize, mode = 'folder', verbose = True, window = (20, 192, 192)):
     '''Function to patch up data and make into memory mapped array
     
     Inputs
@@ -79,8 +79,20 @@ def generate_patch(input_arr, patch_dst, patchlist, stridesize, patchsize, mode 
         for i,p in enumerate(patchlist):
             if i >= len(os.listdir(patch_dst))-1: #so that you can re-run a job if it was killed halfway (bc of occassional memory issues)
                 v = input_arr[p[0]:p[0]+patchsize[0], p[1]:p[1]+patchsize[1], p[2]:p[2]+patchsize[2]]
+                #padding to prevent cnn erros 
+                if v.shape[0] < window[0]:
+                    pad = np.zeros((window[0]-v.shape[0], v.shape[1], v.shape[2]))
+                    v = np.append(v, pad, axis = 0)
+                elif v.shape[1] < window[1]:
+                    pad = np.zeros((v.shape[0], window[1]-v.shape[1], v.shape[2]))
+                    v = np.append(v, pad, axis = 0)
+                elif v.shape[2] < window[2]:
+                    pad = np.zeros((v.shape[0], v.shape[1], window[2]-v.shape[2]))
+                    v = np.append(v, pad, axis = 0)
+                #saving out
                 tifffile.imsave(os.path.join(patch_dst, 'patch_{}.tif'.format(str(i).zfill(10))), v.astype('float32'), compress=1)
-                if i%10==0 and verbose: print('{} of {}'.format(i, len(patchlist))); del v
+                del v
+                if verbose: print('{} of {}'.format(i, len(patchlist)))
     #return
     return patch_dst
    
@@ -355,7 +367,7 @@ if __name__ == '__main__':
     vols = os.listdir(fsz); vols.sort()
     src = os.path.join(fsz, vols[len(vols)-1]) #hack - try to load param_dict instead?
     if not os.path.isdir(src): src = os.path.join(fsz, vols[len(vols)-2]) #hack - try to load param_dict instead?
-    sys.stdout.write('\n preprocessing tif directory of: \n{}'.format(src)); sys.stdout.flush()
+    sys.stdout.write('\n preprocessing tif directory of: \n{}\n'.format(src))
     
     #set params to use for reconstruction
     patchsz = (64,3840,3328) #cnn window size for lightsheet = typically 20, 192, 192 #patchsize = (64,3840,3136)
@@ -370,13 +382,15 @@ if __name__ == '__main__':
     
     #make patches
     inputshape = get_dims_from_folder(src)
+    sys.stdout.write('input shape: {}\n'.format(inputshape))
     patchlist = make_indices(inputshape, stridesz)
+    sys.stdout.write('length of patch list aka number of patches: {}\n'.format(len(patchlist))); sys.stdout.flush()
     
     #set directories - #FIXME: hack    
     dst = os.path.join('/jukebox/scratch/zmd', os.path.basename(os.path.abspath(args.expt_name))); makedir(dst)
     in_dst = os.path.join(dst, 'input_memmap_array.npy') 
-    cnn_src = os.path.join(dst, 'cnn_output') #set cnn patch directory
-    recon_dst = os.path.join(dst, 'reconst_array.npy') #set reconstructed array directory
+    cnn_src = os.path.join(dst, 'output_chnks') #set cnn patch directory
+    recon_dst = os.path.join(dst, 'reconstructed_array.npy') #set reconstructed array directory
     
     #recover step id from command line args      
     stepid = args.stepid
