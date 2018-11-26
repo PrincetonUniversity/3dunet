@@ -88,11 +88,8 @@ def fill_params(expt_name, chkpt_num, gpus,
     params["jobid"] = jobid
 
     #Dataset params
-<<<<<<< HEAD
+
     params["data_dir"]    = "/scratch/gpfs/zmd/{}".format(dset_name)
-=======
-    params["data_dir"]    = "/tigress/zmd/3dunet_data/{}".format(dset_name)
->>>>>>> a30613c97b28672f0e9f603101433d1cd7603d58
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     params["dsets"]       = dset_name
     params["input_spec"]  = collections.OrderedDict(input=(20,192,192)) #dp dataset spec
