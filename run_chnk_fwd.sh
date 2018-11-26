@@ -6,9 +6,9 @@
 #SBATCH --gres=gpu:1
 #SBATCH --contiguous
 #SBATCH --mem=30000 #30gbs
-#SBATCH -t 5                # time (minutes)
-#SBATCH -o /scratch/gpfs/zmd/logs/chnk_%a_%j.out
-#SBATCH -e /scratch/gpfs/zmd/logs/chnk_%a_%j.err
+#SBATCH -t 360                # time (minutes)
+#SBATCH -o logs/chnk_%a_%j.out
+#SBATCH -e logs/chnk_%a_%j.err
 
 echo "Array Index: $SLURM_ARRAY_TASK_ID"
 
