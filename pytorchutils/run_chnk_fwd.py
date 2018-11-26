@@ -63,7 +63,7 @@ def main(noeval, **args):
 
 
 def fill_params(expt_name, chkpt_num, gpus,
-                nobn, model_fname, dset_name, tag):
+                nobn, model_fname, dset_name, tag, jobid):
 
     params = {}
 
@@ -79,15 +79,16 @@ def fill_params(expt_name, chkpt_num, gpus,
 
     #IO/Record params
     params["expt_name"]   = expt_name
-    params["expt_dir"]    = "/tigress/tpisano/3dunet_data/experiments/{}".format(expt_name)
+    params["expt_dir"]    = "/tigress/zmd/3dunet_data/experiments/{}".format(expt_name)
     params["model_dir"]   = os.path.join(params["expt_dir"], "models")
     params["log_dir"]     = os.path.join(params["expt_dir"], "logs")
     params["fwd_dir"]     = os.path.join(params["expt_dir"], "forward")
     params["log_tag"]     = "fwd_" + tag if len(tag) > 0 else "fwd"
     params["output_tag"]  = tag
+    params["jobid"] = jobid
 
     #Dataset params
-    params["data_dir"]    = "/tigress/tpisano/3dunet_data/{}".format(dset_name)
+    params["data_dir"]    = "/scratch/gpfs/zmd/{}".format(dset_name)
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     params["dsets"]       = dset_name
     params["input_spec"]  = collections.OrderedDict(input=(20,192,192)) #dp dataset spec
@@ -158,7 +159,7 @@ if __name__ == "__main__":
 
     parser.add_argument("expt_name",
                         help="Experiment Name")
-    parser.add_argument("model_name",
+    parser.add_argument("model_fname",
                         help="Model Template Name")
     parser.add_argument("chkpt_num", type=int,
                         help="Checkpoint Number")
