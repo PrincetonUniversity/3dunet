@@ -62,8 +62,7 @@ def main(noeval, **args):
     sys.stdout.write("\patch {}: {} min\n".format(jobid+1, round((time.time()-start)/60, 1))); sys.stdout.flush()
 
 
-def fill_params(expt_name, chkpt_num, gpus,
-                nobn, model_fname, dset_name, tag, jobid):
+def fill_params(expt_name, chkpt_num, gpus, nobn, model_fname, dset_name, tag, jobid):
 
     params = {}
 
@@ -88,7 +87,6 @@ def fill_params(expt_name, chkpt_num, gpus,
     params["jobid"] = jobid
 
     #Dataset params
-
     params["data_dir"]    = "/scratch/gpfs/zmd/{}".format(dset_name)
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     params["dsets"]       = dset_name
