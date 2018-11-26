@@ -27,8 +27,8 @@ Go to the dataprovider3, DataTools, and augmentor directories and run (for each 
     - lines 57 & 65: modify experiment and data directory 
 3. `run_chnk_fwd.py` --> large-scale inference
     - lines 82 & 90: modify experiment and data directory 
-    - if working with a slurm-based schedule:
-	1. modify experiment folder name (containing the preprocesed 'input_chnks' folder 	  in `run_chnk_fwd.sh` in the 'slurm_scripts' directory in the main repo
+    - if working with a slurm-based scheduler:
+	1. modify `run_chnk_fwd.sh` in the main repo
 	2. use `python pytorchutils/run_chnk_fwd.py -h` for more info on command line 		arguments
 4. modify parameters (stride, window, # of iterations, etc.) in the main parameter dictionaries
 
