@@ -1,9 +1,0 @@
-#ignore logs
-*.out
-*.err
-*demo/
-
-#ignore pyc binary files
-*.pyc
-*__pycache__/
-
