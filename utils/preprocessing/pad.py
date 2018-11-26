@@ -48,6 +48,6 @@ if __name__ == '__main__':
 #        start = time.time()    
 #        pad(src, start)
     
-    src = '/home/wanglab/mounts/scratch/bad/20170308_tp_bl6f_lob7_2x_02/input_chnks/patch_0000000095.tif'
+    src = '/home/wanglab/mounts/scratch/bad/20170308_tp_bl6_lob8_lat_05/input_chnks/patch_0000000004.tif'
     start = time.time() 
     pad(src, start)

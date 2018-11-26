@@ -84,7 +84,7 @@ def fill_params(expt_name, chkpt_num, gpus, nobn, model_fname, dset_name, tag, j
     params["fwd_dir"]     = os.path.join(params["expt_dir"], "forward")
     params["log_tag"]     = "fwd_" + tag if len(tag) > 0 else "fwd"
     params["output_tag"]  = tag
-    params["jobid"] = jobid
+    params["jobid"]       = jobid
 
     #Dataset params
     params["data_dir"]    = "/scratch/gpfs/zmd/{}".format(dset_name)
@@ -162,7 +162,7 @@ if __name__ == "__main__":
                         help="Model Template Name")
     parser.add_argument("chkpt_num", type=int,
                         help="Checkpoint Number")
-    parser.add_argument("dset_name", nargs="+",
+    parser.add_argument("dset_name",
                         help="Inference Dataset Name")
     parser.add_argument("--nobn", action="store_true",
                         help="Whether net uses batch normalization")
