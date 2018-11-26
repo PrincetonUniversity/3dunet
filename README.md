@@ -21,13 +21,17 @@ Go to the dataprovider3, DataTools, and augmentor directories and run (for each 
 
 ## Run:
 - main scripts are located in the pytorchutils directory
-- modify parameters in the respective run files
-    - parameter dictionary
-    - read and writing functions for data structures
-    - data and experiment directories
 1. `run_exp.py` --> training
+    - lines 64-98: modify data directory, train and validation sets, and named experiment   	  directory (in which the experiment directory of logs and model weights is stored) 
 2. `run_fwd.py` --> inference
+    - lines 57 & 65: modify experiment and data directory 
 3. `run_chnk_fwd.py` --> large-scale inference
+    - lines 82 & 90: modify experiment and data directory 
+    - if working with a slurm-based schedule:
+	1. modify experiment folder name (containing the preprocesed 'input_chnks' folder 	  in `run_chnk_fwd.sh` in the 'slurm_scripts' directory in the main repo
+	2. use `python pytorchutils/run_chnk_fwd.py -h` for more info on command line 		arguments
+4. modify parameters (stride, window, # of iterations, etc.) in the main parameter dictionaries
+
 
 Contact: tpisano@princeton.edu, zmd@princeton.edu
 

@@ -35,7 +35,7 @@ def main(noeval, **args):
 
     #lightsheet mods - input folder contains list of our "big" patches
     input_fld = os.path.join(params["data_dir"], "input_chnks") #set patches directory 
-    output_fld = os.path.join(params["data_dir"], "cnn_output") #set output directory 
+    output_fld = os.path.join(params["data_dir"], "output_chnks") #set output directory 
     
     if not os.path.exists(output_fld): os.mkdir(output_fld)
     jobid = int(params["jobid"]) #set patch no. to run through cnn
@@ -52,7 +52,6 @@ def main(noeval, **args):
         start = time.time()
         
         fs = make_forward_scanner(dset, **params)
-        sys.stdout.write("\striding by: {}".format(fs.stride)); sys.stdout.flush()    
         
         output = forward.forward(net, fs, params["scan_spec"], #runs forward pass
                                  activation=params["activation"])
@@ -88,7 +87,7 @@ def fill_params(expt_name, chkpt_num, gpus,
     params["output_tag"]  = tag
 
     #Dataset params
-    params["data_dir"]    = "/scratch/zmd/{}".format(dset_name)
+    params["data_dir"]    = "/scratch/gpfs/zmd/{}".format(dset_name)
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     params["dsets"]       = dset_name
     params["input_spec"]  = collections.OrderedDict(input=(20,192,192)) #dp dataset spec
@@ -136,9 +135,9 @@ def save_output(output, dset, output_fld, output_tag, jobid, chkpt_num, **params
         output_data = output.outputs.get_data(k)
         
         if len(output_tag) == 0:
-            basename = "{}_{}_{}.tif".format(str(jobid).zfill(10), k, chkpt_num)
+            basename = "patch_{}_{}_{}.tif".format(str(jobid).zfill(10), k, chkpt_num)
         else:
-            basename = "{}_{}_{}_{}.tif".format(str(jobid).zfill(10), k, 
+            basename = "patch_{}_{}_{}_{}.tif".format(str(jobid).zfill(10), k, 
                                                chkpt_num, output_tag)
 
         full_fname = os.path.join(output_fld, basename)

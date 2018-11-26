@@ -18,40 +18,21 @@ from tools.conv_net.functions.bipartite import pairwise_distance_metrics
 
 #%%
 if __name__ == '__main__':
-    
-    #transfer from globus
-    src = '/tigress/zmd/wang/zahra/3dunet_cnn/experiments/20181001_zd_train/forward'
-    dest = '/jukebox/LightSheetTransfer/cnn/zmd'
-    label = 'model_20181001'
-    transfer(src, dest, label, other_endpoint = False)
-        
-    
-#    test = ['20170116_tp_bl6_lob7_ml_08_647_010na_z7d5um_150msec_10povlp_ch00_C00_440-475_02', #for 20181001 net
-#            'JGANNOTATION_20170116_tp_bl6_lob7_ml_08_647_010na_z7d5um_150msec_10povlp_ch00_C00_750-785_00', 
-#            '20170116_tp_bl6_lob45_500r_12_647_010na_z7d5um_150msec_10povlp_ch00_C00_275-310_01', 
-#            '20170116_tp_bl6_lob7_500r_09_647_010na_z7d5um_75msec_10povlp_ch00_z200-400_y4500-4850_x3450-3800', 
-#            '20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_03_500-550', 
-#            '20170116_tp_bl6_lob7_ml_08_647_010na_z7d5um_150msec_10povlp_ch00_C00_440-475_00', 
-#            '20170115_tp_bl6_lob6a_1000r_647_010na_z7d5um_125msec_10povlp_ch00_04_500-550', 
-#            'JGANNOTATION_20170115_tp_bl6_lob6a_500r_01_647_010na_z7d5um_75_msec_10povlp_ch00_C00_425-460_00', 
-#            '20170204_tp_bl6_cri_1000r_02_1hfds_647_0010na_25msec_z7d5um_10povlap_ch00_z200-400_y1350-1700_x3100-3450']
-
-#%%    
-    #after transfer, set relevant paths
-    pth = '/home/wanglab/mounts/wang/zahra/conv_net/training/experiment_dirs/20181009_zd_train/forward/normalisation_test/test'
+      
+    #set relevant paths
+    pth = '/home/wanglab/mounts/wang/zahra/conv_net/training/experiment_dirs/20181115_zd_train/forward/comparison_test'
     points_dict = load_dictionary('/jukebox/wang/pisano/conv_net/annotations/all_better_res/h129/filename_points_dictionary.p')
     
-#******************************************************************************************************************************************    
     #initialise empty vectors
     tps = []; fps = []; fns = []    
     #iterates through forward pass output
     for dset in os.listdir(pth):
         impth = os.path.join(pth, dset)
-        predicted = probabiltymap_to_centers_thresh(impth, threshold = (0.4, 1))
+        predicted = probabiltymap_to_centers_thresh(impth, threshold = (0.6, 1))
         
         print '\n   Finished finding centers for {}, calculating statistics\n'.format(dset)
         
-        ground_truth = points_dict[dset[:-28]+'.npy'] #modifying file names so they match with original data
+        ground_truth = points_dict[dset[:-23]+'.npy'] #modifying file names so they match with original data
         
         paired,tp,fp,fn = pairwise_distance_metrics(ground_truth, predicted, cutoff = 30) #returns true positive = tp; false positive = fp; false negative = fn
        
@@ -61,7 +42,9 @@ if __name__ == '__main__':
     precision = tp/(tp+fp); recall = tp/(tp+fn) #calculating precision and recal
     f1 = 2*( (precision*recall)/(precision+recall) ) #calculating f1 score
     
-    print '\n   Finished calculating statistics for set params\n\nF1 score: {} \nTrue pos, false pos, false neg: {} \n'.format(f1, (tp,fp,fn))
+    print ('\n   Finished calculating statistics for set params\n\nReport:\n***************************\n\
+    F1 score: {}% \ntrue positives, false positives, false negatives: {} \n\
+    precision: {}% \nrecall: {}%\n'.format(round(f1*100, 2), (tp,fp,fn), round(precision*100, 2), round(recall*100, 2)))
     
 #%%
 def transfer(src, dest, label, other_endpoint = False):
@@ -118,9 +101,10 @@ def probabiltymap_to_centers_thresh(src, threshold = (0.1,1), numZSlicesPerSplit
             f = h5py.File(src)
             src = f['/main'].value
             f.close()
-        if src[-3:] == 'tif': src = tifffile.imread(src)
-        if src[-3:] == 'npy': src = load_np(src)
-
+        elif src[-3:] == 'tif': src = tifffile.imread(src)
+        elif src[-3:] == 'npy': src = load_np(src)
+        
+    src = np.squeeze(src)    
     zdim, ydim, xdim = src.shape
 
     #run
@@ -217,4 +201,3 @@ def return_pixels_associated_w_center(centers, labels, size = (15,100,100)):
         z,y,x = [aa.astype('int') for aa in cen]
         dct[cen] = np.asarray(np.where(labels[0][z-zz:z+zz+1, y-yy:y+yy+1, x-xx:x+xx+1]==labels[0][z,y,x])).T    
     return dct
-

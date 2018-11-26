@@ -2,12 +2,13 @@
 """
 Created on Mon Oct 15 16:44:04 2018
 
-@author: Zahra
+@author: zahramansoor
 """
 
 import re, os
 import matplotlib.pyplot as plt
 import h5py, numpy as np
+from scipy.stats import linregress
 
 def save_stats_h5(fname):
     '''Function to extract test loss and training loss values from h5 files saved in training.
@@ -27,51 +28,30 @@ def save_stats_h5(fname):
 
 
 
-def plot_val_curve(pth, exclude_initial = False):
+def plot_val_curve(loss, start_iter = 0):
     '''Function to plot validation data loss value from .out file from training on tiger2
     Inputs:
-        pth = directory of .out files from training
-    Returns:
-        pdf of plot, in the path directory
+        loss = array of loss values
+        start_iter = iteration from which to start plotting from
     '''
+    #set x
+    iters = np.arange(start_iter, len(loss))
     
-    #initialise things
-    test = ''
-    
-    out = os.listdir(pth)
-    pths = [os.path.join(pth, f) for f in out if f[-4:] == '.out']; pths.sort() #sort so trainings are in order of time performed
-    
-    #read text file output from PyTorchUtils
-    for src in pths:
-        with open(src, 'r') as searchfile:
-            for line in searchfile:
-                if 'TEST:' in line: #finds all lines with test
-                    test += line
-            searchfile.close()
-
-    #regex    
-    n = re.compile("(?<='soma_label':\s)(\d+.\d+)") #finds loss values in test lines
-    loss = n.findall(test)
-    loss = [round(float(xx), 5) for xx in loss if str(xx)] #write into numerical vector
+    #linear regression
+    fit = np.polyfit(iters, loss[start_iter:], 1)
+    fit_fn = np.poly1d(fit)
+    linreg_stats = linregress(iters, loss[start_iter:])
     
     #plot
-    if exclude_initial:
-        plt.rcParams.update({'font.size': 8})
-        plt.figure()
-        plt.plot(loss[1:], 'r')
-        plt.ylim(0, 0.0015)
-        plt.xlabel('# of iterations in thousands')
-        plt.ylabel('loss value')
-        plt.title('3D U-net validation curve for H129')          
-        plt.savefig(os.path.join(pth, 'val_zoom_initial_test_omitted.pdf'), dpi = 300)
-        plt.close()
-    else:
-        plt.rcParams.update({'font.size': 8})
-        plt.figure()
-        plt.plot(loss, 'r')
-        plt.ylim(0, 0.02)
-        plt.xlabel('# of iterations in thousands')
-        plt.ylabel('loss value')
-        plt.title('3D U-net validation curve for H129')          
-        plt.savefig(os.path.join(pth, 'val_zoom'), dpi = 300)
-        plt.close()    
+    plt.rcParams.update({'font.size': 8})
+    plt.figure()
+    plt.plot(loss[start_iter:], 'r')
+    plt.xlabel('# of iterations in thousands')
+    plt.ylabel('loss value')
+    plt.title('3D U-net validation curve for H129')          
+#        plt.savefig(os.path.join(pth, 'val_zoom'), dpi = 300)
+#    plt.close() 
+    plt.figure()
+    plt.plot(iters, loss[start_iter:], 'yo', iters, fit_fn(iters), '--k')
+    
+    return linreg_stats
