@@ -20,15 +20,15 @@ Created on Tue Nov 27 08:32:24 2018
 
 #transfer from PNI scratch to tigress using globus https://app.globus.org/file-manager
 import os
-inn = '/jukebox/scratch/zmd/for_tom/'
-out = '/tigress/tpisano/3dunet_data/'
+inn = '/jukebox/scratch/zmd/'
+out = '/scratch/gpfs/zmd/'
 logs = os.path.join(out, 'logs')
 if not os.path.exists(logs): os.mkdir(logs)
-repo = '/tigress/tpisano/3dunet'
+repo = '/tigress/zmd/3dunet'
 slurm_script = 'run_chnk_fwd.sh'
-tom_folder = os.path.join(out, 'tom_slurm_scripts')
-if not os.path.exists(tom_folder): os.mkdir(tom_folder)
-print(tom_folder)
+fld = os.path.join(out, 'slurm_scripts')
+if not os.path.exists(fld): os.mkdir(fld)
+print(fld)
 
 #function to run
 from subprocess import check_output
@@ -38,7 +38,7 @@ def sp_call(call):
 
 
 #loop
-paths = [xx for xx in os.listdir(out) if 'experiments' not in xx and 'logs' not in xx and 'tom_slurm_scripts' not in xx]
+paths = [xx for xx in os.listdir(out) if 'completed' not in xx and 'split_data' not in xx]
 paths_to_call = []
 for pth in paths:
     
@@ -53,7 +53,7 @@ for pth in paths:
         
         #new dir
         if 'cd pytorchutils/' in line:
-            new_lines[i] = line.replace('pytorchutils/', '/tigress/tpisano/3dunet/pytorchutils/')
+            new_lines[i] = line.replace('pytorchutils/', '/tigress/zmd/3dunet/pytorchutils/')
         
         #path to folder
         if 'python run_chnk_fwd.py 20181115_zd_train' in line:
@@ -64,12 +64,12 @@ for pth in paths:
             new_lines[i] = line.replace('logs', logs)
             
     #save out
-    with open(os.path.join(tom_folder, 'run_'+pth+'.sh'), 'w+') as fl:
+    with open(os.path.join(fld, 'run_'+pth+'.sh'), 'w+') as fl:
         [fl.write(new_line) for new_line in new_lines]
         fl.close()
         
     #collect
-    paths_to_call.append(os.path.join(tom_folder, 'run_'+pth+'.sh'))
+    paths_to_call.append(os.path.join(fld, 'run_'+pth+'.sh'))
     
 #call
 for pth in paths_to_call:
