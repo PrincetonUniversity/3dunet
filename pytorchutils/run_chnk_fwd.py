@@ -6,7 +6,7 @@ Created on Mon Nov 19 13:53:51 2018
 @author: wanglab
 """
 
-import os, numpy as np, sys, time
+import os, numpy as np, sys, time, shutil
 import collections
 import tifffile
 
@@ -44,8 +44,10 @@ def main(noeval, **args):
     fls = [os.path.join(input_fld, xx) for xx in os.listdir(input_fld)]; fls.sort()
     
     #select the file to process for this array job
-    if jobid > len(fls):
-        sys.stdout.write("\njobid {} > number of files {}\n".format(jobid, len(fls))); sys.stdout.flush()    
+    if jobid > len(fls)-1:
+        sys.stdout.write("\njobid {} > number of files {}\n\ndeleting input chunks...\n".format(jobid, len(fls))); sys.stdout.flush()    
+        shutil.rmtree(input_fld)
+        
     else:    
         dset = fls[jobid]
         
@@ -60,7 +62,6 @@ def main(noeval, **args):
         fs._init() #clear out scanner
         
     sys.stdout.write("patch {}: {} min\n".format(jobid+1, round((time.time()-start)/60, 1))); sys.stdout.flush()
-
 
 def fill_params(expt_name, chkpt_num, gpus, nobn, model_fname, dset_name, tag, jobid):
 
