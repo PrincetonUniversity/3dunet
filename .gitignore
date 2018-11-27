@@ -1,0 +1,12 @@
+#ignore logs
+*.out
+*.err
+*demo/
+*logs/
+
+#ignore pyc binary files
+*.pyc
+*__pycache__/
+
+#ignore datatools dir
+datatools
