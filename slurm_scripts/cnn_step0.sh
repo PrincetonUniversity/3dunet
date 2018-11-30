@@ -19,5 +19,5 @@ module load anacondapy/5.1.0
 
 echo "Experiment name:" "$@"
 
-python cell_detect.py "$@" 0
+python cell_detect.py "$@" 0 0
 

@@ -38,7 +38,7 @@ def sp_call(call):
 
 
 #loop
-paths = [xx for xx in os.listdir(out) if 'completed' not in xx and 'split_data' not in xx]
+paths = [xx for xx in os.listdir(out) if 'completed' not in xx and 'split_data' not in xx and 'logs' not in xx and 'slurm_scripts' not in xx]
 paths_to_call = []
 for pth in paths:
     

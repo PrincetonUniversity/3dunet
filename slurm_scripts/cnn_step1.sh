@@ -18,5 +18,7 @@ module load anacondapy/5.1.0
 . activate lightsheet
 
 echo "Experiment name:" "$@"
+echo "Array Index: $SLURM_ARRAY_TASK_ID"
 
-python cell_detect.py "$@" 1
+
+python cell_detect.py "$@" 1 ${SLURM_ARRAY_TASK_ID}
