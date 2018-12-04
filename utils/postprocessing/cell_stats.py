@@ -27,8 +27,7 @@ def calculate_cell_measures(**params):
     df.to_csv(os.path.join(params["output_dir"], "cells/cell_measures.csv"))
     
     #return csv path
-    sys.stdout.write("\ncell measures and statistics saved in: \n{}".format(os.path.join(params["output_dir"], "cells/cell_measures.csv")))
-    sys.stdout.flush()
+    return os.path.join(params["output_dir"], "cells/cell_measures.csv")
 
 
 #%%

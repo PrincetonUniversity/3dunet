@@ -6,7 +6,7 @@ Created on Mon Nov 19 15:42:12 2018
 @author: wanglab
 """
 
-import os, sys, shutil, pickle
+import os, sys, shutil
 import argparse   
 from utils.preprocessing.preprocess import get_dims_from_folder, make_indices, make_memmap_from_tiff_list, generate_patch, reconstruct_memmap_array_from_tif_dir
 from utils.postprocessing.cell_stats import calculate_cell_measures    
@@ -18,7 +18,7 @@ def main(**args):
     # for a given experiment, but only params should be used below
     params = fill_params(**args)
     
-    #save to .p file
+    #save to .csv file
     save_params(params)
     
     if params["stepid"] == 0:
@@ -48,7 +48,8 @@ def main(**args):
 
     elif params["stepid"] == 3:
         ##############################################POST CNN --> FINDING CELL CENTERS#####################################################   
-
+        
+        #find cell centers, measure sphericity, perimeter, and z span of a cell
         csv_dst = calculate_cell_measures(**params)
         sys.stdout.write('\ncell coordinates and measures saved in {}\n'.format(csv_dst)); sys.stdout.flush()
 
@@ -95,7 +96,7 @@ def fill_params(expt_name, stepid, jobid):
     
     #post-processing params
     params["threshold"]     = (0.6,1)
-    params["zsplt"]         = 100
+    params["zsplt"]         = 120
     params["ovlp_plns"]     = 30
 
     return params
