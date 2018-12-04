@@ -73,8 +73,9 @@ def fill_params(expt_name, stepid, jobid):
     params["cnn_data_dir"]  = os.path.join(params["scratch_dir"], "reconstruct/"+params["expt_name"])
     params["cnn_dir"]       = os.path.join(params["cnn_data_dir"], "output_chnks") #set cnn patch directory
     params["reconstr_arr"]  = os.path.join(params["cnn_data_dir"], "reconstructed_array.npy")
+    params["output_dir"]    = expt_name
     
-    #processing params
+    #pre-processing params
     params["dtype"]         = "float32"
     params["cores"]         = 8
     params["verbose"]       = True
@@ -91,8 +92,10 @@ def fill_params(expt_name, stepid, jobid):
     params["inputshape"]    = get_dims_from_folder(src)
     params["patchlist"]     = make_indices(params["inputshape"], params["stridesz"])
     
-    #threshold param based on net eval
+    #post-processing params
     params["threshold"]     = (0.6,1)
+    params["zsplt"]         = 100
+    params["ovlp_plns"]     = 30
 
     return params
 

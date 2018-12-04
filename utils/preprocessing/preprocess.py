@@ -4,6 +4,9 @@
 Created on Thu Nov 29 18:23:23 2018
 
 @author: wanglab
+
+by Tom Pisano (tpisano@princeton.edu, tjp77@gmail.com)
+
 """
 
 import os, numpy as np, sys, multiprocessing as mp

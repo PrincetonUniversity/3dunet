@@ -2,7 +2,7 @@
 #
 #SBATCH -p all                # partition (queue)
 #SBATCH -c 1                      # number of cores
-#SBATCH -t 90                # time (minutes)
+#SBATCH -t 200                # time (minutes)
 #SBATCH -o logs/cnn_step2_%j.out        # STDOUT #add _%a to see each array job
 #SBATCH -e logs/cnn_step2_%j.err        # STDERR #add _%a to see each array job
 #SBATCH --contiguous #used to try and get cpu mem to be contigous
