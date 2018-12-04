@@ -10,6 +10,7 @@ import os, sys, shutil, pickle
 import argparse   
 from utils.preprocessing.preprocess import get_dims_from_folder, make_indices, make_memmap_from_tiff_list, generate_patch, reconstruct_memmap_array_from_tif_dir
 from utils.postprocessing.cell_stats import calculate_cell_measures    
+import pandas as pd
 
 def main(**args):
 
@@ -104,9 +105,8 @@ def save_params(params):
     save params in cnn specific parameter dictionary for reconstruction/postprocessing 
     can discard later if need be
     """
-    with open(os.path.join(params["cnn_data_dir"], "cnn_param_dict.p"), "wb") as handle:
-        pickle.dump(params, handle)
-        handle.close()
+    (pd.DataFrame.from_dict(data=params, orient='index').to_csv(os.path.join(params["cnn_data_dir"], "cnn_param_dict.csv"),
+                            header = False))
 
 #%%
 if __name__ == '__main__':
