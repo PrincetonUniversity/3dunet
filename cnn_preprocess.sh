@@ -16,12 +16,14 @@ cat /proc/meminfo
 module load anacondapy/5.1.0
 . activate lightsheet
 
+echo "Experiment name:" "$@"
+
 #generate memmap array of full size cell channel data
 OUT0=$(sbatch slurm_scripts/cnn_step0.sh "$@") 
 echo $OUT0
 
 #generate chunks for cnn input
-OUT1=$(sbatch --dependency=afterany:${OUT0##* } slurm_scripts/cnn_step1.sh "$@") 
+OUT1=$(sbatch --dependency=afterany:${OUT0##* } --array=0-100 slurm_scripts/cnn_step1.sh "$@") 
 echo $OUT1
 
 #functionality

@@ -20,7 +20,7 @@ from tools.conv_net.functions.bipartite import pairwise_distance_metrics
 if __name__ == '__main__':
       
     #set relevant paths
-    pth = '/home/wanglab/mounts/wang/zahra/conv_net/training/experiment_dirs/20181115_zd_train/forward/comparison_test'
+    pth = '/home/wanglab/mounts/wang/zahra/conv_net/training/experiment_dirs/20181115_zd_train/forward/test_data_iters_295590'
     points_dict = load_dictionary('/jukebox/wang/pisano/conv_net/annotations/all_better_res/h129/filename_points_dictionary.p')
     
     #initialise empty vectors
@@ -39,7 +39,7 @@ if __name__ == '__main__':
         tps.append(tp); fps.append(fp); fns.append(fn) #append matrix to save all values to calculate f1 score
        
     tp = sum(tps); fp = sum(fps); fn = sum(fns) #sum all the elements in the lists
-    precision = tp/(tp+fp); recall = tp/(tp+fn) #calculating precision and recal
+    precision = tp/(tp+fp); recall = tp/(tp+fn) #calculating precision and recall
     f1 = 2*( (precision*recall)/(precision+recall) ) #calculating f1 score
     
     print ('\n   Finished calculating statistics for set params\n\nReport:\n***************************\n\
@@ -47,27 +47,6 @@ if __name__ == '__main__':
     precision: {}% \nrecall: {}%\n'.format(round(f1*100, 2), (tp,fp,fn), round(precision*100, 2), round(recall*100, 2)))
     
 #%%
-def transfer(src, dest, label, other_endpoint = False):
-    '''Tranfers diretories from tigress to local/jukebox locations.
-    Inputs:
-        src = tigress source path
-        dest = destination path
-        label = name of transfer
-        other_endpoint = False; assumes transfer to LightSheetTransfer unless jukebox/other endpoint keys specified
-    '''    
-    #for globus transfer, endpoint keys: 
-    #tigress = 'a9df83d2-42f0-11e6-80cf-22000b1701d1' #transferring from
-    #wanglab = 'f7949748-c728-11e8-8c57-0a1d4c5c824a' #transferring to
-    #jukebox = '6ce834d6-ff8a-11e6-bad1-22000b9a448b'    
-    
-    tigress_pth = 'a9df83d2-42f0-11e6-80cf-22000b1701d1:'+src
-    if not other_endpoint:
-        lst_pth = '6ce834d6-ff8a-11e6-bad1-22000b9a448b:'+dest
-    else:
-        lst_pth = other_endpoint+':'+dest
-    
-    sp.call(['globus', 'transfer', tigress_pth, lst_pth, '--recursive', '--label', label]) #run command line call
-    
     
 def probabiltymap_to_centers_thresh(src, threshold = (0.1,1), numZSlicesPerSplit = 200, overlapping_planes = 40, cores = 4, return_pixels = False, verbose = False, structure_rank_order = 2):
     '''

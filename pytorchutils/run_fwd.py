@@ -4,7 +4,7 @@ import os, imp
 import collections
 
 import torch
-from torch.nn import functional as F
+from torch import sigmoid
 import dataprovider3 as dp
 
 import forward
@@ -46,7 +46,7 @@ def fill_params(expt_name, chkpt_num, gpus,
     params["in_spec"]     = dict(input=(1,20,192,192))
     params["output_spec"] = collections.OrderedDict(soma=(1,20,192,192))
     params["width"]       = [32, 40, 80]
-    params["activation"]  = F.sigmoid
+    params["activation"]  = sigmoid
     params["chkpt_num"]   = chkpt_num
 
     #GPUS
@@ -67,7 +67,7 @@ def fill_params(expt_name, chkpt_num, gpus,
     params["dsets"]       = dset_names
     params["input_spec"]  = collections.OrderedDict(input=(20,192,192)) #dp dataset spec
     params["scan_spec"]   = collections.OrderedDict(soma=(1,20,192,192))
-    params["scan_params"] = dict(stride=(0.5,0.5,0.5), blend="bump")
+    params["scan_params"] = dict(stride=(0.75,0.75,0.75), blend="bump")
 
     #Use-specific Module imports
     params["model_class"] = utils.load_source(model_fname).Model

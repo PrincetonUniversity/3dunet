@@ -55,6 +55,9 @@ def plot_val_curve(loss, start_iter = 0, m = 50):
 #        plt.savefig(os.path.join(pth, 'val_zoom'), dpi = 300)
 #    plt.close() 
     plt.figure()
-    plt.plot(iters[start_iter:], loss[start_iter:], 'yo', iters[start_iter:], fit_fn(iters[start_iter:]), '--k')
+    plt.plot(loss[start_iter:], 'yo', fit_fn(iters[start_iter:]), '--k')
+    plt.xlabel('# of iterations in thousands')
+    plt.ylabel('loss value')
+    plt.title('Linear regression of loss values')  
     
     return linreg_stats

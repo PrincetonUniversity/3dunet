@@ -8,7 +8,7 @@ Created on Wed Nov 28 18:13:16 2018
 by Tom Pisano (tpisano@princeton.edu, tjp77@gmail.com) & Zahra D (zmd@princeton.edu, zahra.dhanerawala@gmail.com)
 
 """
-import numpy as np, cv2, sys, os
+import numpy as np, cv2, sys, os, collections
 import time
 from skimage.external import tifffile
 
@@ -31,7 +31,7 @@ def calculate_cell_measures(**params):
 
 
 #%%
-def probabiltymap_to_cell_measures(src, threshold = (0.6,1), numZSlicesPerSplit = 100, overlapping_planes = 30, cores = 10, 
+def probabiltymap_to_cell_measures(src, threshold = (0.6,1), numZSlicesPerSplit = 30, overlapping_planes = 30, cores = 10, 
                                     verbose = False, structure_rank_order = 2):
     '''
     by tpisano
@@ -73,8 +73,6 @@ def probabiltymap_to_cell_measures(src, threshold = (0.6,1), numZSlicesPerSplit 
     #run
     df = []
     for i in iterlst: 
-        #i = iterlst[9]
-        #(array, start, numZSlicesPerSplit, overlapping_planes, threshold, structure_rank_order) = iterlst[5]
         df.append(find_labels_centerofmass_cell_measures(i[0], i[1], i[2], i[3], i[4], i[5]))
         
     df = pd.concat(df)
@@ -83,7 +81,8 @@ def probabiltymap_to_cell_measures(src, threshold = (0.6,1), numZSlicesPerSplit 
 
     return df
 
-def find_labels_centerofmass_cell_measures(array, start, numZSlicesPerSplit, overlapping_planes, threshold, structure_rank_order):
+def find_labels_centerofmass_cell_measures(array, start, numZSlicesPerSplit, overlapping_planes, 
+                                           threshold, structure_rank_order):
     '''
     by tpisano
     
@@ -101,38 +100,53 @@ def find_labels_centerofmass_cell_measures(array, start, numZSlicesPerSplit, ove
     #thresholding
     a = arr>=threshold[0]
     a = a.astype("bool") #thanks to ben - reduces size of arr 4 fold!
-    #del arr
     
     #find labels
     labels = ndimage.measurements.label(a, structure)
-    centers = ndimage.measurements.center_of_mass(a, labels[0], range(1, labels[1]+1)); 
+    centers = ndimage.measurements.center_of_mass(a, labels[0], range(1, labels[1]+1))
+    
+    #save to dataframe to use for contour mapping
+    zlst=[];ylst=[];xlst=[]
+    for center in centers: #not great but works
+        z,y,x = center
+        zlst.append(z); ylst.append(y); xlst.append(x)
+    data = [[zlst[i], ylst[i], xlst[i], range(1, labels[1]+1)[i]] for i in range(len(zlst))]
+    com_px_val = pd.DataFrame(data, columns = ["z", "y", "x", "val"])
     
     #filter
     if start==0:
         #such that you only keep centers in first chunk
-        centers = [center for center in centers if (center[0] <= numZSlicesPerSplit)]
+        #save to data frames in the proper format
+        com_px_val = com_px_val[com_px_val["z"] <= numZSlicesPerSplit]        
     else:
         #such that you only keep centers within middle third
-        centers = [center for center in centers if (center[0] > overlapping_planes) and (center[0] <= np.min(((numZSlicesPerSplit + overlapping_planes), zdim)))]
-        
-    #get perimeter of cell and sphericities
-    perimeters, sphericities, zspans = find_perimeter_sphericity(tuple((labels, centers, start)))
-    del a, labels
+        #save to data frames in the proper format
+        com_px_val = com_px_val[(com_px_val["z"] > (overlapping_planes)) & (com_px_val["z"] <= np.min(((numZSlicesPerSplit + overlapping_planes), zdim)))]            
     
-    #get radii
-    intensities = find_intensity(centers, start, arr, zyx_search_range=(5,10,10))
+    #make temp dict
+    inputs = com_px_val.to_dict("list")
+    inputs = collections.OrderedDict(sorted(inputs.items())) #so that order is the same
+    
+    #get perimeter of cell and sphericities
+    perimeters, sphericities, zspans = find_perimeter_sphericity(labels, inputs)
+    
+    #discard temp dict
+    del labels
+    
+    #get intensities
+    intensities = find_intensity(inputs, start, arr, zyx_search_range=(5,10,10)); del inputs
         
-    #adjust z plane to accomodate chunking
-    if start!=0:
-        centers = [(xx[0]+(start-overlapping_planes), xx[1], xx[2]) for xx in centers] #think this might have been the error on my part. It didn't have the start minus overlapping planes
+    #adjust z plane to accomodate chunkings
+    if start!=0: com_px_val["z"] = com_px_val["z"]+(start-overlapping_planes) #only chaning z based on z chunking
     
     #put into df
-    data = [[centers[i][0].astype("uint16"), centers[i][1].astype("uint16"), centers[i][2].astype("uint16"), intensities[i], sphericities[i], perimeters[i], zspans[i]] for i in range(len(centers))]
-    df = pd.DataFrame(data = data, columns = ["z", "y", "x", "intensity", "sphericity", "maximum perimeter", "length of cell (in z)" ])
+    data = [[com_px_val["z"].iloc[i].astype("uint16"), com_px_val["y"].iloc[i].astype("uint16"), com_px_val["x"].iloc[i].astype("uint16"), 
+             intensities[i], sphericities[i], perimeters[i], zspans[i]] for i in range(len(com_px_val["z"]))]
+    
+    df = pd.DataFrame(data = data, columns = ["z", "y", "x", "intensity", "sphericity", "maximum perimeter", "z depth"])
     
     return df
 
-#%%
 def perimeter_sphericity(src, dims = 3):
     """
     src = 3d
@@ -175,12 +189,12 @@ def perimeter_sphericity(src, dims = 3):
                     "no cell in plane"
         
         #return - maximum perimeter and mean sphericity per cell
-        #TODO: add z plane span of a cell
         if len(perimeters) > 0:
             perimeter = np.max(perimeters)
             zspan = len(perimeters)
         else:
             perimeter = perimeters
+            zspan = None #if contour found no cell in z planes
         if len(sphericities) > 0: 
             sphericity = np.mean(sphericities) 
         else: 
@@ -209,51 +223,40 @@ def findContours(z):
     elif str(cv2.__version__)[0] == '2':
         contours,hierarchy = cv2.findContours(z, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) #if need more than two values to unpack error here upgrade to cv2 3+
     contours = np.asarray([c.squeeze() for c in contours if cv2.contourArea(c)>0])
+    
     return contours
 
 
-def find_perimeter_sphericity(args): #(labels, centers):
-    """
-    Function that takes in from scipy.ndimage.labels
-    
-    1 is more spherical
-    dims=(2,3) number of dimensions to look at
-    box_size: 1/2 size of bounding box (should be comfortably larger than cell). 50 = 50pixels +/- center, meaning a 100pixel length cube
-
+def find_perimeter_sphericity(labels, inputs): #(labels, centers):
     """    
-    #set variables
-    timer = time.time()
-    labels = args[0]; centers = args[1]
+    takes labels and centers and finds sphericity, z span, and  maximum perimeter of cell
+    1 is more spherical
+    """    
     
     #initialise dataframes
     perimeters = []; sphericities = []; zspans = []
     
-    if labels[1]==0: #np array of zeros
-        return labels
-    else:
-        vals = range(1, labels[1]+1) #don't need zero and account for zero indexing
-        for val, center in zip(vals, centers):   
-            vol = bounding_box_from_center_array(labels[0], val, center) #FIXME: make start a variable
-            perimeter, sphericity, zspan = perimeter_sphericity(vol)      
-            perimeters.append(perimeter); sphericities.append(sphericity); zspans.append(zspan)
-    
-    print ('Total time for measurements {} minutes'.format(round((time.time() - timer) / 60)))
-    
+    #iterate through centers and their pixel values
+    for i in range(len(inputs["z"])):
+        val,x,y,z = [v[i] for k,v in inputs.items()]
+        vol = bounding_box_from_center_array(labels[0], val, (z,y,x)) 
+        perimeter, sphericity, zspan = perimeter_sphericity(vol)      
+        perimeters.append(perimeter); sphericities.append(sphericity); zspans.append(zspan)
+        
     return perimeters, sphericities, zspans
 
-def bounding_box_from_center_array(src, val, center, ovrlp = 10, box_size=(20, 50, 50)):
-    """
-    Faster version of _array as it makes a box rather than calculating
-    """
-    z,y,x = [int(xx) for xx in center]
-    
-    out = np.copy(src[max(0,z-box_size[0]):z+box_size[0], max(0, y-box_size[1]):y+box_size[1], max(x-box_size[2],0):x+box_size[2]]) #copy is critical
-    
-    a = (out==val).astype(int)
-    return a.astype("uint8")
+def bounding_box_from_center_array(src, val, center, box_size=(32,32,32)):
 
+    z,y,x = [int(xx) for xx in center]
+    zr, yr, xr = box_size
     
-def find_intensity(centers, start, recon_dst, zyx_search_range=(5,10,10)):
+    out = src[max(0,z-box_size[0]):z+box_size[0], max(0, y-box_size[1]):y+box_size[1], max(x-box_size[2],0):x+box_size[2]] #copy is critical   
+    #convert to boolean
+    a = (out==val).astype(int)
+    
+    return a
+    
+def find_intensity(inputs, start, recon_dst, zyx_search_range=(5,10,10)):
     """
     function to return maximum intensity of a determined center src_raw given a zyx point and search range
     zyx_search_range=(4,10,10)
@@ -269,9 +272,9 @@ def find_intensity(centers, start, recon_dst, zyx_search_range=(5,10,10)):
     
     #initialise
     a = []
-    for i in centers:
+    for i in range(len(inputs["z"])):
         #setting the proper ranges
-        z,y,x = i[0],i[1],i[2]
+        val,x,y,z = [v[i] for k,v in inputs.items()]
         zr,yr,xr = zyx_search_range
         
         #making sure ranges are not negative
@@ -290,4 +293,3 @@ def find_intensity(centers, start, recon_dst, zyx_search_range=(5,10,10)):
         a.append(mx)
         
     return np.array(a)
-     
