@@ -25,7 +25,7 @@ out = '/scratch/gpfs/zmd/'
 logs = os.path.join(out, 'logs')
 if not os.path.exists(logs): os.mkdir(logs)
 repo = '/tigress/zmd/3dunet'
-slurm_script = 'run_chnk_fwd.sh'
+slurm_script = '/tigress/zmd/3dunet/pytorchutils/slurm_scripts/run_chnk_fwd.sh'
 fld = os.path.join(out, 'slurm_scripts')
 if not os.path.exists(fld): os.mkdir(fld)
 print(fld)
@@ -57,7 +57,7 @@ for pth in paths:
         
         #path to folder
         if 'python run_chnk_fwd.py 20181115_zd_train' in line:
-            new_lines[i] = line.replace('20180327_jg42_bl6_lob6a_05', pth)
+            new_lines[i] = line.replace('20170115_tp_bl6_lob6a_rpv_03', pth)
             
         #logs
         if 'logs/chnk_' in line:
