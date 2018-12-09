@@ -11,7 +11,7 @@ import collections
 import tifffile
 
 import torch
-from torch.nn import functional as F
+from torch import sigmoid
 import dataprovider3 as dp
 
 import forward
@@ -46,8 +46,6 @@ def main(noeval, **args):
     #select the file to process for this array job
     if jobid > len(fls)-1:
         sys.stdout.write("\njobid {} > number of files {}\n\ndeleting input chunks...\n".format(jobid, len(fls))); sys.stdout.flush()    
-        shutil.rmtree(input_fld)
-        
     else:    
         dset = fls[jobid]
         
@@ -71,7 +69,7 @@ def fill_params(expt_name, chkpt_num, gpus, nobn, model_fname, dset_name, tag, j
     params["in_spec"]     = dict(input=(1,20,192,192))
     params["output_spec"] = collections.OrderedDict(soma=(1,20,192,192))
     params["width"]       = [32, 40, 80]
-    params["activation"]  = F.sigmoid
+    params["activation"]  = sigmoid
     params["chkpt_num"]   = chkpt_num
 
     #GPUS
