@@ -12,8 +12,9 @@ from utils.preprocessing.preprocess import get_dims_from_folder, make_indices, m
 from utils.postprocessing.cell_stats import calculate_cell_measures    
 import pandas as pd
 
-def main(**args):
 
+def main(**args):
+    
     #args should be the info you need to specify the params
     # for a given experiment, but only params should be used below
     params = fill_params(**args)
@@ -61,9 +62,13 @@ def fill_params(expt_name, stepid, jobid):
 
     params = {}
 
+    #slurm params
+    params["stepid"]        = stepid
+    params["jobid"]         = jobid #for patching array job; should be irrelevant for other steps
+    
     #experiment params
     params["expt_name"]     = os.path.basename(os.path.abspath(expt_name))
-    
+        
     #find cell channel tiff directory
     fsz = os.path.join(expt_name, "full_sizedatafld")
     vols = os.listdir(fsz); vols.sort()
@@ -86,10 +91,6 @@ def fill_params(expt_name, stepid, jobid):
     params["verbose"]       = True
     params["cleanup"]       = False
     
-    #slurm params
-    params["stepid"]        = stepid
-    params["jobid"]         = jobid #for patching array job; should be irrelevant for other steps
-    
     params["patchsz"]       = (64, 3840, 3328) #cnn window size for lightsheet = typically 20, 192, 192 #patchsize = (64,3840,3136)
     params["stridesz"]      = (44, 3648, 3136) #stridesize = (44,3648,2944)
     params["window"]        = (20, 192, 192)
@@ -101,7 +102,7 @@ def fill_params(expt_name, stepid, jobid):
     params["threshold"]     = (0.6,1)
     params["zsplt"]         = 30
     params["ovlp_plns"]     = 30
-
+        
     return params
 
 def save_params(params, dst):

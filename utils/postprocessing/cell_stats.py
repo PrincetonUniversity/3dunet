@@ -23,7 +23,7 @@ def calculate_cell_measures(**params):
     df = probabiltymap_to_cell_measures(params["reconstr_arr"], threshold = params["threshold"], numZSlicesPerSplit = params["zsplt"], 
                                                             overlapping_planes = params["ovlp_plns"], cores = 1, 
                                                             verbose = params["verbose"])
-    
+    #export to csv in lightsheet package processed folder
     df.to_csv(os.path.join(params["output_dir"], "cells/cell_measures.csv"))
     
     #return csv path
@@ -74,10 +74,11 @@ def probabiltymap_to_cell_measures(src, threshold = (0.6,1), numZSlicesPerSplit 
     df = []
     for i in iterlst: 
         df.append(find_labels_centerofmass_cell_measures(i[0], i[1], i[2], i[3], i[4], i[5]))
+        if verbose: sys.stdout.write('\nfinished calculating cell measures for z planes: {}-{}\n\n'.format(z, z+30)); sys.stdout.flush() 
         
     df = pd.concat(df)
                 
-    print ('total time {} minutes'.format(round((time.time() - start) / 60)))
+    print ('total time: {} minutes'.format(round((time.time() - start) / 60)))
 
     return df
 
@@ -88,7 +89,6 @@ def find_labels_centerofmass_cell_measures(array, start, numZSlicesPerSplit, ove
     
     '''
     zdim, ydim, xdim = array.shape
-
     structure = generate_binary_structure(array.ndim, structure_rank_order) if structure_rank_order else None
     
     #get array
@@ -111,16 +111,14 @@ def find_labels_centerofmass_cell_measures(array, start, numZSlicesPerSplit, ove
         z,y,x = center
         zlst.append(z); ylst.append(y); xlst.append(x)
     data = [[zlst[i], ylst[i], xlst[i], range(1, labels[1]+1)[i]] for i in range(len(zlst))]
-    com_px_val = pd.DataFrame(data, columns = ["z", "y", "x", "val"])
+    com_px_val = pd.DataFrame(data, columns = ["z", "y", "x", "val"]); del centers #discard centers
     
     #filter
     if start==0:
-        #such that you only keep centers in first chunk
-        #save to data frames in the proper format
+        #such that you only keep centers in first chunk - filter data frame
         com_px_val = com_px_val[com_px_val["z"] <= numZSlicesPerSplit]        
     else:
-        #such that you only keep centers within middle third
-        #save to data frames in the proper format
+        #such that you only keep centers within middle third - filter data frame
         com_px_val = com_px_val[(com_px_val["z"] > (overlapping_planes)) & (com_px_val["z"] <= np.min(((numZSlicesPerSplit + overlapping_planes), zdim)))]                
     #make temp dict
     inputs = com_px_val.to_dict("list")
@@ -256,8 +254,7 @@ def find_intensity(inputs, start, recon_dst, zyx_search_range=(5,10,10)):
     function to return maximum intensity of a determined center src_raw given a zyx point and search range
     zyx_search_range=(4,10,10)
     zyx = (345, 3490, 3317)
-    """
-    
+    """    
     #handle input
     if type(recon_dst) == str:
         #load reconstructed memmap array
@@ -270,8 +267,7 @@ def find_intensity(inputs, start, recon_dst, zyx_search_range=(5,10,10)):
     for i in range(len(inputs["z"])):
         #setting the proper ranges
         val,x,y,z = [v[i] for k,v in inputs.items()]
-        zr,yr,xr = zyx_search_range
-        
+        zr,yr,xr = zyx_search_range        
         #making sure ranges are not negative
         rn = []
         for xx,yy in zip((z,y,x), zyx_search_range):
@@ -280,10 +276,8 @@ def find_intensity(inputs, start, recon_dst, zyx_search_range=(5,10,10)):
             else:
                 rn.append((int(xx), int(xx+yy+1)))
     
-        
         #find the maximum part of cell 
-        mx = np.max(cnn_src[rn[0][0]:rn[0][1], rn[1][0]:rn[1][1], rn[2][0]:rn[2][1]])
-        
+        mx = np.max(cnn_src[rn[0][0]:rn[0][1], rn[1][0]:rn[1][1], rn[2][0]:rn[2][1]])        
         #append the initialised list
         a.append(mx)
         
