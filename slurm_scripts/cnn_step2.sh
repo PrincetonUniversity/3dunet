@@ -15,7 +15,6 @@ echo "on host: `hostname` "
 cat /proc/$$/status | grep Cpus_allowed_list
 
 module load anacondapy/5.1.0
-. activate lightsheet
 
 echo "Experiment name:" "$@"
 
