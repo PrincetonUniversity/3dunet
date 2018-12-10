@@ -35,7 +35,7 @@ for i in test:
     if not os.path.exists(drc): os.makedirs(drc)
     shutil.copy(t, drc)
 
-print("moved files into test directory")    
+print("copied files into test directory")    
 #train
 for i in train: 
     t = os.path.join(pth, i+'_lbl.h5')
@@ -49,7 +49,7 @@ for i in train:
     if not os.path.exists(drc): os.makedirs(drc)
     shutil.copy(t, drc)
 
-print("moved files into train directory")        
+print("copied files into train directory")        
 #val
 for i in val: 
     t = os.path.join(pth, i+'_img.h5')
@@ -62,4 +62,4 @@ for i in val:
     drc = data_pth+'/val/raw'
     if not os.path.exists(drc): os.makedirs(drc)
     shutil.copy(t, drc)
-print("moved files into val directory")    
+print("copied files into val directory")    
