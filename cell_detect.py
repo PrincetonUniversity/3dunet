@@ -18,29 +18,32 @@ def main(**args):
     # for a given experiment, but only params should be used below
     params = fill_params(**args)
     
-    #save to .csv file
-    save_params(params)
-    
     if params["stepid"] == 0:
         #######################################PRE-PROCESSING FOR CNN INPUT --> MAKING INPUT ARRAY######################################################
         
         #make directory to store patches
         if not os.path.exists(params["data_dir"]): os.mkdir(params["data_dir"])
+
+    	#save params to .csv file
+    	save_params(params, params["data_dir"])
         
         #convert full size data folder into memmap array
-        input_arr = make_memmap_from_tiff_list(params["cellch_dir"], params["data_dir"], 
+        make_memmap_from_tiff_list(params["cellch_dir"], params["data_dir"], 
                                                params["cores"], params["dtype"], params["verbose"])
             
     if params["stepid"] == 1:
         #######################################PRE-PROCESSING FOR CNN INPUT --> PATCHING######################################################
         
         #generate memmap array of patches
-        patch_dst = generate_patch(input_arr, **params)
+        patch_dst = generate_patch(**params)
         sys.stdout.write("\nmade patches in {}\n".format(patch_dst)); sys.stdout.flush()
 
     elif params["stepid"] == 2:
         #######################################POST CNN --> RECONSTRUCTION AFTER RUNNING INFERENCE ON TIGER2#################################
-
+        
+        #save params to .csv file
+    	save_params(params, params["data_dir"])
+        
         #reconstruct
         sys.stdout.write('\nstarting reconstruction...\n'); sys.stdout.flush()
         reconstruct_memmap_array_from_tif_dir(**params)
@@ -72,7 +75,7 @@ def fill_params(expt_name, stepid, jobid):
     params["data_dir"]      = os.path.join(params["scratch_dir"], params["expt_name"])
     
     #changed paths after cnn run
-    params["cnn_data_dir"]  = os.path.join(params["scratch_dir"], "reconstruct/"+params["expt_name"])
+    params["cnn_data_dir"]  = os.path.join(params["scratch_dir"], params["expt_name"])
     params["cnn_dir"]       = os.path.join(params["cnn_data_dir"], "output_chnks") #set cnn patch directory
     params["reconstr_arr"]  = os.path.join(params["cnn_data_dir"], "reconstructed_array.npy")
     params["output_dir"]    = expt_name
@@ -96,19 +99,20 @@ def fill_params(expt_name, stepid, jobid):
     
     #post-processing params
     params["threshold"]     = (0.6,1)
-    params["zsplt"]         = 120
+    params["zsplt"]         = 30
     params["ovlp_plns"]     = 30
 
     return params
 
-def save_params(params):
+def save_params(params, dst):
     """ 
     save params in cnn specific parameter dictionary for reconstruction/postprocessing 
     can discard later if need be
     """
-    (pd.DataFrame.from_dict(data=params, orient='index').to_csv(os.path.join(params["cnn_data_dir"], "cnn_param_dict.csv"),
+    (pd.DataFrame.from_dict(data=params, orient='index').to_csv(os.path.join(dst, "cnn_param_dict.csv"),
                             header = False))
-
+    sys.stdout.write("\nparameters saved in: {}".format(os.path.join(dst, "cnn_param_dict.csv"))); sys.stdout.flush()
+    
 #%%
 if __name__ == '__main__':
     

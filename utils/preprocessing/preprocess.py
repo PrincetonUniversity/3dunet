@@ -13,9 +13,8 @@ import os, numpy as np, sys, multiprocessing as mp
 from skimage.external import tifffile
 
 
-def generate_patch(input_arr, **params):
+def generate_patch(**params):
     '''
-    by tpisano
     Function to patch up data and make into memory mapped array
     
     Inputs
@@ -33,7 +32,7 @@ def generate_patch(input_arr, **params):
 
     '''
     #load array
-    input_arr = load_memmap_arr(input_arr)
+    input_arr = load_memmap_arr(os.path.join(params["data_dir"], "input_memmap_array.npy"))
     
     #set patch destination
     patch_dst = os.path.join(params["data_dir"], "input_chnks")    
@@ -178,22 +177,33 @@ def reconstruct_memmap_array_from_tif_dir(**params):
     #load
     cnn_fls = os.listdir(params["cnn_dir"]); cnn_fls.sort()
     
-    #init new array
-    recon_array = load_memmap_arr(params["reconstr_arr"], mode='w+', shape = params["inputshape"], dtype = params["dtype"])
+    jobid = int(params["jobid"]) #set patch no. to run through cnn
+    
+    #init new array if first patch i.e. array job 0
+    if jobid == 0:
+        recon_array = load_memmap_arr(params["reconstr_arr"], mode="w+", shape = params["inputshape"], dtype = params["dtype"])
+    else:
+        recon_array = load_memmap_arr(params["reconstr_arr"], mode="r+")
     
     #find patchlist
     patchlist = params["patchlist"]
     
     #iterate
-    for i,p in enumerate(patchlist):    
-        b = tifffile.imread(os.path.join(params["cnn_dir"], cnn_fls[i])).astype(params["dtype"])
-        a = recon_array[p[0]:p[0]+b.shape[0], p[1]:p[1]+b.shape[1], p[2]:p[2]+b.shape[2]]
-        if not a.shape == b.shape: b = b[:a.shape[0], :a.shape[1], :a.shape[2]]
-        nvol = np.maximum(a,b)
-        recon_array[p[0]:p[0]+b.shape[0], p[1]:p[1]+b.shape[1], p[2]:p[2]+b.shape[2]] = nvol
-        recon_array.flush(); del b
-        if params["verbose"]: print('{} of {}'.format(i, len(patchlist)))
+    #select the file to process for this array job
+    if jobid > len(params["patchlist"])-1:
+        sys.stdout.write("\njobid {} > number of files".format(jobid)); sys.stdout.flush()  
+    else:
+        #patch
+        for i,p in enumerate(params["patchlist"]):
+            if i == jobid: 
+                b = tifffile.imread(os.path.join(params["cnn_dir"], cnn_fls[i])).astype(params["dtype"])
+                a = recon_array[p[0]:p[0]+b.shape[0], p[1]:p[1]+b.shape[1], p[2]:p[2]+b.shape[2]]
+                if not a.shape == b.shape: b = b[:a.shape[0], :a.shape[1], :a.shape[2]]
+                nvol = np.maximum(a,b)
+                recon_array[p[0]:p[0]+b.shape[0], p[1]:p[1]+b.shape[1], p[2]:p[2]+b.shape[2]] = nvol
+                recon_array.flush(); del b
+                if params["verbose"]: print("{} of {}".format(i, len(patchlist)))
         
-    sys.stdout.write('\finished reconstruction :]\n'); sys.stdout.flush()
+    sys.stdout.write("\nfinished reconstruction :]\nshape after reconstruction is: {}".format(recon_array.shape)); sys.stdout.flush()
     
     return params["reconstr_arr"]
