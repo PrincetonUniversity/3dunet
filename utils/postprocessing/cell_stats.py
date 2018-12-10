@@ -99,7 +99,7 @@ def find_labels_centerofmass_cell_measures(array, start, numZSlicesPerSplit, ove
     
     #thresholding
     a = arr>=threshold[0]
-    a = a.astype("bool") #thanks to ben - reduces size of arr 4 fold!
+    a = a.astype("bool") #ben - reduces size of arr 4 fold!
     
     #find labels
     labels = ndimage.measurements.label(a, structure)
@@ -107,7 +107,7 @@ def find_labels_centerofmass_cell_measures(array, start, numZSlicesPerSplit, ove
     
     #save to dataframe to use for contour mapping
     zlst=[];ylst=[];xlst=[]
-    for center in centers: #not great but works
+    for center in centers: #not great (slow) but works
         z,y,x = center
         zlst.append(z); ylst.append(y); xlst.append(x)
     data = [[zlst[i], ylst[i], xlst[i], range(1, labels[1]+1)[i]] for i in range(len(zlst))]
@@ -121,23 +121,18 @@ def find_labels_centerofmass_cell_measures(array, start, numZSlicesPerSplit, ove
     else:
         #such that you only keep centers within middle third
         #save to data frames in the proper format
-        com_px_val = com_px_val[(com_px_val["z"] > (overlapping_planes)) & (com_px_val["z"] <= np.min(((numZSlicesPerSplit + overlapping_planes), zdim)))]            
-    
+        com_px_val = com_px_val[(com_px_val["z"] > (overlapping_planes)) & (com_px_val["z"] <= np.min(((numZSlicesPerSplit + overlapping_planes), zdim)))]                
     #make temp dict
     inputs = com_px_val.to_dict("list")
     inputs = collections.OrderedDict(sorted(inputs.items())) #so that order is the same
     
     #get perimeter of cell and sphericities
-    perimeters, sphericities, zspans = find_perimeter_sphericity(labels, inputs)
-    
-    #discard temp dict
-    del labels
-    
+    perimeters, sphericities, zspans = find_perimeter_sphericity(labels, inputs); del labels #discard labels    
     #get intensities
-    intensities = find_intensity(inputs, start, arr, zyx_search_range=(5,10,10)); del inputs
+    intensities = find_intensity(inputs, start, arr, zyx_search_range=(5,10,10)); del inputs #discard temp dict
         
     #adjust z plane to accomodate chunkings
-    if start!=0: com_px_val["z"] = com_px_val["z"]+(start-overlapping_planes) #only chaning z based on z chunking
+    if start!=0: com_px_val["z"] = com_px_val["z"]+(start-overlapping_planes) #only changing z based on z chunking
     
     #put into df
     data = [[com_px_val["z"].iloc[i].astype("uint16"), com_px_val["y"].iloc[i].astype("uint16"), com_px_val["x"].iloc[i].astype("uint16"), 
