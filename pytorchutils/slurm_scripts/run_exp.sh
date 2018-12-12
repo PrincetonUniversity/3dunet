@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH -p all                # partition (queue)
-#SBATCH -N 2
+#SBATCH -N 1
 #SBATCH --ntasks-per-node=4
 #SBATCH --ntasks-per-socket=2
 #SBATCH --gres=gpu:4
 #SBATCH --contiguous
 #SBATCH --mem=14000 #14gbs
-#SBATCH -t 720                 # time (minutes)
+#SBATCH -t 8500                 # time (minutes)
 #SBATCH -o cnn_train_20181210.out
 #SBATCH -e cnn_train_20181210.err
 
