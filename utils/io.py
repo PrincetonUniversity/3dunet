@@ -42,9 +42,9 @@ def sample_reconstructed_array(pth):
         print(chunk.shape)
         
         #save tif
-        tifffile.imsave(os.path.join(pth, 'sample.tif'), chunk[500:520, :, :])
+        tifffile.imsave(os.path.join(pth, 'sample.tif'), chunk[700:705, :, :])
         
-        print("chunk of z500-520 saved as: {}".format(os.path.join(pth, 'sample.tif')))
+        print("chunk of z700-705 saved as: {}".format(os.path.join(pth, 'sample.tif')))
     
 def csv_to_dict(csv_pth):
     """ 
@@ -69,7 +69,6 @@ def find_imgs_to_process(scratch_dir, tracing_fld, call = False):
     #run/running thorugh cnn
     done = [xx for xx in os.listdir(scratch_dir) if "checked_logs" not in xx 
             and "for_tom" not in xx and "logs" not in xx and "slurm_scripts" not in xx]
-    
     print("\n {} are done\n".format(len(done))) 
     
     #all in tracing folder
@@ -81,7 +80,6 @@ def find_imgs_to_process(scratch_dir, tracing_fld, call = False):
     
     #get a random sample
     to_process = [left[random.randrange(len(left))] for i in range(10)]
-    
     print("\n 10 brain samples: \n*************************************************************************\n {}".format(to_process))
     
     pths = [os.path.join(tracing_fld, xx) for xx in to_process]
@@ -102,13 +100,14 @@ def submit_reconstruction(scratch_dir, tracing_fld, to_reconstruct = False):
                       not in os.listdir(os.path.join(scratch_dir, xx)) and "output_chnks" in os.listdir(os.path.join(scratch_dir, xx))]   
     #call
     for pth in to_reconstruct:
-        call = "sbatch --array=0-100 slurm_scripts/cnn_step2.sh {}".format(os.path.join(tracing_fld, pth))
+        call = "sbatch slurm_scripts/cnn_step21.sh {}".format(os.path.join(tracing_fld, pth))
         print(call)
         sp_call(call)
-        
+
+#%%        
 if __name__ == "__main__":
     
-    scratch_dir = "/jukebox/scratch/"
+    scratch_dir = "/jukebox/scratch/zmd"
     tracing_fld = "/jukebox/wang/pisano/tracing_output/antero_4x"
     
     find_imgs_to_process(scratch_dir, tracing_fld, call = False)
@@ -121,4 +120,4 @@ if __name__ == "__main__":
 #                        "20180410_jg49_bl6_lob45_02",
 #                        "20170207_db_bl6_crii_rlat_03"]
 #    
-#    submit_reconstruction(scratch_dir, tracing_fld, to_reconstruct)
+    submit_reconstruction(scratch_dir, tracing_fld)
