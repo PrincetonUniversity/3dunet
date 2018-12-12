@@ -214,9 +214,9 @@ def generate_mem_mapped_array_for_net_training(impth, roipth, dst, verbose=False
     
 if __name__ == "__main__":
     #convert first
-    inputFolder = "/jukebox/wang/zahra/conv_net/annotations/pls_convert"
-    saveLocation = "/jukebox/wang/zahra/conv_net/annotations/pls_convert/memmap"; makedir(saveLocation)
-    otsufld = "/jukebox/wang/zahra/conv_net/annotations/pls_convert/otsu"; makedir(otsufld)  
+    inputFolder = "/home/wanglab/Documents/prv_inputs"
+    saveLocation = "/home/wanglab/Documents/prv_inputs/memmap"; makedir(saveLocation)
+    otsufld = "/home/wanglab/Documents/prv_inputs/otsu"; makedir(otsufld)  
     size=(8,30,30)
     otsu_factor = 0.5
     
@@ -238,13 +238,11 @@ if __name__ == "__main__":
    
     #test to make sure one loads
     idx = 9#7
-    flds = listdirfull(otsufld)
-    for nfld in flds:
-        fls = listdirfull(nfld)
-        fls.sort()
-        f = h5.File(fls[idx], 'r')
-        a = np.copy(f['/main'])
-        plt.figure()
-        plt.imshow(a[a.shape[0]/2])
-        f.close()
-        sitk.Show(sitk.GetImageFromArray(a))
+    fls = listdirfull(otsufld)
+    fls.sort()
+    f = h5.File(fls[idx], 'r')
+    a = np.copy(f['/main'])
+    plt.figure()
+    plt.imshow(a[a.shape[0]/2])
+    f.close()
+    sitk.Show(sitk.GetImageFromArray(a))

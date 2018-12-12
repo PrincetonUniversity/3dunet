@@ -52,13 +52,13 @@ for i in train:
 print("copied files into train directory")        
 #val
 for i in val: 
-    t = os.path.join(pth, i+'_img.h5')
+    t = os.path.join(pth, i+'_lbl.h5')
     drc = data_pth+'/val/label'
     if not os.path.exists(drc): os.makedirs(drc)
     shutil.copy(t, drc)
     
 for i in val:
-    t = os.path.join(pth, i+'_lbl.h5')
+    t = os.path.join(pth, i+'_img.h5')
     drc = data_pth+'/val/raw'
     if not os.path.exists(drc): os.makedirs(drc)
     shutil.copy(t, drc)
