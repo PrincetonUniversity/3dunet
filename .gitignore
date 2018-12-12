@@ -10,3 +10,5 @@
 
 #ignore datatools dir
 datatools
+
+3d_unet_run_script.py
