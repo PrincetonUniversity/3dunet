@@ -18,7 +18,7 @@ from scipy.ndimage.morphology import generate_binary_structure
 import pandas as pd
 
 
-def consolidate_cell_measures(**params):
+def consolidate_cell_measures(ignore_jobid_count = False, **params):
     """ consolidates cell measures jobs into one csv file """
     
     #grab csv output folder
@@ -26,7 +26,7 @@ def consolidate_cell_measures(**params):
     jobs = os.listdir(unet_output_dir)
     
     #check
-    if len(jobs) == (int(params["inputshape"][0])/int(params["zsplt"]))+1: #+1 to account for job number 0      
+    if len(jobs) == (int(params["inputshape"][0])/int(params["zsplt"]))+1 or ignore_jobid_count: #+1 to account for job number 0      
         list_of_single_dfs = [os.path.join(unet_output_dir, fl) for fl in os.listdir(unet_output_dir) if fl != "pooled_cell_measures"]; list_of_single_dfs.sort()
         #make folder for the pooled results
         if not os.path.exists(os.path.join(unet_output_dir, "pooled_cell_measures")): os.mkdir(os.path.join(unet_output_dir, "pooled_cell_measures"))
@@ -176,12 +176,7 @@ def perimeter_sphericity_voxels(src, dims = 3):
     
     looks at it from two perspectives and then takes the total average
     dims=(2,3) number of dimensions to look at
-    
-    ball(9) = .895
-    cube(9) = .785
-    cylinder(9,9) = .770
-    np.asarray([star(9) for xx in range(9)]) = .638
-    
+   
     sometime two contours are found on a zplane after labels - in this case take min, but could take average?
     """
     #initialise
@@ -250,8 +245,8 @@ def findContours(z):
     
     return contours
 
-def bounding_box_from_center_array(src, val, center, box_size=(32,32,32)):
-
+def bounding_box_from_center_array(src, val, center, box_size=(75,75,75)):
+    """ faster version of _array to grab cell around center """
     z,y,x = [int(xx) for xx in center]
     zr, yr, xr = box_size
     
@@ -261,7 +256,6 @@ def bounding_box_from_center_array(src, val, center, box_size=(32,32,32)):
     
     return a
     
-
 def helper_intensity(val,x,y,z, zyx_search_range, cnn_src):
     """mini function to utilize pandas parallelization
     """
