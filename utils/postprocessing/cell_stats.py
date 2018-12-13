@@ -61,7 +61,7 @@ def calculate_cell_measures(**params):
 
 #%%
 def probabiltymap_to_cell_measures(src, jobid, threshold = (0.6,1), numZSlicesPerSplit = 30, overlapping_planes = 30, cores = 1, 
-                                    verbose = False, structure_rank_order = 2):
+                                    verbose = True, structure_rank_order = 2):
     """
     by tpisano
     
