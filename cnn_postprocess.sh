@@ -25,11 +25,11 @@ OUT1=$(sbatch --dependency=afterany:${OUT0##* } --array=0-100 slurm_scripts/cnn_
 echo $OUT1
 
 #generate cell measures
-OUT2=$(sbatch --dependency=afterany:${OUT0##* } --array=0-30 slurm_scripts/cnn_step3.sh "$@") 
+OUT2=$(sbatch --dependency=afterany:${OUT1##* } --array=0-30 slurm_scripts/cnn_step3.sh "$@") 
 echo $OUT2
 
 #check that cell measure jobs have run
-OUT3=$(sbatch --dependency=afterany:${OUT0##* } slurm_scripts/cnn_step4.sh "$@") 
+OUT3=$(sbatch --dependency=afterany:${OUT2##* } slurm_scripts/cnn_step4.sh "$@") 
 echo $OUT3
 
 #functionality
