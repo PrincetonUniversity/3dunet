@@ -58,10 +58,10 @@ def generate_patch(**params):
                     v = np.append(v, pad, axis = 0)
                 if v.shape[1] < window[1]:
                     pad = np.zeros((v.shape[0], window[1]-v.shape[1], v.shape[2]))
-                    v = np.append(v, pad, axis = 0)
+                    v = np.append(v, pad, axis = 1)
                 if v.shape[2] < window[2]:
                     pad = np.zeros((v.shape[0], v.shape[1], window[2]-v.shape[2]))
-                    v = np.append(v, pad, axis = 0)
+                    v = np.append(v, pad, axis = 2)
                 #saving out
                 tifffile.imsave(os.path.join(patch_dst, 'patch_{}.tif'.format(str(i).zfill(10))), v.astype('float32'), compress=1)
                 if params["verbose"]: print('{} of {}'.format(i, len(params["patchlist"])))

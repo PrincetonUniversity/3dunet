@@ -23,8 +23,8 @@ OUT0=$(sbatch slurm_scripts/cnn_step0.sh "$@")
 echo $OUT0
 
 #generate chunks for cnn input
-OUT1=$(sbatch --dependency=afterany:${OUT0##* } --array=0-100 slurm_scripts/cnn_step1.sh "$@") 
+OUT1=$(sbatch --dependency=afterany:${OUT0##* } --array=0-130 slurm_scripts/cnn_step1.sh "$@") 
 echo $OUT1
 
 #functionality
-#go to 3dunet main directory and type sbatch sub_cnn_preprocess.sh [path to lightsheet package output directory]
+#go to 3dunet main directory and type sbatch cnn_preprocess.sh [path to lightsheet package output directory]

@@ -5,11 +5,11 @@ Created on Wed Nov 28 18:13:16 2018
 
 @author: wanglab
 
-by Tom Pisano (tpisano@princeton.edu, tjp77@gmail.com) & Zahra D (zmd@princeton.edu, zahra.dhanerawala@gmail.com)
+by Tom Pisano (tpisano@princeton.edu, tjp7rr@gmail.com) & Zahra D (zmd@princeton.edu, zahra.dhanerawala@gmail.com)
 
 """
 
-import numpy as np, cv2, sys, os
+import numpy as np, cv2, sys, os, shutil
 import time
 from skimage.external import tifffile
 
@@ -23,7 +23,7 @@ def consolidate_cell_measures(ignore_jobid_count = False, **params):
     
     #grab csv output folder
     unet_output_dir = os.path.join(params["output_dir"], "3dunet_output")
-    jobs = os.listdir(unet_output_dir)
+    jobs = [xx for xx in os.listdir(unet_output_dir) if not xx == "pooled_cell_measures"]
     
     #check
     if len(jobs) == (int(params["inputshape"][0])/int(params["zsplt"]))+1 or ignore_jobid_count: #+1 to account for job number 0      
@@ -35,6 +35,9 @@ def consolidate_cell_measures(ignore_jobid_count = False, **params):
         pooled_df = (pd.concat([pd.read_csv(fl) for fl in list_of_single_dfs])).drop(columns="Unnamed: 0")
         pooled_df.to_csv(os.path.join(unet_output_dir, "pooled_cell_measures/{}_cell_measures.csv".format(params["expt_name"])))
         
+        #move param dict
+        shutil.move(os.path.join(params["data_dir"], "cnn_param_dict.csv"), 
+                               os.path.join(os.path.join(params["output_dir"], "3dunet_output"), "cnn_param_dict.csv"))
         sys.stdout.write("\npooled cell measures for cell channel saved in: {}\n".format(os.path.join(unet_output_dir, "pooled_cell_measures/{}_cell_measures.csv".format(params["expt_name"]))))
     else:
         sys.stdout.write("\njobs have not completed for all z planes. check to see which jobs are missing in {}".format(unet_output_dir))
@@ -143,30 +146,30 @@ def find_labels_centerofmass_cell_measures(array, start, numZSlicesPerSplit, ove
         #such that you only keep centers within middle third - filter data frame
         df = df[(df["z"] > (overlapping_planes)) & (df["z"] <= np.min(((numZSlicesPerSplit + overlapping_planes), zdim)))]                
 
-    #TODO: paralellise this
     #modify the current dataframe - pandas voodoo - get perimeter of cell and sphericities
-    df["p_s_z_v"] = df.apply(lambda row: perimeter_sphericity_voxels(bounding_box_from_center_array(labels[0], row["val"], (row["z"],row["y"], row["x"]))), 1)
+    if len(df) != 0:        
+        df["p_s_z_v"] = df.apply(lambda row: perimeter_sphericity_voxels(bounding_box_from_center_array(labels[0], row["val"], (row["z"],row["y"], row["x"]))), 1)
     
-    #now unpack
-    df["maximum perimeter"] = df.apply(lambda row: row["p_s_z_v"][0],1)
-    df["sphericity"] = df.apply(lambda row: row["p_s_z_v"][1],1)
-    df["z depth"] = df.apply(lambda row: row["p_s_z_v"][2],1)
-    df["no_voxels"] = df.apply(lambda row: row["p_s_z_v"][3],1)
-    del df["p_s_z_v"]
-    
-    #test one that breaks
-    #df = df.reset_index()
-    #row = df.iloc[0]
-    #perimeter_sphericity(bounding_box_from_center_array(labels[0], row["val"], (row["z"],row["y"], row["x"])))
-    #ta = bounding_box_from_center_array(labels[0], row["val"], (row["z"],row["y"], row["x"]))
-    #df[df["no_voxels"]>=6]["sphericity"].values <---this confirms that it"s how cv2 deals with very small objects, essentially less than 2 pixels in x or y
-    
-    #get intensities
-    zyx_search_range = (5,10,10)
-    df["intensity"] = df.apply(lambda row:helper_intensity(row["val"],row["x"],row["y"],row["z"], zyx_search_range, arr),1)
+        #now unpack
+        df["maximum perimeter"] = df.apply(lambda row: row["p_s_z_v"][0],1)
+        df["sphericity"] = df.apply(lambda row: row["p_s_z_v"][1],1)
+        df["z depth"] = df.apply(lambda row: row["p_s_z_v"][2],1)
+        df["no_voxels"] = df.apply(lambda row: row["p_s_z_v"][3],1)
+        del df["p_s_z_v"]
         
-    #adjust z plane to accomodate chunkings
-    if start!=0: df["z"] = df["z"]+(start-overlapping_planes) #only changing z based on z chunking
+        #test one that breaks
+        #df = df.reset_index()
+        #row = df.iloc[0]
+        #perimeter_sphericity(bounding_box_from_center_array(labels[0], row["val"], (row["z"],row["y"], row["x"])))
+        #ta = bounding_box_from_center_array(labels[0], row["val"], (row["z"],row["y"], row["x"]))
+        #df[df["no_voxels"]>=6]["sphericity"].values <---this confirms that it"s how cv2 deals with very small objects, essentially less than 2 pixels in x or y
+        
+        #get intensities
+        zyx_search_range = (5,10,10)
+        df["intensity"] = df.apply(lambda row:helper_intensity(row["val"],row["x"],row["y"],row["z"], zyx_search_range, arr),1)
+            
+        #adjust z plane to accomodate chunkings
+        if start!=0: df["z"] = df["z"]+(start-overlapping_planes) #only changing z based on z chunking
     
     return df
 
@@ -247,6 +250,7 @@ def findContours(z):
 
 def bounding_box_from_center_array(src, val, center, box_size=(75,75,75)):
     """ faster version of _array to grab cell around center """
+    
     z,y,x = [int(xx) for xx in center]
     zr, yr, xr = box_size
     

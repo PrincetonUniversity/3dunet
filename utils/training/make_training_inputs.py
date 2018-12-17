@@ -102,7 +102,7 @@ def convert_input(inputFolder, saveLocation, remove_bad=True):
     #make mem_mapped arrays once, to be more cluster friendly
     import multiprocessing as mp
     print ('Starting conversion...')
-    p =mp.Pool(12)
+    p = mp.Pool(12)
     iterlst = [(pair[0], pair[1], saveLocation) for pair in pairs]
     bad = p.map(basic_convert, iterlst)
     p.terminate()

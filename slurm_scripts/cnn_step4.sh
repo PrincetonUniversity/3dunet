@@ -1,7 +1,7 @@
 #!/bin/env bash
 #
 #SBATCH -p all                # partition (queue)
-#SBATCH -c 10                     # number of cores
+#SBATCH -c 1                    # number of cores
 #SBATCH -t 20                # time (minutes)
 #SBATCH -o /scratch/zmd/logs/cnn_step4_%j.out        # STDOUT #add _%a to see each array job
 #SBATCH -e /scratch/zmd/logs/cnn_step4_%j.err        # STDERR #add _%a to see each array job

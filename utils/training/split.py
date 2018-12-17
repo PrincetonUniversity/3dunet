@@ -11,11 +11,13 @@ import os, shutil
 
 #doing this so i can remember which datasets are in which category - makes it easier to have physical copies
 
-data_pth = "/jukebox/wang/zahra/conv_net/training/prv/split_training_inputs"
-pth = "/jukebox/wang/zahra/conv_net/annotations/prv/inputs"
+data_pth = "/home/wanglab/Documents/split_new_training_inputs"
+if not os.path.exists(data_pth): os.mkdir(data_pth)
+
+pth = "/home/wanglab/Documents/prv_inputs"
 
 #split into train, val, and test data
-raw = [xx[:-7] for xx in os.listdir(pth) if xx[-7:] == "_img.h5"] #cutoff extension coz will add it later with labels
+raw = [xx[:-7] for xx in split if xx[-7:] == "_img.h5"] #cutoff extension coz will add it later with labels
 
 #%70-20-10 train-validation-test
 train, test = train_test_split(raw, test_size = 0.3, train_size = 0.7, random_state = 1)   

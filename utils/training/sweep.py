@@ -20,7 +20,7 @@ from tools.conv_net.functions.bipartite import pairwise_distance_metrics
 if __name__ == '__main__':
       
     #set relevant paths
-    pth = '/jukebox/wang/zahra/conv_net/training/prv/experiment_dirs/20181210_zd_train/forward/'
+    pth = '/jukebox/wang/zahra/conv_net/training/prv/experiment_dirs/20181210_zd_train/forward/iters_300600'
     points_dict = load_dictionary('/jukebox/wang/zahra/conv_net/annotations/prv/filename_points_dictionary.p')
     
     #initialise empty vectors
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     #iterates through forward pass output
     for dset in os.listdir(pth):
         impth = os.path.join(pth, dset)
-        predicted = probabiltymap_to_centers_thresh(impth, threshold = (0.6, 1))
+        predicted = probabiltymap_to_centers_thresh(impth, threshold = (0.7, 1))
         
         print '\n   Finished finding centers for {}, calculating statistics\n'.format(dset)
         
@@ -42,9 +42,11 @@ if __name__ == '__main__':
     precision = tp/(tp+fp); recall = tp/(tp+fn) #calculating precision and recall
     f1 = 2*( (precision*recall)/(precision+recall) ) #calculating f1 score
     
-    print ('\n   Finished calculating statistics for set params\n\nReport:\n***************************\n\
-    F1 score: {}% \ntrue positives, false positives, false negatives: {} \n\
-    precision: {}% \nrecall: {}%\n'.format(round(f1*100, 2), (tp,fp,fn), round(precision*100, 2), round(recall*100, 2)))
+    print ('\n   Finished calculating statistics for set params\n\n\nReport:\n***************************\n\
+    F1 score: {}% \n\
+    true positives, false positives, false negatives: {} \n\
+    precision: {}% \n\
+    recall: {}%\n'.format(round(f1*100, 2), (tp,fp,fn), round(precision*100, 2), round(recall*100, 2)))
     
 #%%
     

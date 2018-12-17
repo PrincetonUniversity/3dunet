@@ -56,6 +56,8 @@ def main(**args):
     elif params["stepid"] == 3:
         ##############################################POST CNN --> FINDING CELL CENTERS#####################################################   
         
+        save_params(params, params["data_dir"])
+        
         #find cell centers, measure sphericity, perimeter, and z span of a cell
         csv_dst = calculate_cell_measures(**params)
         sys.stdout.write("\ncell coordinates and measures saved in {}\n".format(csv_dst)); sys.stdout.flush()
