@@ -20,7 +20,7 @@ from tools.conv_net.functions.bipartite import pairwise_distance_metrics
 if __name__ == '__main__':
       
     #set relevant paths
-    pth = '/home/wanglab/mounts/wang/zahra/conv_net/training/prv/experiment_dirs/20181210_zd_train/forward/'
+    pth = '/jukebox/wang/zahra/conv_net/training/prv/experiment_dirs/20181210_zd_train/forward/'
     points_dict = load_dictionary('/jukebox/wang/zahra/conv_net/annotations/prv/filename_points_dictionary.p')
     
     #initialise empty vectors

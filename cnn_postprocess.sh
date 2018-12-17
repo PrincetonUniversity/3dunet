@@ -17,12 +17,20 @@ module load anacondapy/5.1.0
 . activate lightsheet
 
 #generate memmap array of reconstructed cnn output
-OUT0=$(sbatch slurm_scripts/cnn_step2.sh "$@") 
+OUT0=$(sbatch slurm_scripts/cnn_step21.sh "$@") 
 echo $OUT0
 
-#generate cell centers and measurements
-OUT1=$(sbatch --dependency=afterany:${OUT0##* } slurm_scripts/cnn_step3.sh "$@") 
+#populate reconstructed array
+OUT1=$(sbatch --dependency=afterany:${OUT0##* } --array=0-100 slurm_scripts/cnn_step2.sh "$@") 
 echo $OUT1
+
+#generate cell measures
+OUT2=$(sbatch --dependency=afterany:${OUT1##* } --array=0-30 slurm_scripts/cnn_step3.sh "$@") 
+echo $OUT2
+
+#check that cell measure jobs have run
+OUT3=$(sbatch --dependency=afterany:${OUT2##* } slurm_scripts/cnn_step4.sh "$@") 
+echo $OUT3
 
 #functionality
 #go to 3dunet main directory and type sbatch sub_cnn_postprocess.sh [path to lightsheet package output directory]
