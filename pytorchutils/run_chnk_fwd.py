@@ -45,11 +45,10 @@ def main(noeval, **args):
     
     #select the file to process for this array job
     if jobid > len(fls)-1:
-        sys.stdout.write("\njobid {} > number of files {}\n\ndeleting input chunks...\n".format(jobid, len(fls))); sys.stdout.flush()    
+        sys.stdout.write("\njobid {} > number of files {}".format(jobid, len(fls))); sys.stdout.flush()    
     else:    
+        start = time.time() 
         dset = fls[jobid]
-        
-        start = time.time()
         
         fs = make_forward_scanner(dset, **params)
         
@@ -59,7 +58,7 @@ def main(noeval, **args):
         save_output(output, dset, output_fld, **params) #saves tif       
         fs._init() #clear out scanner
         
-    sys.stdout.write("patch {}: {} min\n".format(jobid+1, round((time.time()-start)/60, 1))); sys.stdout.flush()
+        sys.stdout.write("patch {}: {} min\n".format(jobid+1, round((time.time()-start)/60, 1))); sys.stdout.flush()
 
 def fill_params(expt_name, chkpt_num, gpus, nobn, model_fname, dset_name, tag, jobid):
 

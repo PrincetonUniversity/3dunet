@@ -5,7 +5,7 @@ Created on Mon Dec 10 15:42:10 2018
 
 @author: wanglab
 """
-import os, random, csv, h5py
+import os, random, csv, h5py, cv2
 from subprocess import check_output
 import numpy as np
 from skimage.external import tifffile
@@ -16,12 +16,60 @@ def sp_call(call):
     print(check_output(call, shell=True)) 
     return
 
+def resize(pth, dst, resizef = 6):
+    """ 
+    resize function using cv2
+    inspired by tpisano
+    inputs:
+        pth = 3d tif stack
+        dst = folder to save each z plane
+    """
+    #make sure dst exists
+    if not os.path.exists(dst): os.mkdir(dst)
+    
+    #read file
+    img = tifffile.imread(pth)
+    z,y,x = img.shape
+    
+    for i in range(z):
+        #make the factors
+        xr = img[i].shape[1] / resizef; yr = img[i].shape[0] / resizef
+        im = cv2.resize(img[i], (xr, yr), interpolation=cv2.INTER_LINEAR)
+        tifffile.imsave(os.path.join(dst, "zpln{}.tif".format(str(i).zfill(12))), im.astype("uint16"), compress=1)
+    
+    return dst
+
+def resize_stack(pth, dst):
+    
+    """
+    runs with resize
+    inputs:
+        pth = folder with resized tifs
+        dst = folder
+    """
+    #make sure dst exists
+    if not os.path.exists(dst): os.mkdir(dst)
+    
+    #get all tifs
+    fls = [os.path.join(pth, xx) for xx in os.listdir(pth) if xx[0] != "." and "~" not in xx and "Thumbs.db" not in xx and ".tif" in xx]; fls.sort()
+    y,x = tifffile.imread(fls[0]).shape
+    dims = (len(fls),y,x)
+    stack = np.zeros(dims)
+    
+    for i in range(len(fls)):
+        stack[i] = cv2.imread(fls[i], cv2.IMREAD_GRAYSCALE)
+    
+    #save stack
+    tifffile.imsave(os.path.join(dst, "resized_stack.tif"), stack.astype("uint16"))
+    
+    return os.path.join(dst, "resized_stack.tif")
+    
 def check_dim(pth):
     """ 
-    find all dimensions of imgs in the directory 
+    find all dimensions of imgs in the direccvtory 
     usefull to check training inputs before setting window size
     i.e. window size should not be larger than input dimensions 
-    e.g. pth = '/jukebox/wang/pisano/conv_net/annotations/all_better_res/h129/otsu/inputRawImages'
+    e.g. pth = "/jukebox/wang/pisano/conv_net/annotations/all_better_res/h129/otsu/inputRawImages"
     only h5 files
     """
     for i, fn in enumerate(os.listdir(pth)):
@@ -36,15 +84,15 @@ def sample_reconstructed_array(pth):
     """
 
     flds = os.listdir(pth)
-    if 'reconstructed_array.npy' in flds: 
+    if "reconstructed_array.npy" in flds: 
         #read memory mapped array
-        chunk = np.lib.format.open_memmap(os.path.join(pth, 'reconstructed_array.npy'), dtype = 'float32', mode = 'r')
+        chunk = np.lib.format.open_memmap(os.path.join(pth, "reconstructed_array.npy"), dtype = "float32", mode = "r")
         print(chunk.shape)
         
         #save tif
-        tifffile.imsave(os.path.join(pth, 'sample.tif'), chunk[700:705, :, :])
+        tifffile.imsave(os.path.join(pth, "sample.tif"), chunk[700:705, :, :])
         
-        print("chunk of z700-705 saved as: {}".format(os.path.join(pth, 'sample.tif')))
+        print("chunk of z700-705 saved as: {}".format(os.path.join(pth, "sample.tif")))
     
 def csv_to_dict(csv_pth):
     """ 

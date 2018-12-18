@@ -78,16 +78,6 @@ def probabiltymap_to_cell_measures(src, jobid, threshold = (0.6,1), numZSlicesPe
     cores: number of parallel jobs to do at once. Adjust this and numZSlicesPerSplit based on memory constraints
     overlapping_planes: number of planes on each side to overlap by, this should be comfortably larger than the maximum z distances of a single object
     structure_rank_order: Optional. If true provides the structure element to used in ndimage.measurements.labels, 2 seems to be the most specific
-    
-    #tp test 20181210
-    src =  "/home/wanglab/Downloads/20170116_tp_bl6_lob6b_lpv_07/reconstructed_array.npy"
-    threshold = (0.6,1)
-    numZSlicesPerSplit = 30
-    overlapping_planes = 30
-    cores = 1
-    verbose = False
-    structure_rank_order = 2
-
     """
     #handle inputs
     if type(src) == str:
@@ -100,18 +90,21 @@ def probabiltymap_to_cell_measures(src, jobid, threshold = (0.6,1), numZSlicesPe
     sys.stdout.flush() 
     
     iterlst=[(src, z, numZSlicesPerSplit, overlapping_planes, threshold, structure_rank_order) for z in range(0, zdim, numZSlicesPerSplit)]    
-    i = iterlst[int(jobid)]
-
-    #run
-    single_df = []
-    single_df.append(find_labels_centerofmass_cell_measures(i[0], i[1], i[2], i[3], i[4], i[5]))
-    if verbose: sys.stdout.write('\nfinished calculating cell measures for z planes: {}-{}\n'.format(i[1], i[1]+30)); sys.stdout.flush() 
-    
-    print ("total time {} minutes".format(round((time.time() - start) / 60)))
-    
-    #convert to pandas df
-    single_df = pd.concat(single_df)
-    return single_df
+    if int(jobid) > len(iterlst):
+         sys.stdout.write("\njobid > number of planes\n\n")
+    else:
+        #set chunk
+        i = iterlst[int(jobid)]
+        #run
+        single_df = []
+        single_df.append(find_labels_centerofmass_cell_measures(i[0], i[1], i[2], i[3], i[4], i[5]))
+        if verbose: sys.stdout.write('\nfinished calculating cell measures for z planes: {}-{}\n'.format(i[1], i[1]+30)); sys.stdout.flush() 
+        
+        print ("total time {} minutes".format(round((time.time() - start) / 60)))
+        
+        #convert to pandas df
+        single_df = pd.concat(single_df)
+        return single_df
 
 def find_labels_centerofmass_cell_measures(array, start, numZSlicesPerSplit, overlapping_planes, 
                                            threshold, structure_rank_order):

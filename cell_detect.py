@@ -133,7 +133,7 @@ if __name__ == "__main__":
     parser.add_argument("stepid", type=int,
                         help="Step ID to run patching, reconstructing, or cell counting")
     parser.add_argument("jobid",
-                        help="Job ID to run patching as an array job")
+                        help="Job ID to run as an array job")
     parser.add_argument("expt_name",
                         help="Tracing output directory (aka registration output)")
     
