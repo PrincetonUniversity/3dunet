@@ -21,21 +21,23 @@ def resize(pth, dst, resizef = 6):
     resize function using cv2
     inspired by tpisano
     inputs:
-        pth = 3d tif stack
+        pth = 3d tif stack or memmap array
         dst = folder to save each z plane
     """
     #make sure dst exists
     if not os.path.exists(dst): os.mkdir(dst)
     
     #read file
-    img = tifffile.imread(pth)
+    if pth[-4:] == ".tif": img = tifffile.imread(pth)
+    elif pth[-4:] == ".npy": img = np.lib.format.open_memmap(pth, dtype = "float32", mode = "r")
+    
     z,y,x = img.shape
     
     for i in range(z):
         #make the factors
         xr = img[i].shape[1] / resizef; yr = img[i].shape[0] / resizef
         im = cv2.resize(img[i], (xr, yr), interpolation=cv2.INTER_LINEAR)
-        tifffile.imsave(os.path.join(dst, "zpln{}.tif".format(str(i).zfill(12))), im.astype("uint16"), compress=1)
+        tifffile.imsave(os.path.join(dst, "zpln{}.tif".format(str(i).zfill(12))), im.astype("float32"), compress=1)
     
     return dst
 
@@ -57,10 +59,10 @@ def resize_stack(pth, dst):
     stack = np.zeros(dims)
     
     for i in range(len(fls)):
-        stack[i] = cv2.imread(fls[i], cv2.IMREAD_GRAYSCALE)
+        stack[i] = tifffile.imread(fls[i])
     
     #save stack
-    tifffile.imsave(os.path.join(dst, "resized_stack.tif"), stack.astype("uint16"))
+    tifffile.imsave(os.path.join(dst, "resized_stack.tif"), stack.astype("float32"))
     
     return os.path.join(dst, "resized_stack.tif")
     
@@ -76,7 +78,7 @@ def check_dim(pth):
         f = h5py.File(os.path.join(pth,fn))
         d = f["/main"].value
         f.close()
-        print fn, d.shape, np.nonzero(d)[0].shape
+        print(fn, d.shape, np.nonzero(d)[0].shape)
 
 def sample_reconstructed_array(pth):
     """ check to make sure reconstruction worked
@@ -140,15 +142,16 @@ def find_imgs_to_process(scratch_dir, tracing_fld, call = False):
             print(call)
             sp_call(call)
 
-def submit_reconstruction(scratch_dir, tracing_fld, to_reconstruct = False):
+def submit_post_processing(scratch_dir, tracing_fld, to_reconstruct = False):
     """ submit reconstruction en masse """
 
     if not to_reconstruct:
         to_reconstruct = [xx for xx in os.listdir(scratch_dir) if "reconstructed_array.npy"
-                      not in os.listdir(os.path.join(scratch_dir, xx)) and "output_chnks" in os.listdir(os.path.join(scratch_dir, xx))]   
+                      not in os.listdir(os.path.join(scratch_dir, xx)) 
+                      and "output_chnks" in os.listdir(os.path.join(scratch_dir, xx))]   
     #call
     for pth in to_reconstruct:
-        call = "sbatch slurm_scripts/cnn_step21.sh {}".format(os.path.join(tracing_fld, pth))
+        call = "sbatch cnn_postprocess.sh {}".format(os.path.join(tracing_fld, pth))
         print(call)
         sp_call(call)
 
@@ -158,7 +161,7 @@ if __name__ == "__main__":
     scratch_dir = "/jukebox/scratch/zmd"
     tracing_fld = "/jukebox/wang/pisano/tracing_output/antero_4x"
     
-    find_imgs_to_process(scratch_dir, tracing_fld, call = False)
+#    find_imgs_to_process(scratch_dir, tracing_fld, call = False)
     
 #    to_reconstruct = ["20170308_tp_bl6f_lob6a_2x_01",
 #                        "20170116_tp_bl6_lob7_1000r_10",
@@ -168,4 +171,4 @@ if __name__ == "__main__":
 #                        "20180410_jg49_bl6_lob45_02",
 #                        "20170207_db_bl6_crii_rlat_03"]
 #    
-    submit_reconstruction(scratch_dir, tracing_fld)
+    submit_post_processing(scratch_dir, tracing_fld)

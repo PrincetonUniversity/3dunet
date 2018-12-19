@@ -20,7 +20,7 @@ Go to the dataprovider3, DataTools, and augmentor directories and run (for each 
 `python setup.py install`
 
 ## Run:
-- main scripts are located in the pytorchutils directory
+- main GPU-based scripts are located in the pytorchutils directory
 1. `run_exp.py` --> training
     - lines 64-98: modify data directory, train and validation sets, and named experiment   	  directory (in which the experiment directory of logs and model weights is stored) 
 2. `run_fwd.py` --> inference
@@ -31,7 +31,11 @@ Go to the dataprovider3, DataTools, and augmentor directories and run (for each 
 	1. modify `run_chnk_fwd.sh` in the main repo
 	2. use `python pytorchutils/run_chnk_fwd.py -h` for more info on command line 		arguments
 4. modify parameters (stride, window, # of iterations, etc.) in the main parameter dictionaries
-
+- `cell_detect.py` --> CPU-based pre-processing and post-processing based on tpisano's lightsheet package
+    - if working with a slurm-based scheduler, 
+	1. `cnn_preprocess.sh` --> chunks full sized data from specified directory  
+	2. `cnn_postprocess.sh` --> reconstructs and uses connected components to find cell measures
+    - output is a '3dunet_output' directory containing a '[brain_name]_cell_measures.csv'
 
 Contact: tpisano@princeton.edu, zmd@princeton.edu
 
