@@ -5,7 +5,8 @@ Created on Mon Dec 10 15:42:10 2018
 
 @author: wanglab
 """
-import os, random, csv, h5py, cv2
+
+import os, csv, h5py, cv2
 from subprocess import check_output
 import numpy as np
 from skimage.external import tifffile
@@ -19,7 +20,6 @@ def sp_call(call):
 def resize(pth, dst, resizef = 6):
     """ 
     resize function using cv2
-    inspired by tpisano
     inputs:
         pth = 3d tif stack or memmap array
         dst = folder to save each z plane
@@ -80,7 +80,7 @@ def check_dim(pth):
         f.close()
         print(fn, d.shape, np.nonzero(d)[0].shape)
 
-def sample_reconstructed_array(pth):
+def sample_reconstructed_array(pth, zstart, zend):
     """ check to make sure reconstruction worked
     pth = path to cnn output folder (probably in scratch) that has the reconstructed array
     """
@@ -92,9 +92,9 @@ def sample_reconstructed_array(pth):
         print(chunk.shape)
         
         #save tif
-        tifffile.imsave(os.path.join(pth, "sample.tif"), chunk[700:705, :, :])
+        tifffile.imsave(os.path.join(pth, "sample.tif"), chunk[zstart:zend, :, :])
         
-        print("chunk of z700-705 saved as: {}".format(os.path.join(pth, "sample.tif")))
+        print("chunk saved as: {}".format(os.path.join(pth, "sample.tif")))
     
 def csv_to_dict(csv_pth):
     """ 
@@ -110,37 +110,6 @@ def csv_to_dict(csv_pth):
             csv_dict[r[0]] = r[1]
             
     return csv_dict
-
-def find_imgs_to_process(scratch_dir, tracing_fld, call = False):
-    """ find 10 random samples to process from tom"s tracing folder,
-        submit preprocessing en masse when call = True """
-    
-    #repo = "/jukebox/wang/zahra/python/3dunet"
-    #run/running thorugh cnn
-    done = [xx for xx in os.listdir(scratch_dir) if "checked_logs" not in xx 
-            and "for_tom" not in xx and "logs" not in xx and "slurm_scripts" not in xx]
-    print("\n {} are done\n".format(len(done))) 
-    
-    #all in tracing folder
-    brains = os.listdir(tracing_fld)
-    
-    #find ones not yet processed
-    left = [xx for xx in brains if xx not in done]
-    print("\n {} are left\n".format(len(left)))
-    
-    #get a random sample
-    to_process = [left[random.randrange(len(left))] for i in range(10)]
-    print("\n 10 brain samples: \n*************************************************************************\n {}".format(to_process))
-    
-    pths = [os.path.join(tracing_fld, xx) for xx in to_process]
-    print("\n their paths: \n*************************************************************************\n {}".format(pths))
-    
-    if call:
-        for pth in pths:  
-            #submit preprocessing jobs
-            call = "sbatch cnn_preprocess.sh {}".format(pth)
-            print(call)
-            sp_call(call)
 
 def submit_post_processing(scratch_dir, tracing_fld, to_reconstruct = False):
     """ submit reconstruction en masse """
