@@ -37,7 +37,6 @@ def main(noeval, **args):
     sys.stdout.write("running inference on: \n{}\n".format(os.path.basename(params["data_dir"]))); sys.stdout.flush()   
     output_fld = os.path.join(params["data_dir"], "output_chnks") #set output directory 
     
-    if not os.path.exists(output_fld): os.mkdir(output_fld)
     jobid = int(params["jobid"]) #set patch no. to run through cnn
     
     #find files that need to be processed

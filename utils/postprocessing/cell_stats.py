@@ -35,9 +35,10 @@ def consolidate_cell_measures(ignore_jobid_count = False, **params):
         pooled_df = (pd.concat([pd.read_csv(fl) for fl in list_of_single_dfs])).drop(columns="Unnamed: 0")
         pooled_df.to_csv(os.path.join(unet_output_dir, "pooled_cell_measures/{}_cell_measures.csv".format(params["expt_name"])))
         
-#        #move param dict
-#        shutil.move(os.path.join(params["data_dir"], "cnn_param_dict.csv"), 
-#                               os.path.join(os.path.join(params["output_dir"], "3dunet_output"), "cnn_param_dict.csv"))
+        #move param dict
+        shutil.move(os.path.join(params["data_dir"], "cnn_param_dict.csv"), 
+                               os.path.join(os.path.join(params["output_dir"], "3dunet_output"), "cnn_param_dict.csv"))
+        
         sys.stdout.write("\npooled cell measures for cell channel saved in: {}\n".format(os.path.join(unet_output_dir, "pooled_cell_measures/{}_cell_measures.csv".format(params["expt_name"]))))
     else:
         sys.stdout.write("\njobs have not completed for all z planes. check to see which jobs are missing in {}".format(unet_output_dir))

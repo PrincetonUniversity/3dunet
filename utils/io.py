@@ -6,7 +6,7 @@ Created on Mon Dec 10 15:42:10 2018
 @author: wanglab
 """
 
-import os, csv, h5py, cv2
+import os, csv, h5py, cv2, ast
 from subprocess import check_output
 import numpy as np
 from skimage.external import tifffile
@@ -15,6 +15,15 @@ from skimage.external import tifffile
 def sp_call(call):
     """ command line call function """ 
     print(check_output(call, shell=True)) 
+    return
+
+
+def make_inference_output_folder(pth):
+    """ needed to start inference correctly so chunks aren't missing from output folder """
+    
+    if not os.path.exists(os.path.join(pth, "output_chnks")): os.mkdir(os.path.join(pth, "output_chnks"))
+    print("output folder made for :\n {}".format(pth))
+    
     return
 
 def resize(pth, dst, resizef = 6):
@@ -107,8 +116,11 @@ def csv_to_dict(csv_pth):
     with open(csv_pth) as csvf:
         f = csv.reader(csvf)
         for r in f:
-            csv_dict[r[0]] = r[1]
-            
+            if r[1][:9] == "/jukebox/" or r[0] == "dtype" or r[0] == "expt_name":
+                csv_dict[r[0]] = r[1]
+            else:
+                csv_dict[r[0]] = ast.literal_eval(r[1]) #reads integers, tuples, and lists as they were entered
+    
     return csv_dict
 
 def submit_post_processing(scratch_dir, tracing_fld, to_reconstruct = False):
@@ -140,4 +152,4 @@ if __name__ == "__main__":
 #                        "20180410_jg49_bl6_lob45_02",
 #                        "20170207_db_bl6_crii_rlat_03"]
 #    
-    submit_post_processing(scratch_dir, tracing_fld)
+#    submit_post_processing(scratch_dir, tracing_fld)
