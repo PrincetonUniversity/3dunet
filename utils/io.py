@@ -10,6 +10,7 @@ import os, csv, h5py, cv2, ast
 from subprocess import check_output
 import numpy as np
 from skimage.external import tifffile
+from utils.postprocessing.cell_stats import consolidate_cell_measures
 
 #function to run
 def sp_call(call):
@@ -26,6 +27,17 @@ def make_inference_output_folder(pth):
     
     return
 
+def consolidate_cell_measures_bulk(pth):
+    
+    fls = [xx for xx in os.listdir(pth) if "reconstructed_array.npy" in os.listdir(os.path.join(pth, xx))]
+    
+    for fl in fls:
+        src = os.path.join(os.path.join(pth, fl), "cnn_param_dict.csv")
+        params = csv_to_dict(src)
+        consolidate_cell_measures(**params)
+    
+    return
+    
 def resize(pth, dst, resizef = 6):
     """ 
     resize function using cv2

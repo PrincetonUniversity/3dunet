@@ -45,6 +45,7 @@ def consolidate_cell_measures(ignore_jobid_count = False, **params):
     
     sys.stdout.flush()
 
+
 def calculate_cell_measures(**params):
     """ finds center of mass, sphericity, perimeter, and voxel count from cnn output """
     
