@@ -135,33 +135,3 @@ def csv_to_dict(csv_pth):
     
     return csv_dict
 
-def submit_post_processing(scratch_dir, tracing_fld, to_reconstruct = False):
-    """ submit reconstruction en masse """
-
-    if not to_reconstruct:
-        to_reconstruct = [xx for xx in os.listdir(scratch_dir) if "reconstructed_array.npy"
-                      not in os.listdir(os.path.join(scratch_dir, xx)) 
-                      and "output_chnks" in os.listdir(os.path.join(scratch_dir, xx))]   
-    #call
-    for pth in to_reconstruct:
-        call = "sbatch cnn_postprocess.sh {}".format(os.path.join(tracing_fld, pth))
-        print(call)
-        sp_call(call)
-
-#%%        
-if __name__ == "__main__":
-    
-    scratch_dir = "/jukebox/scratch/zmd"
-    tracing_fld = "/jukebox/wang/pisano/tracing_output/antero_4x"
-    
-#    find_imgs_to_process(scratch_dir, tracing_fld, call = False)
-    
-#    to_reconstruct = ["20170308_tp_bl6f_lob6a_2x_01",
-#                        "20170116_tp_bl6_lob7_1000r_10",
-#                        "20170116_tp_bl6_lob45_ml_11",
-#                        "20170115_tp_bl6_lob6a_1000r_02",
-#                        "20170204_tp_bl6_cri_1750r_03",
-#                        "20180410_jg49_bl6_lob45_02",
-#                        "20170207_db_bl6_crii_rlat_03"]
-#    
-#    submit_post_processing(scratch_dir, tracing_fld)

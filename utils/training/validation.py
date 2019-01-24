@@ -5,7 +5,7 @@ Created on Mon Oct 15 16:44:04 2018
 @author: zahramansoor
 """
 
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt, os
 import h5py, numpy as np
 from scipy.stats import linregress
 
@@ -27,12 +27,14 @@ def save_stats_h5(fname):
 
 
 
-def plot_val_curve(loss, start_iter = 0, m = 50):
-    '''Function to plot validation data loss value from .out file from training on tiger2
+def plot_val_curve(loss, pth, fname, start_iter = 0, m = 10):
+    '''Function to plot validation data loss value from h5 file from training on tiger2
     Inputs:
         loss = array of loss values
-        start_iter = iteration from which to start plotting from
-        m = multiple at which log was saved (in parameter dictionary)
+        pth = path to save pdf
+        fname = file name (as string) to add onto pdf
+        start_iter = iteration from which to start plotting from, default is 0
+        m = multiple at which log was saved (in parameter dictionary), default is 10
     '''
     #set x and y
     iters = np.arange(0, len(loss))
@@ -51,13 +53,14 @@ def plot_val_curve(loss, start_iter = 0, m = 50):
     plt.plot(loss[start_iter:], 'ro')
     plt.xlabel('# of iterations in thousands')
     plt.ylabel('loss value')
-    plt.title('3D U-net validation curve for PRV')          
-#        plt.savefig(os.path.join(pth, 'val_zoom'), dpi = 300)
-#    plt.close() 
+    plt.title('3D U-net validation curve for H129')          
+    plt.savefig(os.path.join(pth, fname+'.pdf'), dpi = 300)
+    
     plt.figure()
     plt.plot(loss[start_iter:], 'yo', fit_fn(iters[start_iter:]), '--k')
     plt.xlabel('# of iterations in thousands')
     plt.ylabel('loss value')
     plt.title('Linear regression of loss values')  
+    plt.savefig(os.path.join(pth, fname+'_linreg.pdf'), dpi = 300)
     
     return linreg_stats

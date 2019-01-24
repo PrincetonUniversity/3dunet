@@ -28,6 +28,9 @@ echo $OUT1
 OUT2=$(sbatch --dependency=afterany:${OUT1##* } --array=0-30 slurm_scripts/cnn_step3.sh "$@") 
 echo $OUT2
 
+#export csv dictionary and run last check
+OUT3=$(sbatch --dependency=afterany:${OUT2##* } slurm_scripts/cnn_step4.sh "$@") 
+echo $OUT3
 
 #functionality
 #go to 3dunet main directory and type sbatch cnn_postprocess.sh [path to lightsheet package output directory]
