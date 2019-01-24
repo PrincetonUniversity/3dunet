@@ -7,9 +7,9 @@
 #SBATCH --contiguous
 #SBATCH --mem=14000 #14gbs
 #SBATCH -t 8500                 # time (minutes)
-#SBATCH -o cnn_train_20181210.out
-#SBATCH -e cnn_train_20181210.err
+#SBATCH -o cnn_train_20190102.out
+#SBATCH -e cnn_train_20190102.err
 
-module load cudatoolkit/10.0 cudnn/cuda-10.0/7.3.1 anaconda/5.2.0
-. activate 3dunet_py3
-python run_exp.py 20181210_zd_train models/RSUNet.py samplers/soma.py augmentors/flip_rotate.py --batch_sz 18 --chkpt_num 325680 --gpus 0,1,2,3
+module load cudatoolkit/10.0 cudnn/cuda-10.0/7.3.1 anaconda3/5.3.1
+. activate 3dunet
+python run_exp.py 20190102_zd_train models/RSUNet.py samplers/soma.py augmentors/flip_rotate.py --batch_sz 18 --chkpt_num 117780 --gpus 0,1,2,3
