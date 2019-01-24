@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -p all                # partition (queue)
-#SBATCH -N 2
-#SBATCH --ntasks-per-node=2
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=1
 #SBATCH --ntasks-per-socket=1
 #SBATCH --gres=gpu:1
 #SBATCH --contiguous
