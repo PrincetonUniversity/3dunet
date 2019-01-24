@@ -26,5 +26,9 @@ echo $OUT0
 OUT1=$(sbatch --dependency=afterany:${OUT0##* } --array=0-100 slurm_scripts/cnn_step1.sh "$@") 
 echo $OUT1
 
+#check if correct number of patches were made
+OUT2=$(sbatch --dependency=afterany:${OUT1##* } slurm_scripts/cnn_step1_check.sh "$@") 
+echo $OUT2
+
 #functionality
 #go to 3dunet main directory and type sbatch cnn_preprocess.sh [path to lightsheet package output directory]

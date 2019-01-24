@@ -9,7 +9,8 @@ Created on Mon Nov 19 15:42:12 2018
 import os, sys, shutil
 import argparse   
 from utils.preprocessing.preprocess import get_dims_from_folder, make_indices, make_memmap_from_tiff_list, generate_patch, reconstruct_memmap_array_from_tif_dir
-from utils.postprocessing.cell_stats import calculate_cell_measures, consolidate_cell_measures    
+from utils.postprocessing.cell_stats import calculate_cell_measures, consolidate_cell_measures
+from utils.preprocessing.check import check_patchlist_length_equals_patches    
 import pandas as pd, numpy as np
 
 
@@ -31,12 +32,19 @@ def main(**args):
         make_memmap_from_tiff_list(params["cellch_dir"], params["data_dir"], 
                                                params["cores"], params["dtype"], params["verbose"])
             
-    if params["stepid"] == 1:
+    elif params["stepid"] == 1:
         #######################################PRE-PROCESSING FOR CNN INPUT --> PATCHING###################################################
         
         #generate memmap array of patches
         patch_dst = generate_patch(**params)
         sys.stdout.write("\nmade patches in {}\n".format(patch_dst)); sys.stdout.flush()
+        
+    elif params["stepid"] == 11:
+        #######################################CHECK TO SEE WHETHER PATCHING WAS SUCCESSFUL###################################################
+        
+        #run checker
+        check_patchlist_length_equals_patches(**params)
+        sys.stdout.write("\nready for inference!"); sys.stdout.flush()
 
     elif params["stepid"] == 21:
         ####################################POST CNN --> INITIALISING RECONSTRUCTED ARRAY FOR ARRAY JOB####################################
