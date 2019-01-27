@@ -11,11 +11,11 @@ import os, numpy as np, sys, multiprocessing as mp, time, matplotlib.pyplot as p
 from scipy import ndimage
 from skimage.external import tifffile
 from scipy.ndimage.morphology import generate_binary_structure
+from sklearn import metrics
 import h5py
 
 from tools.utils.io import load_dictionary, load_np
 from tools.conv_net.functions.bipartite import pairwise_distance_metrics
-from sklearn import metrics
 
     
 def probabiltymap_to_centers_thresh(src, threshold = (0.1,1), numZSlicesPerSplit = 200, overlapping_planes = 40, cores = 4, return_pixels = False, verbose = False, structure_rank_order = 2):
@@ -170,7 +170,13 @@ def calculate_true_negatives(impth, tp, fp, fn):
     return tn
 
 def calculate_f1_score(pth, points_dict, threshold = 0.6):
-    """ simple function to manually calculate F1 scores using human annotations """
+    """ 
+    simple function to manually calculate F1 scores using human annotations 
+    inputs:
+        pth = path to datasets
+        points_dict = grouth truth dictionary of points/dataset(made before training)
+        threshold = desired threshold to test, from 0 to 1
+    """
     
     #initialise empty vectors
     tps = []; fps = []; fns = []; tns = []; tcs = []    
@@ -202,17 +208,17 @@ def calculate_f1_score(pth, points_dict, threshold = 0.6):
     return tp, fp, fn, tn, total_cells
 
 def generate_roc_curve(tps, fps, fns, tns):
-    """ plots ROC curve based on ground truth and predicted """
+    """ plots ROC curve based on contingency table measures obtained from calculate_f1_scores function """
     
     #calculate rates
-    tpr = [xx/(xx+yy) for xx, yy in zip(tps, fns)]
-    fpr = [xx/(xx+yy) for xx, yy in zip(fps, tns)]
+    tpr = [xx/(xx+yy) for xx, yy in zip(tps, fns)][1:] #0 threshold is messed up 
+    fpr = [xx/(xx+yy) for xx, yy in zip(fps, tns)][1:]
 
     roc_auc = metrics.auc(fpr, tpr)
     
     plt.figure()
     plt.plot(fpr, tpr, color="darkorange", lw=1, label="ROC curve (area = %0.2f)" % roc_auc)
-    plt.plot([0, 1], [0, 1], color="navy", lw=1, linestyle="--")
+    plt.plot([0, 0.025], [0, 1], color="navy", linestyle="--")
     plt.xlim([0.0, 0.01])
     plt.ylim([0.0, 1.05])
     plt.xlabel("False Positive Rate") 
