@@ -154,22 +154,23 @@ def return_pixels_associated_w_center(centers, labels, size = (15,100,100)):
 def calculate_true_negatives(impth, tp, fp, fn):
     
     """ 
-    uses formula: TN = total pixels-TP-FP-FN
+    uses formula: TN = total voxels-TP-FP-FN
     calculates TN for roc curve from bipartite mapping output
+    #FIXME: check TN formula
     """
     
     #read image    
     img = tifffile.imread(impth)
     imgshp = img.shape
     
-    #calculate total pixels
-    total_pixels = imgshp[0]*imgshp[1]*imgshp[2]
+    #calculate total voxels
+    total_voxels = (imgshp[0]*imgshp[1]*imgshp[2])/(32*20*20)
     
-    tn = total_pixels-tp-fp-fn
+    tn = total_voxels-tp-fp-fn
     
     return tn
 
-def calculate_f1_score(pth, points_dict, threshold = 0.6):
+def calculate_f1_score(pth, points_dict, threshold = 0.6, verbose = False):
     """ 
     simple function to manually calculate F1 scores using human annotations 
     inputs:
@@ -179,55 +180,48 @@ def calculate_f1_score(pth, points_dict, threshold = 0.6):
     """
     
     #initialise empty vectors
-    tps = []; fps = []; fns = []; tns = []; tcs = []    
+    tps = []; fps = []; fns = []
     #iterates through forward pass output
     for dset in os.listdir(pth):
         impth = os.path.join(pth, dset)
-        predicted = probabiltymap_to_centers_thresh(impth, threshold = (threshold, 1))
+        predicted = probabiltymap_to_centers_thresh(impth, threshold = (threshold, 1))        
+        if verbose: print("\n   Finished finding centers for {}, calculating statistics\n".format(dset))        
+        ground_truth = points_dict[dset[:-23]+".npy"] #modifying file names so they match with original data        
+        paired, tp, fp, fn = pairwise_distance_metrics(ground_truth, predicted, cutoff = 30, verbose = False) #returns true positive = tp; false positive = fp; false negative = fn        
         
-        print "\n   Finished finding centers for {}, calculating statistics\n".format(dset)
-        
-        ground_truth = points_dict[dset[:-23]+".npy"] #modifying file names so they match with original data
-        
-        paired, tp, fp, fn = pairwise_distance_metrics(ground_truth, predicted, cutoff = 30) #returns true positive = tp; false positive = fp; false negative = fn
-        
-        tn = calculate_true_negatives(impth, tp, fp, fn)
-        
-        tps.append(tp); fps.append(fp); fns.append(fn); tns.append(tn); tcs.append(len(ground_truth)) #append matrix to save all values to calculate f1 score and roc curve
+        tps.append(tp); fps.append(fp); fns.append(fn)#append matrix to save all values to calculate f1 score and roc curve
     
-    tp = sum(tps); fp = sum(fps); fn = sum(fns); total_cells = sum(tcs) #sum all the elements in the lists
+    tp = sum(tps); fp = sum(fps); fn = sum(fns)
     precision = tp/(tp+fp); recall = tp/(tp+fn) #calculating precision and recall
     f1 = 2*( (precision*recall)/(precision+recall) ) #calculating f1 score
     
-    print ("\n   Finished calculating statistics for set params\n\n\nReport:\n***************************\n\
-    F1 score: {}% \n\
-    true positives, false positives, false negatives: {} \n\
-    precision: {}% \n\
-    recall: {}%\n".format(round(f1*100, 2), (tp,fp,fn), round(precision*100, 2), round(recall*100, 2)))    
+    if verbose: print ("\n   Finished calculating statistics for set params\n\n\nReport:\n***************************\n\
+                        Threshold: {} \n\
+                        F1 score: {}% \n\
+                        true positives, false positives, false negatives: {} \n\
+                        precision: {}% \n\
+                        recall: {}%\n".format(threshold, round(f1*100, 2), (tp,fp,fn), round(precision*100, 2), round(recall*100, 2)))    
     
-    return tp, fp, fn, tn, total_cells
+    return f1, precision, recall
 
-def generate_roc_curve(tps, fps, fns, tns):
+def generate_precision_recall_curve(precisions, recalls):
     """ plots ROC curve based on contingency table measures obtained from calculate_f1_scores function """
     
-    #calculate rates
-    tpr = [xx/(xx+yy) for xx, yy in zip(tps, fns)][1:] #0 threshold is messed up 
-    fpr = [xx/(xx+yy) for xx, yy in zip(fps, tns)][1:]
-
-    roc_auc = metrics.auc(fpr, tpr)
+    #calculate
+    roc_auc = metrics.auc(recalls, precisions)
     
     plt.figure()
-    plt.plot(fpr, tpr, color="darkorange", lw=1, label="ROC curve (area = %0.2f)" % roc_auc)
-    plt.plot([0, 0.025], [0, 1], color="navy", linestyle="--")
+    plt.plot(recalls, [1-xx for xx in precisions], color="darkorange", lw=1, label="ROC curve (area = %0.2f)" % roc_auc)
+    plt.plot([0, 1], [0, 1], color="navy", linestyle="--")
     plt.xlim([0.0, 0.01])
     plt.ylim([0.0, 1.05])
-    plt.xlabel("False Positive Rate") 
-    plt.ylabel("True Positive Rate")
-    plt.title("Receiver operating characteristic curve")
+    plt.xlabel("Recall") 
+    plt.ylabel("Precision")
+    plt.title("Precision-Recall curves")
     plt.legend(loc="lower right")
     plt.show()
     
-    return tpr, fpr, roc_auc
+    return roc_auc
 
 #%%
 if __name__ == "__main__":
@@ -237,22 +231,13 @@ if __name__ == "__main__":
     points_dict = load_dictionary("/jukebox/wang/zahra/conv_net/annotations/h129/filename_points_dictionary.p")
 
     #which thresholds are being evaluated
-    thresholds = [0.  , 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1 ,
-       0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2 , 0.21,
-       0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3 , 0.31, 0.32,
-       0.33, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4 , 0.41, 0.42, 0.43,
-       0.44, 0.45, 0.46, 0.47, 0.48, 0.49, 0.5 , 0.51, 0.52, 0.53, 0.54,
-       0.55, 0.56, 0.57, 0.58, 0.59, 0.6 , 0.61, 0.62, 0.63, 0.64, 0.65,
-       0.66, 0.67, 0.68, 0.69, 0.7 , 0.71, 0.72, 0.73, 0.74, 0.75, 0.76,
-       0.77, 0.78, 0.79, 0.8 , 0.81, 0.82, 0.83, 0.84, 0.85, 0.86, 0.87,
-       0.88, 0.89, 0.9 , 0.91, 0.92, 0.93, 0.94, 0.95, 0.96, 0.97, 0.98,
-       0.99]
+    thresholds = np.arange(0,1,0.005)
     
-    tps = []; fps = []; fns = []; tns = []; tcs = []
+    f1s = []; precisions = []; recalls = []
     for threshold in thresholds:
         #generate true, false positives list
-        tp, fp, fn, tn, tc = calculate_f1_score(pth, points_dict, threshold)
+        f1, precision, recall = calculate_f1_score(pth, points_dict, threshold)
         
-        tps.append(tp); fps.append(fp); fns.append(fn); tns.append(tn); tcs.append(tc)
+        f1s.append(f1); precisions.append(precision); recalls.append(recall)
     
-    tpr, fpr = generate_roc_curve(tps, fps, fns, tns)
+    aoc = generate_precision_recall_curve(precisions[1:], recalls[1:])
