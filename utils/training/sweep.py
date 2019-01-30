@@ -7,12 +7,13 @@ Created on Wed Oct  3 11:39:37 2018
 """
 
 from __future__ import division
-import os, numpy as np, sys, multiprocessing as mp, time, matplotlib.pyplot as plt
+import os, numpy as np, sys, multiprocessing as mp, time, matplotlib.pyplot as plt, pandas as pd
 from scipy import ndimage
 from skimage.external import tifffile
 from scipy.ndimage.morphology import generate_binary_structure
 from sklearn import metrics
 import h5py
+from multiprocessing import Pool
 
 from tools.utils.io import load_dictionary, load_np
 from tools.conv_net.functions.bipartite import pairwise_distance_metrics
@@ -204,20 +205,22 @@ def calculate_f1_score(pth, points_dict, threshold = 0.6, verbose = False):
     
     return f1, precision, recall
 
-def generate_precision_recall_curve(precisions, recalls):
+def generate_precision_recall_curve(df):
     """ plots ROC curve based on contingency table measures obtained from calculate_f1_scores function """
     
     #calculate
+    recalls = np.asarray(df['recall'][1:])
+    precisions = np.asarray(df['precision'][1:])
     roc_auc = metrics.auc(recalls, precisions)
     
     plt.figure()
-    plt.plot(recalls, [1-xx for xx in precisions], color="darkorange", lw=1, label="ROC curve (area = %0.2f)" % roc_auc)
+    plt.plot(recalls, precisions, color="darkorange", lw=1)#, label="ROC curve (area = %0.2f)" % roc_auc)
     plt.plot([0, 1], [0, 1], color="navy", linestyle="--")
-    plt.xlim([0.0, 0.01])
-    plt.ylim([0.0, 1.05])
+    plt.xlim([0, 1])
+    plt.ylim([0, 1.05])
     plt.xlabel("Recall") 
     plt.ylabel("Precision")
-    plt.title("Precision-Recall curves")
+    plt.title("Precision-Recall curve")
     plt.legend(loc="lower right")
     plt.show()
     
@@ -227,17 +230,23 @@ def generate_precision_recall_curve(precisions, recalls):
 if __name__ == "__main__":
     
     #set relevant paths
-    pth = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/forward/test_data_iters_295590/"
+    src = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/forward/test_data_iters_295590/"
     points_dict = load_dictionary("/jukebox/wang/zahra/conv_net/annotations/h129/filename_points_dictionary.p")
-
+    pth = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/precision_recall_thresholds_0d999999_roc_curve_295590.csv"
     #which thresholds are being evaluated
-    thresholds = np.arange(0,1,0.005)
-    
+    thresholds = np.arange(0, 1, 0.1)
     f1s = []; precisions = []; recalls = []
+    
+    #generate precision recall list
     for threshold in thresholds:
-        #generate true, false positives list
-        f1, precision, recall = calculate_f1_score(pth, points_dict, threshold)
-        
+        f1, precision, recall = calculate_f1_score(src, points_dict, threshold, verbose = True)
         f1s.append(f1); precisions.append(precision); recalls.append(recall)
     
-    aoc = generate_precision_recall_curve(precisions[1:], recalls[1:])
+    #save
+    stats_dict = {}
+    stats_dict["threshold"] = [(xx, 1) for xx in thresholds]
+    stats_dict["f1 score"] = f1s
+    stats_dict["precision"] = precisions
+    stats_dict["recall"] = recalls
+    pd.DataFrame(stats_dict, index = None).to_csv(pth)
+##    aoc = generate_precision_recall_curve(precisions, recalls)

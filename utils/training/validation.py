@@ -27,7 +27,7 @@ def save_stats_h5(fname):
 
 
 
-def plot_val_curve(loss, pth, fname, start_iter = 0, m = 10):
+def plot_val_curve(loss, start_iter = 0, m = 10):
     '''Function to plot validation data loss value from h5 file from training on tiger2
     Inputs:
         loss = array of loss values
@@ -54,13 +54,13 @@ def plot_val_curve(loss, pth, fname, start_iter = 0, m = 10):
     plt.xlabel('# of iterations in thousands')
     plt.ylabel('loss value')
     plt.title('3D U-net validation curve for H129')          
-    plt.savefig(os.path.join(pth, fname+'.pdf'), dpi = 300)
+    plt.show()
     
     plt.figure()
     plt.plot(loss[start_iter:], 'yo', fit_fn(iters[start_iter:]), '--k')
     plt.xlabel('# of iterations in thousands')
     plt.ylabel('loss value')
     plt.title('Linear regression of loss values')  
-    plt.savefig(os.path.join(pth, fname+'_linreg.pdf'), dpi = 300)
+    plt.show()
     
     return linreg_stats
