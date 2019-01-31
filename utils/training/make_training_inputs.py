@@ -6,10 +6,10 @@ Created on Mon Dec 10 12:39:16 2018
 @author: wanglab
 """
 
-import os, numpy as np, sys
+import os, numpy as np, sys, multiprocessing as mp
 from skimage.external import tifffile
 from skimage import filters
-from tools.utils.io import *
+from tools.utils.io import listdirfull, load_np, makedir, save_dictionary
 import h5py as h5
 import matplotlib.pyplot as plt
 import SimpleITK as sitk
@@ -243,6 +243,6 @@ if __name__ == "__main__":
     f = h5.File(fls[idx], 'r')
     a = np.copy(f['/main'])
     plt.figure()
-    plt.imshow(a[a.shape[0]/2])
+    plt.imshow(a[a.shape[0]//2])
     f.close()
     sitk.Show(sitk.GetImageFromArray(a))

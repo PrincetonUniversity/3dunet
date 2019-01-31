@@ -14,7 +14,7 @@ import os, shutil
 data_pth = "/home/wanglab/Documents/split_training_inputs"
 if not os.path.exists(data_pth): os.mkdir(data_pth)
 
-pth = "/home/wanglab/Documents/prv_inputs"
+pth = "/home/wanglab/Documents/prv_inputs/otsu"
 
 #split into train, val, and test data
 raw = [xx[:-7] for xx in os.listdir(pth) if xx[-7:] == "_img.h5"] #cutoff extension coz will add it later with labels

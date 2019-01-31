@@ -13,8 +13,7 @@ from skimage.external import tifffile
 from scipy.ndimage.morphology import generate_binary_structure
 from sklearn import metrics
 import h5py
-from multiprocessing import Pool
-
+os.chdir("/jukebox/wang/zahra/lightsheet_copy")
 from tools.utils.io import load_dictionary, load_np
 from tools.conv_net.functions.bipartite import pairwise_distance_metrics
 
@@ -205,13 +204,11 @@ def calculate_f1_score(pth, points_dict, threshold = 0.6, verbose = False):
     
     return f1, precision, recall
 
-def generate_precision_recall_curve(df):
+def generate_precision_recall_curve(precisions, recalls):
     """ plots ROC curve based on contingency table measures obtained from calculate_f1_scores function """
-    
-    #calculate
-    recalls = np.asarray(df['recall'][1:])
-    precisions = np.asarray(df['precision'][1:])
-    roc_auc = metrics.auc(recalls, precisions)
+#    
+#    #calculate
+#    roc_auc = metrics.auc(recalls, precisions)
     
     plt.figure()
     plt.plot(recalls, precisions, color="darkorange", lw=1)#, label="ROC curve (area = %0.2f)" % roc_auc)
@@ -222,31 +219,32 @@ def generate_precision_recall_curve(df):
     plt.ylabel("Precision")
     plt.title("Precision-Recall curve")
     plt.legend(loc="lower right")
-    plt.show()
+    plt.savefig("/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/precision_recall_curve.pdf")
     
-    return roc_auc
+#    return roc_auc
 
 #%%
 if __name__ == "__main__":
     
     #set relevant paths
-    src = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/forward/test_data_iters_295590/"
+    src = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/forward/test_data_iters_295590"
     points_dict = load_dictionary("/jukebox/wang/zahra/conv_net/annotations/h129/filename_points_dictionary.p")
-    pth = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/precision_recall_thresholds_0d999999_roc_curve_295590.csv"
+    pth = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/roc_curve_295590.csv"
     #which thresholds are being evaluated
-    thresholds = np.arange(0, 1, 0.1)
+    thresholds = np.arange(0.002, 1, 0.002)
     f1s = []; precisions = []; recalls = []
     
     #generate precision recall list
     for threshold in thresholds:
-        f1, precision, recall = calculate_f1_score(src, points_dict, threshold, verbose = True)
+        f1, precision, recall = calculate_f1_score(src, points_dict, threshold, verbose = False)
         f1s.append(f1); precisions.append(precision); recalls.append(recall)
     
     #save
+    generate_precision_recall_curve(precisions, recalls)
     stats_dict = {}
     stats_dict["threshold"] = [(xx, 1) for xx in thresholds]
     stats_dict["f1 score"] = f1s
     stats_dict["precision"] = precisions
     stats_dict["recall"] = recalls
     pd.DataFrame(stats_dict, index = None).to_csv(pth)
-##    aoc = generate_precision_recall_curve(precisions, recalls)
+    

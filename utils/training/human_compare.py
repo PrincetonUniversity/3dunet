@@ -15,14 +15,19 @@ from tools.utils.io import load_dictionary
 if __name__ == "__main__":
     
     #load points dict
-    points_dict = load_dictionary("/jukebox/wang/zahra/conv_net/annotations/h129/filename_points_dictionary.p")
+    points_dict = load_dictionary("/jukebox/wang/zahra/conv_net/annotations/prv/filename_points_dictionary_quality_test.p")
     
     #get dsets to compare
-    dsets = [xx for xx in points_dict.keys()]
+    dsets = ["JGANNOTATION_20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_01.npy",
+             "JGANNOTATION_20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_02.npy",
+             "JGANNOTATION_20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0450-0500_01.npy",
+             "JGANNOTATION_20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_03.npy",
+             "JGANNOTATION_20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0450-0500_02.npy"
+                ]
     
     #separate annotators - will have to modify conditions accordinaly
-    ann1_dsets = [xx for xx in points_dict.keys() if xx[:13] == "JGANNOTATION_"]
-    ann2_dsets = [xx for xx in dsets if xx not in ann1_dsets and any(xx in yy for yy in ann1_dsets)]
+    ann1_dsets = dsets
+    ann2_dsets = [xx for xx in points_dict.keys() if xx not in ann1_dsets and any(xx in yy for yy in ann1_dsets)]
     
     #initialise empty vectors
     tps = []; fps = []; fns = []   
