@@ -9,9 +9,9 @@ Created on Wed Oct  3 11:39:37 2018
 from __future__ import division
 import os, numpy as np, sys, multiprocessing as mp, time, matplotlib.pyplot as plt, pandas as pd
 from scipy import ndimage
+from scipy.integrate import simps
 from skimage.external import tifffile
 from scipy.ndimage.morphology import generate_binary_structure
-from sklearn import metrics
 import h5py
 os.chdir("/jukebox/wang/zahra/lightsheet_copy")
 from tools.utils.io import load_dictionary, load_np
@@ -207,15 +207,15 @@ def calculate_f1_score(pth, points_dict, threshold = 0.6, verbose = False):
 def generate_precision_recall_curve(precisions, recalls):
     """ plots ROC curve based on contingency table measures obtained from calculate_f1_scores function """
 #    
-#    #calculate
-#    roc_auc = metrics.auc(recalls, precisions)
+    #calculate
+    roc_auc = simps(precisions, dx = 0.002)
     
     plt.figure()
-    plt.plot(recalls, precisions, color="darkorange", lw=1)#, label="ROC curve (area = %0.2f)" % roc_auc)
+    plt.plot([1-xx for xx in recalls], precisions, color="darkorange", lw=1 , label="ROC curve (area = %0.2f)" % roc_auc)
     plt.plot([0, 1], [0, 1], color="navy", linestyle="--")
     plt.xlim([0, 1])
     plt.ylim([0, 1.05])
-    plt.xlabel("Recall") 
+    plt.xlabel("1 - Recall") 
     plt.ylabel("Precision")
     plt.title("Precision-Recall curve")
     plt.legend(loc="lower right")
@@ -227,19 +227,20 @@ def generate_precision_recall_curve(precisions, recalls):
 if __name__ == "__main__":
     
     #set relevant paths
-    src = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/forward/test_data_iters_295590"
-    points_dict = load_dictionary("/jukebox/wang/zahra/conv_net/annotations/h129/filename_points_dictionary.p")
-    pth = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/roc_curve_295590.csv"
+    src = "/jukebox/wang/zahra/conv_net/training/prv/experiment_dirs/20190130_zd_transfer_learning/forward"
+    points_dict = load_dictionary("/jukebox/wang/zahra/conv_net/annotations/prv/screened_inputs/filename_points_dictionary.p")
+    
     #which thresholds are being evaluated
-    thresholds = np.arange(0.002, 1, 0.002)
+    thresholds = [0.65, 0.7, 0.75]#np.arange(0.002, 1, 0.002)
     f1s = []; precisions = []; recalls = []
     
     #generate precision recall list
     for threshold in thresholds:
-        f1, precision, recall = calculate_f1_score(src, points_dict, threshold, verbose = False)
+        f1, precision, recall = calculate_f1_score(src, points_dict, threshold, verbose = True)
         f1s.append(f1); precisions.append(precision); recalls.append(recall)
     
     #save
+    pth = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/roc_curve_295590.csv"
     generate_precision_recall_curve(precisions, recalls)
     stats_dict = {}
     stats_dict["threshold"] = [(xx, 1) for xx in thresholds]

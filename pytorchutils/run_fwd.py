@@ -62,7 +62,7 @@ def fill_params(expt_name, chkpt_num, gpus,
     params["output_tag"]  = tag
 
     #Dataset params
-    params["data_dir"]    = "/jukebox/wang/zahra/conv_net/annotations/prv/inputs"
+    params["data_dir"]    = "/jukebox/wang/zahra/conv_net/annotations/prv/screened_inputs/inputs"
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     params["dsets"]       = dset_names
     params["input_spec"]  = collections.OrderedDict(input=(20,192,192)) #dp dataset spec
