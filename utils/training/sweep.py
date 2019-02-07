@@ -187,7 +187,7 @@ def calculate_f1_score(pth, points_dict, threshold = 0.6, verbose = False):
         predicted = probabiltymap_to_centers_thresh(impth, threshold = (threshold, 1))        
         if verbose: print("\n   Finished finding centers for {}, calculating statistics\n".format(dset))        
         ground_truth = points_dict[dset[:-23]+".npy"] #modifying file names so they match with original data        
-        paired, tp, fp, fn = pairwise_distance_metrics(ground_truth, predicted, cutoff = 20, verbose = False) #returns true positive = tp; false positive = fp; false negative = fn        
+        paired, tp, fp, fn = pairwise_distance_metrics(ground_truth, predicted, cutoff = 30, verbose = False) #returns true positive = tp; false positive = fp; false negative = fn        
         
         tps.append(tp); fps.append(fp); fns.append(fn)#append matrix to save all values to calculate f1 score and roc curve
     
@@ -227,11 +227,11 @@ def generate_precision_recall_curve(precisions, recalls):
 if __name__ == "__main__":
     
     #set relevant paths
-    src = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/forward/test_data_iters_295590"
-    points_dict = load_dictionary("/jukebox/wang/zahra/conv_net/annotations/h129/filename_points_dictionary.p")
-    pth = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/roc_curve_295590.csv"
+    src = "/jukebox/wang/zahra/conv_net/training/prv/experiment_dirs/20190130_zd_transfer_learning/forward"
+    points_dict = load_dictionary("/jukebox/wang/zahra/conv_net/annotations/prv/screened_inputs/filename_points_dictionary.p")
+    
     #which thresholds are being evaluated
-    thresholds = [0.6]#np.arange(0.002, 1, 0.002)
+    thresholds = [0.65, 0.7, 0.75]#np.arange(0.002, 1, 0.002)
     f1s = []; precisions = []; recalls = []
     
     #generate precision recall list
@@ -240,6 +240,7 @@ if __name__ == "__main__":
         f1s.append(f1); precisions.append(precision); recalls.append(recall)
     
     #save
+    pth = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/roc_curve_295590.csv"
     generate_precision_recall_curve(precisions, recalls)
     stats_dict = {}
     stats_dict["threshold"] = [(xx, 1) for xx in thresholds]
