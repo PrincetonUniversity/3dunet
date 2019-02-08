@@ -57,6 +57,6 @@ for pth in paths:
     
 #call
 for pth in paths_to_call:
-    call = "sbatch --array=0-100 {}".format(pth)
+    call = "sbatch --array=0-130 {}".format(pth)
     print(call)
     sp_call(call)
