@@ -11,4 +11,6 @@
 #ignore datatools dir
 datatools
 
+#ignore bulk run scripts
 3d_unet_run_script.py
+run_bulk_reconstruction.py
