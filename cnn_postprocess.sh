@@ -21,7 +21,7 @@ OUT0=$(sbatch slurm_scripts/cnn_step21.sh "$@")
 echo $OUT0
 
 #populate reconstructed array
-OUT1=$(sbatch --dependency=afterany:${OUT0##* } --array=0-100 slurm_scripts/cnn_step2.sh "$@") 
+OUT1=$(sbatch --dependency=afterany:${OUT0##* } --array=0-130 slurm_scripts/cnn_step2.sh "$@") 
 echo $OUT1
 
 #generate cell measures

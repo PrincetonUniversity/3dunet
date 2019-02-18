@@ -32,7 +32,7 @@ def consolidate_cell_measures(ignore_jobid_count = False, **params):
         if not os.path.exists(os.path.join(unet_output_dir, "pooled_cell_measures")): os.mkdir(os.path.join(unet_output_dir, "pooled_cell_measures"))
     
         #pool
-        pooled_df = (pd.concat([pd.read_csv(fl) for fl in list_of_single_dfs])).drop(columns="Unnamed: 0")
+        pooled_df = (pd.concat([pd.read_csv(fl) for fl in list_of_single_dfs], sort = True)).drop(columns="Unnamed: 0")
         pooled_df.to_csv(os.path.join(unet_output_dir, "pooled_cell_measures/{}_cell_measures.csv".format(params["expt_name"])))
         
         #move param dict

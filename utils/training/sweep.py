@@ -170,7 +170,7 @@ def calculate_true_negatives(impth, tp, fp, fn):
     
     return tn
 
-def calculate_f1_score(pth, points_dict, threshold = 0.6, verbose = False):
+def calculate_f1_score(pth, points_dict, threshold = 0.6, cutoff = 30, verbose = False):
     """ 
     simple function to manually calculate F1 scores using human annotations 
     inputs:
@@ -187,7 +187,7 @@ def calculate_f1_score(pth, points_dict, threshold = 0.6, verbose = False):
         predicted = probabiltymap_to_centers_thresh(impth, threshold = (threshold, 1))        
         if verbose: print("\n   Finished finding centers for {}, calculating statistics\n".format(dset))        
         ground_truth = points_dict[dset[:-23]+".npy"] #modifying file names so they match with original data        
-        paired, tp, fp, fn = pairwise_distance_metrics(ground_truth, predicted, cutoff = 30, verbose = False) #returns true positive = tp; false positive = fp; false negative = fn        
+        paired, tp, fp, fn = pairwise_distance_metrics(ground_truth, predicted, cutoff = cutoff, verbose = False) #returns true positive = tp; false positive = fp; false negative = fn        
         
         tps.append(tp); fps.append(fp); fns.append(fn)#append matrix to save all values to calculate f1 score and roc curve
     
@@ -197,10 +197,11 @@ def calculate_f1_score(pth, points_dict, threshold = 0.6, verbose = False):
     
     if verbose: print ("\n   Finished calculating statistics for set params\n\n\nReport:\n***************************\n\
                         Threshold: {} \n\
+                        Cutoff: {} \n\
                         F1 score: {}% \n\
                         true positives, false positives, false negatives: {} \n\
                         precision: {}% \n\
-                        recall: {}%\n".format(threshold, round(f1*100, 2), (tp,fp,fn), round(precision*100, 2), round(recall*100, 2)))    
+                        recall: {}%\n".format(threshold, cutoff, round(f1*100, 2), (tp,fp,fn), round(precision*100, 2), round(recall*100, 2)))    
     
     return f1, precision, recall
 
@@ -227,16 +228,17 @@ def generate_precision_recall_curve(precisions, recalls):
 if __name__ == "__main__":
     
     #set relevant paths
-    src = "/jukebox/wang/zahra/conv_net/training/prv/experiment_dirs/20190130_zd_transfer_learning/forward"
+    src = "/jukebox/wang/zahra/conv_net/training/prv/experiment_dirs/20190130_zd_transfer_learning/forward/iters_531250"
     points_dict = load_dictionary("/jukebox/wang/zahra/conv_net/annotations/prv/screened_inputs/filename_points_dictionary.p")
     
     #which thresholds are being evaluated
-    thresholds = [0.65, 0.7, 0.75]#np.arange(0.002, 1, 0.002)
+    thresholds = [0.6, 0.61, 0.62, 0.63, 0.64]#[0.6, 0.65, 0.7, 0.75, 0.8]#np.arange(0.002, 1, 0.002)
+    cutoff = 30
     f1s = []; precisions = []; recalls = []
     
     #generate precision recall list
     for threshold in thresholds:
-        f1, precision, recall = calculate_f1_score(src, points_dict, threshold, verbose = True)
+        f1, precision, recall = calculate_f1_score(src, points_dict, threshold, cutoff, verbose = True)
         f1s.append(f1); precisions.append(precision); recalls.append(recall)
     
     #save
