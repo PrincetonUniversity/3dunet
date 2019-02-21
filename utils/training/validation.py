@@ -53,7 +53,7 @@ def plot_val_curve(loss, start_iter = 0, m = 10):
     plt.plot(loss[start_iter:], 'ro')
     plt.xlabel('# of iterations in thousands')
     plt.ylabel('loss value')
-    plt.title('3D U-net validation curve for H129')          
+    plt.title('3D U-net validation curve for PRV')          
     plt.show()
     
     plt.figure()

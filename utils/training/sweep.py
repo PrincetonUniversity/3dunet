@@ -228,11 +228,11 @@ def generate_precision_recall_curve(precisions, recalls):
 if __name__ == "__main__":
     
     #set relevant paths
-    src = "/jukebox/wang/zahra/conv_net/training/prv/experiment_dirs/20190130_zd_transfer_learning/forward/iters_531250"
+    src = "/jukebox/wang/zahra/conv_net/training/prv/experiment_dirs/20190130_zd_transfer_learning/forward/iters_552460"
     points_dict = load_dictionary("/jukebox/wang/zahra/conv_net/annotations/prv/screened_inputs/filename_points_dictionary.p")
     
     #which thresholds are being evaluated
-    thresholds = [0.6, 0.61, 0.62, 0.63, 0.64]#[0.6, 0.65, 0.7, 0.75, 0.8]#np.arange(0.002, 1, 0.002)
+    thresholds = [0.7, 0.72, 0.75, 0.8,0.85,0.9]#np.arange(0.002, 1, 0.002)
     cutoff = 30
     f1s = []; precisions = []; recalls = []
     
@@ -240,7 +240,7 @@ if __name__ == "__main__":
     for threshold in thresholds:
         f1, precision, recall = calculate_f1_score(src, points_dict, threshold, cutoff, verbose = True)
         f1s.append(f1); precisions.append(precision); recalls.append(recall)
-    
+#%%    
     #save
     pth = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/roc_curve_295590.csv"
     generate_precision_recall_curve(precisions, recalls)
