@@ -75,7 +75,7 @@ def fill_params(expt_name, chkpt_num, gpus, nobn, model_fname, dset_name, tag, j
 
     #IO/Record params
     params["expt_name"]   = expt_name
-    params["expt_dir"]    = "/tigress/zmd/3dunet_data/h129/experiments/{}".format(expt_name)
+    params["expt_dir"]    = "/tigress/zmd/3dunet_data/prv/experiments/{}".format(expt_name)
     params["model_dir"]   = os.path.join(params["expt_dir"], "models")
     params["log_dir"]     = os.path.join(params["expt_dir"], "logs")
     params["fwd_dir"]     = os.path.join(params["expt_dir"], "forward")

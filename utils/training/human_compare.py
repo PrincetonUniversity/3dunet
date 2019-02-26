@@ -24,13 +24,16 @@ if __name__ == "__main__":
     #initialise empty vectors
     tps = []; fps = []; fns = []   
     
+    #set voxel cutoff value
+    cutoff = 20
+    
     for dset in ann2_dsets:
     
         #set ground truth
         ann1_ground_truth = points_dict["JGANNOTATION_"+ dset]
         ann2_ground_truth = points_dict[dset]
         
-        paired,tp,fp,fn = pairwise_distance_metrics(ann2_ground_truth, ann1_ground_truth, cutoff = 20) #returns true positive = tp; false positive = fp; false negative = fn
+        paired,tp,fp,fn = pairwise_distance_metrics(ann2_ground_truth, ann1_ground_truth, cutoff) #returns true positive = tp; false positive = fp; false negative = fn
            
         tps.append(tp); fps.append(fp); fns.append(fn) #append matrix to save all values to calculate f1 score
         
@@ -38,9 +41,10 @@ if __name__ == "__main__":
     precision = tp/(tp+fp); recall = tp/(tp+fn) #calculating precision and recall
     f1 = 2*( (precision*recall)/(precision+recall) ) #calculating f1 score
     
-    print ('\n   Finished calculating statistics for set params\n\n\nReport:\n***************************\n\
+    print ("\n   Finished calculating statistics for set params\n\n\nReport:\n***************************\n\
+    Cutoff: {} \n\
     F1 score: {}% \n\
     true positives, false positives, false negatives: {} \n\
     precision: {}% \n\
-    recall: {}%\n'.format(round(f1*100, 2), (tp,fp,fn), round(precision*100, 2), round(recall*100, 2)))
+    recall: {}%\n".format(cutoff, round(f1*100, 2), (tp,fp,fn), round(precision*100, 2), round(recall*100, 2)))
 

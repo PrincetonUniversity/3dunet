@@ -46,7 +46,7 @@ def plot_val_curve(loss, start_iter = 0, m = 10):
     fit = np.polyfit(iters[start_iter:], loss[start_iter:], 1)
     fit_fn = np.poly1d(fit)
     linreg_stats = linregress(iters[start_iter:], loss[start_iter:])
-    
+    loss
     #plot
     plt.rcParams.update({'font.size': 8})
     plt.figure()

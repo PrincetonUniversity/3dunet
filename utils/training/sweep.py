@@ -228,11 +228,11 @@ def generate_precision_recall_curve(precisions, recalls):
 if __name__ == "__main__":
     
     #set relevant paths
-    src = "/jukebox/wang/zahra/conv_net/training/prv/experiment_dirs/20190130_zd_transfer_learning/forward/iters_599990"
+    src = "/jukebox/wang/zahra/conv_net/training/prv/experiment_dirs/20190130_zd_transfer_learning/forward/test_data_iters_299000"
     points_dict = load_dictionary("/jukebox/wang/zahra/conv_net/annotations/prv/screened_inputs/filename_points_dictionary.p")
     
     #which thresholds are being evaluated
-    thresholds = np.arange(0.5, 1, 0.05)
+    thresholds = np.arange(0.3, 0.6, 0.02)
     cutoff = 30
     f1s = []; precisions = []; recalls = []
     
