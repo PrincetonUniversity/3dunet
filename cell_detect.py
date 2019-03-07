@@ -118,7 +118,7 @@ def fill_params(expt_name, stepid, jobid):
     params["patchlist"]     = make_indices(params["inputshape"], params["stridesz"])
     
     #post-processing params
-    params["threshold"]     = (0.6,1)
+    params["threshold"]     = (0.6,1) #h129 = 0.6; prv = 0.48
     params["zsplt"]         = 30
     params["ovlp_plns"]     = 30
         
