@@ -75,7 +75,7 @@ def fill_params(expt_name, chkpt_num, gpus, nobn, model_fname, dset_name, tag, j
 
     #IO/Record params
     params["expt_name"]   = expt_name
-    params["expt_dir"]    = "/tigress/zmd/3dunet_data/prv/experiments/{}".format(expt_name)
+    params["expt_dir"]    = "/tigress/zmd/3dunet_data/h129/experiments/{}".format(expt_name)
     params["model_dir"]   = os.path.join(params["expt_dir"], "models")
     params["log_dir"]     = os.path.join(params["expt_dir"], "logs")
     params["fwd_dir"]     = os.path.join(params["expt_dir"], "forward")
@@ -85,7 +85,7 @@ def fill_params(expt_name, chkpt_num, gpus, nobn, model_fname, dset_name, tag, j
 
     #Dataset params
     params["data_dir"]    = "/scratch/gpfs/zmd/{}".format(dset_name)
-    assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
+#    assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     params["dsets"]       = dset_name
     params["input_spec"]  = collections.OrderedDict(input=(20,192,192)) #dp dataset spec
     params["scan_spec"]   = collections.OrderedDict(soma=(1,20,192,192))
