@@ -214,7 +214,7 @@ def generate_mem_mapped_array_for_net_training(impth, roipth, dst, verbose=False
     
 if __name__ == "__main__":
     #convert first
-    inputFolder = "/home/wanglab/Documents/prv_inputs"
+    inputFolder = "/home/wanglab/mounts/wang/zahra/conv_net/annotations/prv/201903_zd_inputs/inputs"
     saveLocation = "/home/wanglab/Documents/prv_inputs/memmap"; makedir(saveLocation)
     otsufld = "/home/wanglab/Documents/prv_inputs/otsu"; makedir(otsufld)  
     size=(8,30,30)
