@@ -14,16 +14,10 @@ from tools.utils.io import listdirfull, load_np, makedir, load_dictionary, save_
 from tools.conv_net.input.read_roi import read_roi_zip
 
 def human_compare_with_raw_rois(ann1roipth, ann2roipth, cutoff = 30):
-    
-    #load rois as array
-    with zipfile.ZipFile(ann1roipth) as zf:
-            rois1 = zf.namelist()
-    with zipfile.ZipFile(ann2roipth) as zf:
-            rois2 = zf.namelist()
             
     #format ZYX, and remove any rois missaved
-    ann1_zyx_rois = zip(*[map(int, xx.replace('.roi','').split('-')[0:3]) for xx in rois1 if len(xx.split('-'))==3])
-    ann2_zyx_rois = zip(*[map(int, xx.replace('.roi','').split('-')[0:3]) for xx in rois2 if len(xx.split('-'))==3])
+    ann1_zyx_rois = np.asarray([[int(yy) for yy in xx.replace(".roi", "").split("-")] for xx in read_roi_zip(ann1roipth, include_roi_name=True)])
+    ann2_zyx_rois = np.asarray([[int(yy) for yy in xx.replace(".roi", "").split("-")] for xx in read_roi_zip(ann2roipth, include_roi_name=True)])
         
     paired,tp,fp,fn = pairwise_distance_metrics(ann1_zyx_rois, ann2_zyx_rois, cutoff) #returns true positive = tp; false positive = fp; false negative = fn
         
@@ -37,7 +31,7 @@ def human_compare_with_raw_rois(ann1roipth, ann2roipth, cutoff = 30):
     precision: {}% \n\
     recall: {}%\n".format(cutoff, round(f1*100, 2), (tp,fp,fn), round(precision*100, 2), round(recall*100, 2)))
 
-    return tp, fp, fn
+    return tp, fp, fn, f1
 
 if __name__ == "__main__":
     

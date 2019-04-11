@@ -65,23 +65,23 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     
     params["train_sets"] = ['20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0450-0500_00',
-                             '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0450-0500_01',
-                             '20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_00',
-                             '20180215_jg_bl6f_prv_10_647_010na_z7d5um_250msec_10povlap_ch00_z200-400_y4500-4850_x2050-2400',
-                             '20180305_jg_bl6f_prv_11_647_010na_7d5um_250msec_10povlp_ch00_C00_300-345_00',
-                             '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_02',
-                             'JGANNOTATION_20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0450-0500_02',
-                             'JGANNOTATION_20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_03',
+                             'cj_ann_prv_jg29_neocortex_z700-800_02',
+                             'zd_ann_prv_jg24_neocortex_z300-400_01',
+                             '20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_02',
+                             'JGANNOTATION_20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_01',
+                             'zd_ann_prv_jg32_neocortex_z650-810_01',
+                             'cj_ann_prv_jg29_neocortex_z300-500_01',
                              'JGANNOTATION_20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_02',
-                             '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_01',
-                             '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_00',
-                             '20180305_jg_bl6f_prv_11_647_010na_7d5um_250msec_10povlp_ch00_C00_300-345_01',
-                             '20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_01',
-                             '20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_03']
+                             'JGANNOTATION_20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0450-0500_01',
+                             '20180305_jg_bl6f_prv_11_647_010na_7d5um_250msec_10povlp_ch00_C00_300-345_00',
+                             '20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_00',
+                             'cj_ann_prv_jg05_neocortex_z310-449_01',
+                             'zd_ann_prv_jg05_neocortex_z310-449_01',
+                             'zd_ann_prv_jg29_neocortex_z300-500_01']
 
-    params["val_sets"] = ['20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_05',
-                         'JGANNOTATION_20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_01',
-                         '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_06']
+    params["val_sets"] = ['20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0450-0500_01',
+                         'cj_ann_prv_jg32_neocortex_z650-810_01',
+                         'cj_ann_prv_jg05_neocortex_z250-449_02']
 
     params["patchsz"]	   = (20,192,192)
     params["sampler_spec"] = dict(input=params["patchsz"],

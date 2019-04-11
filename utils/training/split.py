@@ -17,7 +17,7 @@ if not os.path.exists(data_pth): os.mkdir(data_pth)
 pth = "/home/wanglab/Documents/prv_inputs/otsu"
 
 #split into train, val, and test data
-raw = [xx[:-7] for xx in os.listdir(pth) if xx[-7:] == "_img.h5"] #cutoff extension coz will add it later with labels
+raw = [xx[:-8] for xx in os.listdir(pth) if xx[-8:] == "_img.tif"] #cutoff extension coz will add it later with labels
 
 #%70-20-10 train-validation-test
 train, test = train_test_split(raw, test_size = 0.3, train_size = 0.7, random_state = 1)   
@@ -26,13 +26,13 @@ val, test = train_test_split(test, test_size = 0.333, train_size = 0.666, random
 #FIXME: messy, make it easier to do without changing all paths but safer
 #test
 for i in test: #move raw and labels to appropriate bins
-    t = os.path.join(pth, i+'_lbl.h5')
+    t = os.path.join(pth, i+'_lbl.tif')
     drc = data_pth+'/test/label'
     if not os.path.exists(drc): os.makedirs(drc)
     shutil.copy(t, drc)
     
 for i in test:
-    t = os.path.join(pth, i+'_img.h5')
+    t = os.path.join(pth, i+'_img.tif')
     drc = data_pth+'/test/raw'
     if not os.path.exists(drc): os.makedirs(drc)
     shutil.copy(t, drc)
@@ -40,13 +40,13 @@ for i in test:
 print("copied files into test directory")    
 #train
 for i in train: 
-    t = os.path.join(pth, i+'_lbl.h5')
+    t = os.path.join(pth, i+'_lbl.tif')
     drc = data_pth+'/train/label'
     if not os.path.exists(drc): os.makedirs(drc)
     shutil.copy(t, drc)
     
 for i in train:
-    t = os.path.join(pth, i+'_img.h5')
+    t = os.path.join(pth, i+'_img.tif')
     drc = data_pth+'/train/raw'
     if not os.path.exists(drc): os.makedirs(drc)
     shutil.copy(t, drc)
@@ -54,13 +54,13 @@ for i in train:
 print("copied files into train directory")        
 #val
 for i in val: 
-    t = os.path.join(pth, i+'_lbl.h5')
+    t = os.path.join(pth, i+'_lbl.tif')
     drc = data_pth+'/val/label'
     if not os.path.exists(drc): os.makedirs(drc)
     shutil.copy(t, drc)
     
 for i in val:
-    t = os.path.join(pth, i+'_img.h5')
+    t = os.path.join(pth, i+'_img.tif')
     drc = data_pth+'/val/raw'
     if not os.path.exists(drc): os.makedirs(drc)
     shutil.copy(t, drc)
