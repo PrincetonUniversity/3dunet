@@ -56,7 +56,7 @@ def otsu_helper((otsufld, inn, size, otsu_factor)):
     
     #save input
     otsu = otsu_dilate(raw, lbl, size=size, otsu_factor=otsu_factor)
-    tifffile.imsave(os.path.join(otsufld, "{}_lbl.tif".format(os.path.basename(inn)[:-4])), otsu)
+    tifffile.imsave(os.path.join(otsufld, "{}_lbl.tif".format(os.path.basename(inn)[:-4])), otsu.astype("float32"))
 
     print(inn)
     
