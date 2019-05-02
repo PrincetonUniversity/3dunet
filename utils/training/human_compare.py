@@ -36,11 +36,14 @@ def human_compare_with_raw_rois(ann1roipth, ann2roipth, cutoff = 30):
 if __name__ == "__main__":
     
     #load points dict
-    points_dict = load_dictionary("/home/wanglab/Documents/prv_inputs/filename_points_dictionary.p")   
-    
+    points_dict = load_dictionary("/home/wanglab/Documents/prv_inputs/hypothalamus/filename_points_dictionary.p")   
+        
+    print(points_dict.keys())
     #separate annotators - will have to modify conditions accordinaly
-    ann1_dsets = [xx for xx in points_dict.keys() if xx[:2] == "cj"]; ann1_dsets.sort()
-    ann2_dsets = [xx for xx in points_dict.keys() if xx not in ann1_dsets]; ann2_dsets.sort()
+    ann1_dsets = ['zd_ann_prv_jg24_hypothal_z550-650_01.npy',
+                  'zd_ann_prv_jg32_hypothal_z710-810_02.npy']
+    ann2_dsets = ['cj_ann_prv_jg24_hypothal_z550-650_01.npy',
+                  'cj_ann_prv_jg32_hypothal_z710-810_02.npy']
     
     #initialise empty vectors
     tps = []; fps = []; fns = []   
@@ -60,7 +63,6 @@ if __name__ == "__main__":
         #f1 per dset
         precision = tp/(tp+fp); recall = tp/(tp+fn) #calculating precision and recall
         f1 = 2*( (precision*recall)/(precision+recall) ) #calculating f1 score
-        print(f1)
         tps.append(tp); fps.append(fp); fns.append(fn) #append matrix to save all values to calculate f1 score
         
     tp = sum(tps); fp = sum(fps); fn = sum(fns) #sum all the elements in the lists
@@ -73,40 +75,3 @@ if __name__ == "__main__":
     true positives, false positives, false negatives: {} \n\
     precision: {}% \n\
     recall: {}%\n".format(cutoff, round(f1*100, 2), (tp,fp,fn), round(precision*100, 2), round(recall*100, 2)))
-#    
-#    annpth = "/home/wanglab/mounts/wang/zahra/conv_net/annotations/prv/volumes_zd_made/all_annotations"
-#    
-#    anns = listdirfull(annpth)
-#    
-#    ann1pths = [xx for xx in anns if os.path.basename(xx)[:2] == "cj" and "neocortex" in os.path.basename(xx)]; ann1pths.sort()
-#    
-#    ann2pths = [xx for xx in anns if xx not in ann1pths and "neocortex" in os.path.basename(xx)]; ann2pths.sort()
-#    
-#    tps = []; fps = []; fns = []
-#    
-#    #set voxel cutoff value
-#    cutoff = 30
-#    
-#    for i in range(len(ann1pths)):
-#        
-#        ann1roipth = ann1pths[i]; ann2roipth = ann2pths[i]
-#        
-#        tp, fp, fn = human_compare_with_raw_rois(ann1roipth, ann2roipth)
-#        
-#        tps.append(tp); fps.append(fp); fns.append(fn) #append matrix to save all values to calculate f1 score
-#        
-#    tp = sum(tps); fp = sum(fps); fn = sum(fns) #sum all the elements in the lists
-#    precision = tp/(tp+fp); recall = tp/(tp+fn) #calculating precision and recall
-#    f1 = 2*( (precision*recall)/(precision+recall) ) #calculating f1 score
-#    
-#    print ("\n   Finished calculating FINAL statistics for set params\n\n\nReport:\n***************************\n\
-#    Cutoff: {} \n\
-#    F1 score: {}% \n\
-#    true positives, false positives, false negatives: {} \n\
-#    precision: {}% \n\
-#    recall: {}%\n".format(cutoff, round(f1*100, 2), (tp,fp,fn), round(precision*100, 2), round(recall*100, 2)))
-#    
-    
-    
-    
-    

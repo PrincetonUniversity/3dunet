@@ -211,10 +211,10 @@ def generate_mem_mapped_array_for_net_training(impth, roipth, dst, verbose=False
     
 if __name__ == "__main__":
     #convert first
-    inputFolder = "/home/wanglab/Documents/prv_raw_inputs/neocortex"
-    saveLocation = "/home/wanglab/Documents/prv_inputs/memmap"; makedir(saveLocation)
-    otsufld = "/home/wanglab/Documents/prv_inputs/otsu"; makedir(otsufld)  
-    size=(10, 48, 48)
+    inputFolder = "/home/wanglab/Documents/prv_raw_inputs/hypothalamus"
+    saveLocation = "/home/wanglab/Documents/prv_inputs/hypothalamus/memmap"; makedir(saveLocation)
+    otsufld = "/home/wanglab/Documents/prv_inputs/hypothalamus/otsu"; makedir(otsufld)  
+    size = (10, 48, 48)
     otsu_factor = 0.6
     
     #convert
