@@ -11,42 +11,40 @@ from skimage.external import tifffile
 from tools.conv_net.input.read_roi import read_roi_zip
 from tools.registration.transform import swap_cols
 
-roifld = "/home/wanglab/Documents/prv_inputs/rois_to_rm"
+roifld = "/home/wanglab/Documents/prv_inputs/hypothalamus/rois_to_rm"
 
-lblfld = "/home/wanglab/Documents/prv_inputs/otsu/"
+lblfld = "/home/wanglab/Documents/prv_inputs/hypothalamus/otsu"
 
-pth = "/home/wanglab/Documents/prv_inputs/otsu"
+pth = "/home/wanglab/Documents/prv_inputs/hypothalamus/otsu"
 
-imgs = ['JGANNOTATION_20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_01_lbl.tif',
-     'JGANNOTATION_20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_02_lbl.tif',
-     'JGANNOTATION_20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0450-0500_01_lbl.tif',
-     'cj_ann_prv_jg05_neocortex_z250-449_02_lbl.tif',
-     'cj_ann_prv_jg05_neocortex_z250-449_02_lbl.tif',
-     'cj_ann_prv_jg05_neocortex_z250-449_02_lbl.tif',
-     'cj_ann_prv_jg05_neocortex_z250-449_02_lbl.tif',
-     'cj_ann_prv_jg05_neocortex_z250-449_02_lbl.tif',
-     'cj_ann_prv_jg05_neocortex_z250-449_02_lbl.tif',
-     'cj_ann_prv_jg05_neocortex_z250-449_02_lbl.tif',
-     'cj_ann_prv_jg05_neocortex_z310-449_01_lbl.tif',
-     'cj_ann_prv_jg24_neocortex_z300-400_01_lbl.tif',
-     'cj_ann_prv_jg24_neocortex_z300-400_02_lbl.tif',
-     'cj_ann_prv_jg29_neocortex_z700-800_02_lbl.tif',
-     "cj_ann_prv_jg32_neocortex_z650-810_01_lbl.tif",
-     'zd_ann_prv_jg05_neocortex_z310-449_01_lbl.tif',
-     'zd_ann_prv_jg24_neocortex_z300-400_01_lbl.tif',
-     'zd_ann_prv_jg29_neocortex_z300-500_01_lbl.tif',
-     "zd_ann_prv_jg32_neocortex_z650-810_01_lbl.tif"
-     ]
+imgs = ['cj_ann_prv_jg32_hypothal_z650-810_01_lbl.tif',
+     '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0450-0500_06_lbl.tif',
+     'cj_ann_prv_jg29_hypothal_z700-800_02_lbl.tif',
+     '20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_03_lbl.tif',
+     'cj_ann_prv_jg24_hypothal_z400-550_04_lbl.tif',
+     'zd_ann_prv_jg05_hypothal_z650-800_01_lbl.tif',
+     'cj_ann_prv_jg05_hypothal_z650-800_01_lbl.tif',
+     'cj_ann_prv_jg05_hypothal_z661-760_02_lbl.tif',
+     '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_00_lbl.tif',
+     '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_05_lbl.tif',
+     '20180305_jg_bl6f_prv_11_647_010na_7d5um_250msec_10povlp_ch00_C00_300-345_01_lbl.tif',
+     'cj_ann_prv_jg32_hypothal_z710-810_02_lbl.tif',
+     '20180215_jg_bl6f_prv_10_647_010na_z7d5um_250msec_10povlap_ch00_z200-400_y4500-4850_x2050-2400_lbl.tif',
+     '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_01_lbl.tif']
 
 for img in imgs:
-        
+
+    #read label image        
     lbl = tifffile.imread(os.path.join(pth, img))
     
-    roipths = [os.path.join(roifld, xx) for xx in os.listdir(roifld) if os.path.basename(img)[6:-4] in xx]
-    
+    #find roi pths associated w that dataset
+    roipths = [os.path.join(roifld, xx) for xx in os.listdir(roifld) if img[:-8] in xx and img[:13] == xx[:13]]
+
     if not roipths == 0:
+        print(img)
         for roipth in roipths:     
             rois = [xx for xx in read_roi_zip(roipth, include_roi_name=True) if ".zip.roi" not in xx[0]]
+            print("\n length of rois: {}\n".format(len(rois)))
             #format so each rois is [z,y,x, [contour]]; remeber IMAGEJ has one-based numerics for z plane. NOTE roi is ZYX, contour[XY???], why swap_cols
             rois = [(map(int, xx[0].replace(".roi","").split("-")), xx[1]) for xx in rois]
             rois = [(xx[0][0]-1, xx[0][1], xx[0][2], swap_cols(xx[1], 0,1)) for xx in rois]        
@@ -57,5 +55,5 @@ for img in imgs:
                 y0, x0 = np.nonzero(segment)        
                 lbl[zi, y0, x0] = 0
     
-        tifffile.imsave("/home/wanglab/Documents/prv_inputs/new_lbls/{}".format(os.path.basename(img)), lbl)
+        tifffile.imsave("/home/wanglab/Documents/prv_inputs/hypothalamus/new_lbls/{}".format(os.path.basename(img)), lbl)
     
