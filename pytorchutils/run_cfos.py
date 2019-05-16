@@ -61,7 +61,7 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
     params["batch_size"]  = batch_sz
 
     #Sampling params
-    params["data_dir"]     = "/tigress/zmd/3dunet_data/prv/all_inputs/"
+    params["data_dir"]     = "/tigress/zmd/3dunet_data/cfos/training_inputs/"
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     
     params["train_sets"] = ['dp_ann_201904_an22_ymazefos_020719_cb_z160-179',
