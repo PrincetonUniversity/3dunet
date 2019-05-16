@@ -131,13 +131,14 @@ def basic_convert((tf, zp, saveLocation)):
     """
     """
     if np.all((os.path.exists(tf), os.path.exists(zp))):
-        dataArray = generate_mem_mapped_array_for_net_training(impth=tf, roipth=zp, dst=os.path.join(saveLocation, os.path.basename(tf)[:-4]+".npy"), verbose = False)     
+        generate_mem_mapped_array_for_net_training(impth=tf, roipth=zp, 
+                                                   dst=os.path.join(saveLocation, os.path.basename(tf)[:-4]+".npy"), verbose = True)     
     else:
         sys.stdout.write("\n^^^^^^^^^^^^^^^^^SKIPPING: Paired files not found for: {} & {}^^^^^^^^^^^^^^^^^^^^\n".format(tf, zp))
         return (tf, zp)
     return
     
-def generate_mem_mapped_array_for_net_training(impth, roipth, dst, verbose=False):
+def generate_mem_mapped_array_for_net_training(impth, roipth, dst, verbose=True):
     """Function for generating a memory mapped array given path to imagestack and roi zip file
     
     To load array after use:
@@ -211,11 +212,11 @@ def generate_mem_mapped_array_for_net_training(impth, roipth, dst, verbose=False
     
 if __name__ == "__main__":
     #convert first
-    inputFolder = "/home/wanglab/Documents/prv_raw_inputs/hypothalamus"
-    saveLocation = "/home/wanglab/Documents/prv_inputs/hypothalamus/memmap"; makedir(saveLocation)
-    otsufld = "/home/wanglab/Documents/prv_inputs/hypothalamus/otsu"; makedir(otsufld)  
-    size = (10, 48, 48)
-    otsu_factor = 0.6
+    inputFolder = "/home/wanglab/Documents/cfos_raw_inputs/"
+    saveLocation = "/home/wanglab/Documents/cfos_inputs/memmap"; makedir(saveLocation)
+    otsufld = "/home/wanglab/Documents/cfos_inputs/otsu"; makedir(otsufld)  
+    size = (2,15,15)
+    otsu_factor = 0.8
     
     #convert
     convert_input(inputFolder, saveLocation, remove_bad=True)
@@ -224,6 +225,6 @@ if __name__ == "__main__":
     for a in listdirfull(saveLocation, "npy"):
         sh = np.nonzero(load_np(a))[0].shape[0]
         if sh==0: print(a,sh)
-                
+#%%                
     #otsu_par
     otsu_par(saveLocation, otsufld, size, otsu_factor)   

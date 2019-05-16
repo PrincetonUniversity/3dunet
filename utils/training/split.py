@@ -14,7 +14,7 @@ import os, shutil
 data_pth = "/home/wanglab/Documents/split_training_inputs"
 if not os.path.exists(data_pth): os.mkdir(data_pth)
 
-pth = "/home/wanglab/Documents/prv_inputs/otsu"
+pth = "/home/wanglab/mounts/wang/zahra/conv_net/annotations/prv/all/inputs"
 
 #split into train, val, and test data
 raw = [xx[:-8] for xx in os.listdir(pth) if xx[-8:] == "_img.tif"] #cutoff extension coz will add it later with labels

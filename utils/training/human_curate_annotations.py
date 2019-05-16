@@ -22,15 +22,14 @@ imgs = ['cj_ann_prv_jg32_hypothal_z650-810_01_lbl.tif',
      'cj_ann_prv_jg29_hypothal_z700-800_02_lbl.tif',
      '20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_03_lbl.tif',
      'cj_ann_prv_jg24_hypothal_z400-550_04_lbl.tif',
-     'zd_ann_prv_jg05_hypothal_z650-800_01_lbl.tif',
-     'cj_ann_prv_jg05_hypothal_z650-800_01_lbl.tif',
      'cj_ann_prv_jg05_hypothal_z661-760_02_lbl.tif',
      '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_00_lbl.tif',
      '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_05_lbl.tif',
      '20180305_jg_bl6f_prv_11_647_010na_7d5um_250msec_10povlp_ch00_C00_300-345_01_lbl.tif',
      'cj_ann_prv_jg32_hypothal_z710-810_02_lbl.tif',
      '20180215_jg_bl6f_prv_10_647_010na_z7d5um_250msec_10povlap_ch00_z200-400_y4500-4850_x2050-2400_lbl.tif',
-     '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_01_lbl.tif']
+     '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_01_lbl.tif',
+     'zd_ann_prv_jg32_hypothal_z710-810_02_lbl.tif']
 
 for img in imgs:
 
