@@ -45,8 +45,8 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
     params = {}
 
     #Model params
-    params["in_spec"]	   = dict(input=(1,20,96,96))
-    params["output_spec"]  = collections.OrderedDict(cleft=(1,20,96,96))
+    params["in_spec"]	   = dict(input=(1,20,32,32))
+    params["output_spec"]  = collections.OrderedDict(cleft=(1,20,32,32))
     params["width"]        = [32, 40, 80]
 
     #Training procedure params
@@ -89,7 +89,7 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
                           'tp_ann_201904_an19_ymazefos_020719_pfc_z380-399',
                           'tp_ann_201904_an4_ymazefos_020119_cortex_z200-219']
 
-    params["patchsz"]	   = (20,96,96)
+    params["patchsz"]	   = (20,32,32)
     params["sampler_spec"] = dict(input=params["patchsz"],
                                   soma_label=params["patchsz"])
 
