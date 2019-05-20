@@ -14,29 +14,7 @@ import matplotlib.pyplot as plt
 import SimpleITK as sitk
 
 def otsu_par(saveLocation, otsufld, size, otsu_factor):
-    """
-    for inn in listdirfull(saveLocation, "npy"):
-        print inn
-        #load
-        arr = load_np(inn)
-        raw = np.copy(arr[0])
-        lbl = np.copy(arr[1])
-        
-        #save input
-        inrawfld = os.path.join(otsufld, "inputRawImages"); makedir(inrawfld)
-        #[tifffile.imsave(os.path.join(inrawfld, "{}_{}_inputRawImages.tif".format(os.path.basename(inn)[:-4], str(i).zfill(4))), ii) for i, ii in enumerate(arr[0])]
-        f = h5.File(os.path.join(inrawfld, "{}_inputRawImages.h5".format(os.path.basename(inn)[:-4])), "w")
-        f["/main"] = raw
-        f.close()
-        
-        #save input
-        #OTSU?
-        inlblfld = os.path.join(otsufld, "inputLabelImages"); makedir(inlblfld)
-        otsu = otsu_dilate(raw, lbl, size=size, otsu_factor=otsu_factor).astype("float32")
-        f = h5.File(os.path.join(inlblfld, "{}_inputLabelImages-segmentation.h5".format(os.path.basename(inn)[:-4])), "w")
-        f["/main"] = otsu
-        f.close()
-    """
+   
     #otsu
     p = mp.Pool(12)
     iterlst = [(otsufld, inn, size, otsu_factor) for inn in listdirfull(saveLocation, "npy")]
@@ -213,10 +191,10 @@ def generate_mem_mapped_array_for_net_training(impth, roipth, dst, verbose=True)
 if __name__ == "__main__":
     #convert first
     inputFolder = "/home/wanglab/Documents/cfos_raw_inputs/"
-    saveLocation = "/home/wanglab/Documents/cfos_inputs/memmap"; makedir(saveLocation)
-    otsufld = "/home/wanglab/Documents/cfos_inputs/otsu"; makedir(otsufld)  
-    size = (2,15,15)
-    otsu_factor = 0.8
+    saveLocation = "/home/wanglab/mounts/wang/zahra/conv_net/annotations/prv/201905_human_curated_inputs_ventricles_removed_hypothalamus_only/memmap"; makedir(saveLocation)
+    otsufld = "/home/wanglab/mounts/wang/zahra/conv_net/annotations/prv/201905_human_curated_inputs_ventricles_removed_hypothalamus_only/otsu"; makedir(otsufld)  
+    size = (10,32,32)
+    otsu_factor = 0.5
     
     #convert
     convert_input(inputFolder, saveLocation, remove_bad=True)

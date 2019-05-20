@@ -36,26 +36,26 @@ def human_compare_with_raw_rois(ann1roipth, ann2roipth, cutoff = 30):
 if __name__ == "__main__":
     
     #load points dict
-    points_dict = load_dictionary("/home/wanglab/Documents/prv_inputs/neocortex/filename_points_dictionary.p")   
+    points_dict = load_dictionary("/home/wanglab/mounts/wang/zahra/conv_net/annotations/cfos/20190516_inputs/cfos_points_dictionary.p")   
         
     print(points_dict.keys())
     #separate annotators - will have to modify conditions accordinaly
-    ann1_dsets = ["zd_ann_prv_jg05_neocortex_z310-449_01.npy", 
-                  "zd_ann_prv_jg24_neocortex_z300-400_01.npy", 
-                  "zd_ann_prv_jg29_neocortex_z300-500_01.npy", 
-                  "zd_ann_prv_jg32_neocortex_z650-810_01.npy"]
+    ann1_dsets = ["jd_ann_201904_an19_ymazefos_020719_thal_z350-369.npy", 
+                  "jd_ann_201904_an21_ymazefos_020719_hypothal_z450-469.npy", 
+                  "jd_ann_201904_an22_ymazefos_020719_cb_z160-179.npy", 
+                  "jd_ann_201904_an22_ymazefos_020719_midbrain_z150-169.npy"]
 
-    ann2_dsets = ["cj_ann_prv_jg05_neocortex_z310-449_01.npy", 
-                  "cj_ann_prv_jg24_neocortex_z300-400_01.npy", 
-                  "cj_ann_prv_jg29_neocortex_z300-500_01.npy", 
-                  "cj_ann_prv_jg32_neocortex_z650-810_01.npy"]
+    ann2_dsets = ["dp_ann_201904_an19_ymazefos_020719_thal_z350-369.npy", 
+                  "dp_ann_201904_an21_ymazefos_020719_hypothal_z450-469.npy", 
+                  "dp_ann_201904_an22_ymazefos_020719_cb_z160-179.npy", 
+                  "dp_ann_201904_an22_ymazefos_020719_midbrain_z150-169.npy"]
 
     
     #initialise empty vectors
     tps = []; fps = []; fns = []   
     
     #set voxel cutoff value
-    cutoff = 30
+    cutoff = 5
     
     for i in range(len(ann2_dsets)):
     

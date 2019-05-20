@@ -61,27 +61,30 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
     params["batch_size"]  = batch_sz
 
     #Sampling params
-    params["data_dir"]     = "/tigress/zmd/3dunet_data/prv/human_curated_inputs_ventricles_removed/"
+    params["data_dir"]     = "/tigress/zmd/3dunet_data/prv/hypothalamus/"
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     
-    params["train_sets"] = ['20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0450-0500_00',
-                             'cj_ann_prv_jg29_neocortex_z700-800_02',
-                             'zd_ann_prv_jg24_neocortex_z300-400_01',
-                             '20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_02',
-                             'JGANNOTATION_20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_01',
-                             'zd_ann_prv_jg32_neocortex_z650-810_01',
-                             'cj_ann_prv_jg29_neocortex_z300-500_01',
-                             'JGANNOTATION_20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_02',
-                             'JGANNOTATION_20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0450-0500_01',
-                             '20180305_jg_bl6f_prv_11_647_010na_7d5um_250msec_10povlp_ch00_C00_300-345_00',
-                             '20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_00',
-                             'cj_ann_prv_jg05_neocortex_z310-449_01',
-                             'zd_ann_prv_jg05_neocortex_z310-449_01',
-                             'zd_ann_prv_jg29_neocortex_z300-500_01']
+    params["train_sets"] = ['cj_ann_prv_jg29_hypothal_z580-700_01',
+                            'zd_ann_prv_jg05_hypothal_z650-800_01',
+                             '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_01',
+                             'zd_ann_prv_jg32_hypothal_z710-810_02',
+                             'cj_ann_prv_jg32_hypothal_z650-810_01',
+                             '20180305_jg_bl6f_prv_11_647_010na_7d5um_250msec_10povlp_ch00_C00_300-345_01',
+                             'JGANNOTATION_20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_03',
+                             'zd_ann_prv_jg24_hypothal_z550-650_01',
+                             'cj_ann_prv_jg24_hypothal_z400-550_04',
+                             'cj_ann_prv_jg05_hypothal_z650-800_01',
+                             'cj_ann_prv_jg05_hypothal_z661-760_02',
+                             'cj_ann_prv_jg24_hypothal_z550-650_01',
+                             '20180305_jg_bl6f_prv_12_647_010na_7d5um_250msec_10povlp_ch00_C00_400-440_03',
+                             'cj_ann_prv_jg29_hypothal_z700-800_02',
+                             '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_02',
+                             'JGANNOTATION_20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0450-0500_02']
 
-    params["val_sets"] = ['20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0450-0500_01',
-                         'cj_ann_prv_jg32_neocortex_z650-810_01',
-                         'cj_ann_prv_jg05_neocortex_z250-449_02']
+    params["val_sets"] = ['20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_00',
+                          '20180306_jg_bl6f_prv_16_647_010na_7d5um_250msec_10povlp_ch00_C00_Z0650-0700_05',
+                          'cj_ann_prv_jg32_hypothal_z710-810_02',
+                          'zd_ann_prv_jg24_hypothal_z550-650_03']
 
     params["patchsz"]	   = (20,192,192)
     params["sampler_spec"] = dict(input=params["patchsz"],

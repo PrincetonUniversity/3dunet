@@ -151,25 +151,6 @@ def return_pixels_associated_w_center(centers, labels, size = (15,100,100)):
         dct[cen] = np.asarray(np.where(labels[0][z-zz:z+zz+1, y-yy:y+yy+1, x-xx:x+xx+1]==labels[0][z,y,x])).T    
     return dct
 
-def calculate_true_negatives(impth, tp, fp, fn):
-    
-    """ 
-    uses formula: TN = total voxels-TP-FP-FN
-    calculates TN for roc curve from bipartite mapping output
-    #FIXME: check TN formula
-    """
-    
-    #read image    
-    img = tifffile.imread(impth)
-    imgshp = img.shape
-    
-    #calculate total voxels
-    total_voxels = (imgshp[0]*imgshp[1]*imgshp[2])/(32*20*20)
-    
-    tn = total_voxels-tp-fp-fn
-    
-    return tn
-
 def calculate_f1_score(pth, points_dict, threshold = 0.6, cutoff = 30, verbose = False):
     """ 
     simple function to manually calculate F1 scores using human annotations 
@@ -186,7 +167,7 @@ def calculate_f1_score(pth, points_dict, threshold = 0.6, cutoff = 30, verbose =
         impth = os.path.join(pth, dset)
         predicted = probabiltymap_to_centers_thresh(impth, threshold = (threshold, 1))        
         if verbose: print("\n   Finished finding centers for {}, calculating statistics\n".format(dset))        
-        ground_truth = points_dict[dset[:-23]+".npy"] #modifying file names so they match with original data        
+        ground_truth = points_dict[dset[:-22]+".npy"] #modifying file names so they match with original data        
         paired, tp, fp, fn = pairwise_distance_metrics(ground_truth, predicted, cutoff = cutoff, verbose = False) #returns true positive = tp; false positive = fp; false negative = fn        
         
         tps.append(tp); fps.append(fp); fns.append(fn)#append matrix to save all values to calculate f1 score and roc curve
@@ -209,10 +190,10 @@ def generate_precision_recall_curve(precisions, recalls):
     """ plots ROC curve based on contingency table measures obtained from calculate_f1_scores function """
 #    
     #calculate
-    roc_auc = simps(precisions, dx = 0.002)
+    roc_auc = np.trapz(precisions, x = [1-xx for xx in recalls])
     
     plt.figure()
-    plt.plot([1-xx for xx in recalls], precisions, color="darkorange", lw=1 , label="ROC curve (area = %0.2f)" % roc_auc)
+    plt.plot([1-xx for xx in recalls], precisions, color="darkorange", lw=1 , label="Precision-Recall curve (area = %0.3f)" % roc_auc)
     plt.plot([0, 1], [0, 1], color="navy", linestyle="--")
     plt.xlim([0, 1])
     plt.ylim([0, 1.05])
@@ -228,26 +209,30 @@ def generate_precision_recall_curve(precisions, recalls):
 if __name__ == "__main__":
     
     #set relevant paths
-    src = "/home/wanglab/mounts/wang/zahra/conv_net/training/prv/experiment_dirs/20190502_zd_transfer_learning_all_inputs/forward/iters_429990"
+    pth = "/home/wanglab/mounts/wang/zahra/conv_net/training/prv/experiment_dirs/20190502_zd_transfer_learning_all_inputs/forward/test_data_nc_only_410000"
     points_dict = load_dictionary("/home/wanglab/mounts/wang/zahra/conv_net/annotations/prv/all/all_points_dictionary.p")
     
     #which thresholds are being evaluated
-    thresholds = np.arange(0.8, 1, 0.05)
+    thresholds = [0.95]#np.arange(0.7, 0.9, 0.05)
     cutoff = 30
     f1s = []; precisions = []; recalls = []
     
     #generate precision recall list
     for threshold in thresholds:
-        f1, precision, recall = calculate_f1_score(src, points_dict, threshold, cutoff, verbose = True)
+        f1, precision, recall = calculate_f1_score(pth, points_dict, threshold, cutoff, verbose = True)
         f1s.append(f1); precisions.append(precision); recalls.append(recall)
 #%%    
     #save
-    pth = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/roc_curve_295590.csv"
+    src = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/precision_recall_curve_295590.csv"
+    import pandas as pd
+    df = pd.read_csv(src)
+    precisions = df["precision"].values
+    recalls = df["recall"].values
     generate_precision_recall_curve(precisions, recalls)
-    stats_dict = {}
-    stats_dict["threshold"] = [(xx, 1) for xx in thresholds]
-    stats_dict["f1 score"] = f1s
-    stats_dict["precision"] = precisions
-    stats_dict["recall"] = recalls
-    pd.DataFrame(stats_dict, index = None).to_csv(pth)
-    
+#    stats_dict = {}
+#    stats_dict["threshold"] = [(xx, 1) for xx in thresholds]
+#    stats_dict["f1 score"] = f1s
+#    stats_dict["precision"] = precisions
+#    stats_dict["recall"] = recalls
+#    pd.DataFrame(stats_dict, index = None).to_csv(pth)
+#    
