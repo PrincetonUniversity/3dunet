@@ -36,19 +36,18 @@ def human_compare_with_raw_rois(ann1roipth, ann2roipth, cutoff = 30):
 if __name__ == "__main__":
     
     #load points dict
-    points_dict = load_dictionary("/home/wanglab/mounts/wang/zahra/conv_net/annotations/cfos/20190516_inputs/cfos_points_dictionary.p")   
+    points_dict = load_dictionary("/home/wanglab/Documents/cfos_inputs/cfos_points_dictionary.p")   
         
     print(points_dict.keys())
     #separate annotators - will have to modify conditions accordinaly
-    ann1_dsets = ["jd_ann_201904_an19_ymazefos_020719_thal_z350-369.npy", 
-                  "jd_ann_201904_an21_ymazefos_020719_hypothal_z450-469.npy", 
-                  "jd_ann_201904_an22_ymazefos_020719_cb_z160-179.npy", 
-                  "jd_ann_201904_an22_ymazefos_020719_midbrain_z150-169.npy"]
+    ann1_dsets = ["tp_ann_201904_an22_ymazefos_020719_pfc_z150-169.npy",
+                  "tp_ann_201904_an30_ymazefos_020719_striatum_z416-435.npy"]
+#                 ["tp_ann_201904_an19_ymazefos_020719_pfc_z380-399.npy", 
+#                  "tp_ann_201812_pcdev_lob6_9_forebrain_hypothal_z520-539.npy", 
+#                  "tp_ann_201812_pcdev_lob6_4_forebrain_cortex_z200-219.npy"]
 
-    ann2_dsets = ["dp_ann_201904_an19_ymazefos_020719_thal_z350-369.npy", 
-                  "dp_ann_201904_an21_ymazefos_020719_hypothal_z450-469.npy", 
-                  "dp_ann_201904_an22_ymazefos_020719_cb_z160-179.npy", 
-                  "dp_ann_201904_an22_ymazefos_020719_midbrain_z150-169.npy"]
+    ann2_dsets = ["jd_ann_201904_an22_ymazefos_020719_pfc_z150-169.npy",
+                  "jd_ann_201904_an30_ymazefos_020719_striatum_z416-435.npy"]
 
     
     #initialise empty vectors

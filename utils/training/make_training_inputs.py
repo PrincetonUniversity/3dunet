@@ -191,10 +191,10 @@ def generate_mem_mapped_array_for_net_training(impth, roipth, dst, verbose=True)
 if __name__ == "__main__":
     #convert first
     inputFolder = "/home/wanglab/Documents/cfos_raw_inputs/"
-    saveLocation = "/home/wanglab/mounts/wang/zahra/conv_net/annotations/prv/201905_human_curated_inputs_ventricles_removed_hypothalamus_only/memmap"; makedir(saveLocation)
-    otsufld = "/home/wanglab/mounts/wang/zahra/conv_net/annotations/prv/201905_human_curated_inputs_ventricles_removed_hypothalamus_only/otsu"; makedir(otsufld)  
-    size = (10,32,32)
-    otsu_factor = 0.5
+    saveLocation = "/home/wanglab/Documents/cfos_inputs/memmap"; makedir(saveLocation)
+    otsufld = "/home/wanglab/Documents/cfos_inputs/otsu"; makedir(otsufld)  
+    size = (2,15,15)    
+    otsu_factor = 0.8
     
     #convert
     convert_input(inputFolder, saveLocation, remove_bad=True)

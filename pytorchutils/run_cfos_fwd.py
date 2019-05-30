@@ -1,14 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Nov 19 13:53:51 2018
+#!/usr/bin/env python
 
-@author: wanglab
-"""
-
-import os, numpy as np, sys, time, shutil
+import os, imp
 import collections
-import tifffile
 
 import torch
 from torch import sigmoid
@@ -16,6 +9,7 @@ import dataprovider3 as dp
 
 import forward
 import utils
+
 
 def main(noeval, **args):
 
@@ -32,34 +26,19 @@ def main(noeval, **args):
     utils.log_tagged_modules(params["modules_used"], params["log_dir"],
                              params["log_tag"], params["chkpt_num"])
 
-    #lightsheet mods - input folder contains list of our "big" patches
-    input_fld = os.path.join(params["data_dir"], "input_chnks") #set patches directory 
-    sys.stdout.write("running inference on: \n{}\n".format(os.path.basename(params["data_dir"]))); sys.stdout.flush()   
-    output_fld = os.path.join(params["data_dir"], "output_chnks") #set output directory 
-    
-    jobid = int(params["jobid"]) #set patch no. to run through cnn
-    
-    #find files that need to be processed
-    fls = [os.path.join(input_fld, xx) for xx in os.listdir(input_fld)]; fls.sort()
-    
-    #select the file to process for this array job
-    if jobid > len(fls)-1:
-        sys.stdout.write("\njobid {} > number of files {}".format(jobid, len(fls))); sys.stdout.flush()    
-    else:    
-        start = time.time() 
-        dset = fls[jobid]
-        
+    for dset in params["dsets"]:
+        print(dset)
+
         fs = make_forward_scanner(dset, **params)
-        
-        output = forward.forward(net, fs, params["scan_spec"], #runs forward pass
+
+        output = forward.forward(net, fs, params["scan_spec"],
                                  activation=params["activation"])
 
-        save_output(output, dset, output_fld, **params) #saves tif       
-        fs._init() #clear out scanner
-        
-        sys.stdout.write("patch {}: {} min\n".format(jobid+1, round((time.time()-start)/60, 1))); sys.stdout.flush()
+        save_output(output, dset, **params)
 
-def fill_params(expt_name, chkpt_num, gpus, nobn, model_fname, dset_name, tag, jobid):
+
+def fill_params(expt_name, chkpt_num, gpus,
+                nobn, model_fname, dset_names, tag):
 
     params = {}
 
@@ -75,18 +54,17 @@ def fill_params(expt_name, chkpt_num, gpus, nobn, model_fname, dset_name, tag, j
 
     #IO/Record params
     params["expt_name"]   = expt_name
-    params["expt_dir"]    = "/tigress/zmd/3dunet_data/cfos/experiments/{}".format(expt_name)
+    params["expt_dir"]    = "/jukebox/wang/zahra/conv_net/training/cfos/experiment_dirs/{}".format(expt_name)
     params["model_dir"]   = os.path.join(params["expt_dir"], "models")
     params["log_dir"]     = os.path.join(params["expt_dir"], "logs")
     params["fwd_dir"]     = os.path.join(params["expt_dir"], "forward")
     params["log_tag"]     = "fwd_" + tag if len(tag) > 0 else "fwd"
     params["output_tag"]  = tag
-    params["jobid"]       = jobid
 
     #Dataset params
-    params["data_dir"]    = "/scratch/gpfs/zmd/{}".format(dset_name)
-#    assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
-    params["dsets"]       = dset_name
+    params["data_dir"]    = "/jukebox/wang/zahra/conv_net/annotations/cfos/all/inputs"
+    assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
+    params["dsets"]       = dset_names
     params["input_spec"]  = collections.OrderedDict(input=(20,32,32)) #dp dataset spec
     params["scan_spec"]   = collections.OrderedDict(soma=(1,20,32,32))
     params["scan_params"] = dict(stride=(0.1,0.1,0.1), blend="bump")
@@ -110,38 +88,40 @@ def make_forward_scanner(dset_name, data_dir, input_spec,
                          scan_spec, scan_params, **params):
     """ Creates a DataProvider ForwardScanner from a dset name """
 
-    # Reading chunk of lightsheet tif
-    img = tifffile.imread(dset_name)
-    
+    # Reading lightsheet image
+    if os.path.isfile(os.path.join(data_dir, dset_name + "_img.h5")):
+        img = utils.read_img(os.path.join(data_dir, dset_name + "_img.h5"))
+    elif os.path.isfile(os.path.join(data_dir, dset_name + "_img.tif")):
+        img = utils.read_img(os.path.join(data_dir, dset_name + "_img.tif"))
+        
     img = (img / 255.).astype("float32")
 
     # Creating DataProvider Dataset
-    vd = dp.Dataset()
+    vd = dp.Dataset(spec=input_spec)
 
     vd.add_data(key="input", data=img)
-    vd.set_spec(input_spec)
 
     # Returning DataProvider ForwardScanner
     return dp.ForwardScanner(vd, scan_spec, **scan_params)
 
-def save_output(output, dset, output_fld, output_tag, jobid, chkpt_num, **params):
+
+def save_output(output, dset_name, chkpt_num, fwd_dir, output_tag, **params):
     """ Saves the volumes within a DataProvider ForwardScanner """
 
     for k in output.outputs.data:
 
         output_data = output.outputs.get_data(k)
-        
+
         if len(output_tag) == 0:
-            basename = "patch_{}_{}_{}.tif".format(str(jobid).zfill(10), k, chkpt_num)
+            basename = "{}_{}_{}.tif".format(dset_name, k, chkpt_num)
         else:
-            basename = "patch_{}_{}_{}_{}.tif".format(str(jobid).zfill(10), k, 
+            basename = "{}_{}_{}_{}.tif".format(dset_name, k, 
                                                chkpt_num, output_tag)
 
-        full_fname = os.path.join(output_fld, basename)
-        
-        tifffile.imsave(full_fname, output_data[0,:,:,:], compress = 1)
+        full_fname = os.path.join(fwd_dir, basename)
 
-    return full_fname
+        utils.write_img(output_data, full_fname)
+
 
 #============================================================
 
@@ -159,8 +139,8 @@ if __name__ == "__main__":
                         help="Model Template Name")
     parser.add_argument("chkpt_num", type=int,
                         help="Checkpoint Number")
-    parser.add_argument("dset_name",
-                        help="Inference Dataset Name")
+    parser.add_argument("dset_names", nargs="+",
+                        help="Inference Dataset Names")
     parser.add_argument("--nobn", action="store_true",
                         help="Whether net uses batch normalization")
     parser.add_argument("--gpus", default=["0"], nargs="+")
@@ -168,8 +148,7 @@ if __name__ == "__main__":
                         help="Whether to use eval version of network")
     parser.add_argument("--tag", default="",
                         help="Output (and Log) Filename Tag")
-    parser.add_argument("jobid", type=int,
-                        help="Array Task ID corresponding to patch number")
+
 
     args = parser.parse_args()
 

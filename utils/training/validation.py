@@ -26,8 +26,7 @@ def save_stats_h5(fname):
     return test_loss_arr, train_loss_arr
 
 
-
-def plot_val_curve(loss, start_iter = 0, m = 10):
+def plot_val_curve(loss, start_iter = 0, end_iter = 15000, m = 10):
     '''Function to plot validation data loss value from h5 file from training on tiger2
     Inputs:
         loss = array of loss values
@@ -37,27 +36,27 @@ def plot_val_curve(loss, start_iter = 0, m = 10):
         m = multiple at which log was saved (in parameter dictionary), default is 10
     '''
     #set x and y
-    iters = np.arange(0, len(loss))
+    iters = np.arange(0, len(loss[:end_iter]))
     if len(loss) > 1000: 
-        loss = np.take(loss, np.arange(0, len(loss)-1, m)) 
-        iters = np.take(iters, np.arange(0, len(iters)-1, m))
+        loss = np.take(loss[:end_iter], np.arange(0, len(loss[:end_iter])-1, m)) 
+        iters = np.take(iters[:end_iter], np.arange(0, len(iters)-1, m))
     
     #linear regression
-    fit = np.polyfit(iters[start_iter:], loss[start_iter:], 1)
+    fit = np.polyfit(iters[start_iter:end_iter], loss[start_iter:end_iter], 1)
     fit_fn = np.poly1d(fit)
-    linreg_stats = linregress(iters[start_iter:], loss[start_iter:])
+    linreg_stats = linregress(iters[start_iter:end_iter], loss[start_iter:end_iter])
     loss
     #plot
     plt.rcParams.update({'font.size': 8})
     plt.figure()
-    plt.plot(loss[start_iter:], 'ro')
+    plt.plot(loss[start_iter:end_iter], 'ro')
     plt.xlabel('# of iterations in thousands')
     plt.ylabel('loss value')
-    plt.title('3D U-net validation curve for PRV')          
+    plt.title('3D U-net validation curve for C-FOS')          
     plt.show()
     
     plt.figure()
-    plt.plot(loss[start_iter:], 'yo', fit_fn(iters[start_iter:]), '--k')
+    plt.plot(loss[start_iter:end_iter], 'yo', fit_fn(iters[start_iter:end_iter]), '--k')
     plt.xlabel('# of iterations in thousands')
     plt.ylabel('loss value')
     plt.title('Linear regression of loss values')  
