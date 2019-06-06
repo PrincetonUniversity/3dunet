@@ -30,7 +30,7 @@ def otsu_helper((otsufld, inn, size, otsu_factor)):
     lbl = np.copy(arr[1])
     
     #save input
-    tifffile.imsave(os.path.join(otsufld, "{}_img.tif".format(os.path.basename(inn)[:-4])), raw)
+    tifffile.imsave(os.path.join(otsufld, "{}_img.tif".format(os.path.basename(inn)[:-4])), raw.astype("float32"))
     
     #save input
     otsu = otsu_dilate(raw, lbl, size=size, otsu_factor=otsu_factor)
@@ -193,7 +193,7 @@ if __name__ == "__main__":
     inputFolder = "/home/wanglab/Documents/cfos_raw_inputs/"
     saveLocation = "/home/wanglab/Documents/cfos_inputs/memmap"; makedir(saveLocation)
     otsufld = "/home/wanglab/Documents/cfos_inputs/otsu"; makedir(otsufld)  
-    size = (2,15,15)    
+    size = (5,10,10)    
     otsu_factor = 0.8
     
     #convert

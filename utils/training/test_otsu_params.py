@@ -90,10 +90,10 @@ def otsu_dilate(arr0, arr1, size=(8,60,60), otsu_factor=0.8):
 if __name__ == "__main__":
     
     #convert firs
-    saveLocation = "/home/wanglab/mounts/wang/zahra/conv_net/annotations/prv/201905_human_curated_inputs_ventricles_removed_hypothalamus_only/memmap"; makedir(saveLocation) #test folder that contains memory mapped arrays will img + lbl points
-    otsufld = "/home/wanglab/Documents/otsu"; makedir(otsufld) #output folder
-    size = (10,32,32)
-    otsu_factor = 0.5
+    saveLocation = "/home/wanglab/Documents/dp_memmap"; makedir(saveLocation) #test folder that contains memory mapped arrays will img + lbl points
+    otsufld = "/home/wanglab/Documents/dp_otsu"; makedir(otsufld) #output folder
+    size = (5, 10, 10)
+    otsu_factor = 0.8
     
     #otsu_par
     otsu_par(saveLocation, otsufld, size, otsu_factor)  

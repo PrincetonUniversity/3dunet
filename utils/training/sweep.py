@@ -167,7 +167,7 @@ def calculate_f1_score(pth, points_dict, threshold = 0.6, cutoff = 30, verbose =
         impth = os.path.join(pth, dset)
         predicted = probabiltymap_to_centers_thresh(impth, threshold = (threshold, 1))        
         if verbose: print("\n   Finished finding centers for {}, calculating statistics\n".format(dset))        
-        ground_truth = points_dict[dset[:-23]+".npy"] #modifying file names so they match with original data        
+        ground_truth = points_dict[dset[:-22]+".npy"] #modifying file names so they match with original data        
         paired, tp, fp, fn = pairwise_distance_metrics(ground_truth, predicted, cutoff = cutoff, verbose = False) #returns true positive = tp; false positive = fp; false negative = fn        
         
         tps.append(tp); fps.append(fp); fns.append(fn)#append matrix to save all values to calculate f1 score and roc curve
@@ -209,12 +209,12 @@ def generate_precision_recall_curve(precisions, recalls):
 if __name__ == "__main__":
     
     #set relevant paths
-    pth = "/home/wanglab/mounts/wang/zahra/conv_net/training/prv/experiment_dirs/20190520_zd_transfer_learning_hypothal/forward/iters_525990_0d5ovlp"
-    points_dict = load_dictionary("/home/wanglab/mounts/wang/zahra/conv_net/annotations/prv/hypothalamus/hypothal_points_dictionary.p")
+    pth = "/home/wanglab/mounts/wang/zahra/conv_net/training/cfos/experiment_dirs/20190516_zd_train/forward/iters_16750_0d5ovlp"
+    points_dict = load_dictionary("/home/wanglab/mounts/wang/zahra/conv_net/annotations/cfos/all/cfos_points_dictionary.p")
     
     #which thresholds are being evaluated
-    thresholds = np.arange(0.4, 0.8, 0.05)
-    cutoff = 30
+    thresholds = np.arange(0.1, 0.6, 0.05)
+    cutoff = 5
     f1s = []; precisions = []; recalls = []
     
     #generate precision recall list

@@ -61,33 +61,42 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
     params["batch_size"]  = batch_sz
 
     #Sampling params
-    params["data_dir"]     = "/jukebox/wang/zahra/conv_net/annotations/cfos/all/inputs"
+    params["data_dir"]     = "/home/wanglab/Documents/cfos_inputs/screened"
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     
-    params["train_sets"] = ['dp_ann_201904_an22_ymazefos_020719_cb_z160-179',
-                             'dp_ann_201904_an21_ymazefos_020719_hypothal_z450-469',
-                             'dp_ann_201904_an22_ymazefos_020719_midbrain_z150-169',
-                             'jd_ann_201904_an10_ymazefos_020719_pb_z260-279',
-                             'tp_ann_201904_an4_ymazefos_020119_pfc_z200-219',
-                             'jd_ann_201904_an30_ymazefos_020719_pfc_z410-429',
-                             'dp_ann_201904_an12_ymazefos_020719_hypothal_z420-449',
-                             'jd_ann_201904_an19_ymazefos_020719_thal_z350-369',
-                             'jd_ann_201904_an22_ymazefos_020719_midbrain_z150-169',
-                             'tp_ann_201812_pcdev_lob6_9_forebrain_hypothal_z520-539',
-                             'jd_ann_201904_an22_ymazefos_020719_cb_z160-179',
-                             'tp_ann_201904_an30_ymazefos_020719_striatum_z416-435',
-                             'jd_ann_201904_an30_ymazefos_020719_cortex_z400-419',
+    params["train_sets"] = ['tp_ann_201904_an30_ymazefos_020719_striatum_z416-435',
+                             'dp_ann_201812_pcdev_lob6_4_forebrain_cortex_z200-219',
+                             'dp_ann_201812_pcdev_lob6_9_forebrain_hypothal_z520-539',
                              'tp_ann_201812_pcdev_crus1_23_forebrain_cortex_z290-309',
-                             'jd_ann_201904_an10_ymazefos_020719_cortex_z480-499',
                              'jd_ann_201904_an27_ymazefos_020719_cortex_z300-329',
-                             'tp_ann_201812_pcdev_lob6_4_forebrain_cortex_z200-219',
-                             'dp_ann_201904_an19_ymazefos_020719_thal_z350-369']
+                             'dp_ann_an16_ymazecfos_z260-299_retrosplenial_cropped',
+                             'dp_ann_201904_an19_ymazefos_020719_cortex_z350-369',
+                             'tp_ann_201904_an10_ymzefos_020719_cortex_z280-279',
+                             'jd_ann_201904_an22_ymazefos_020719_pfc_z150-169',
+                             'jd_ann_201904_an22_ymazefos_020719_cb_z160-179',
+                             'dp_ann_201904_an22_ymazefos_020719_midbrain_z150-169',
+                             'dp_ann_201904_an19_ymazefos_020719_thal_z350-369',
+                             'jd_ann_201904_an10_ymazefos_020719_hypothal_z460-479',
+                             'jd_ann_201904_an10_ymazefos_020719_pb_z260-279',
+                             'dp_ann_201904_an12_ymazefos_020719_hypothal_z420-449',
+                             'tp_ann_201904_an4_ymazefos_020119_pfc_z200-219',
+                             'tp_ann_201904_an22_ymazefos_020719_pfc_z150-169',
+                             'jd_ann_201904_an30_ymazefos_020719_pfc_z410-429',
+                             'dp_ann_an16_ymazecfos_z260-299_retrosplenial',
+                             'dp_ann_201904_an19_ymazefos_020719_pfc_z380-399',
+                             'jd_ann_201904_an19_ymazefos_020719_thal_z350-369',
+                             'jd_ann_201904_an30_ymazefos_020719_cortex_z400-419',
+                             'dp_ann_an22_ymazecfos_z230-249_sm_cortex',
+                             'tp_ann_201904_an4_ymazefos_020119_cortex_z200-219',
+                             'dp_ann_201904_an21_ymazefos_020719_hypothal_z450-469']
 
-    params["val_sets"] = ['tp_ann_201904_an22_ymazefos_020719_pfc_z150-169',
-                          'dp_ann_201904_an19_ymazefos_020719_pfc_z380-399',
-                          'jd_ann_201904_an22_ymazefos_020719_pfc_z150-169',
-                          'tp_ann_201904_an19_ymazefos_020719_pfc_z380-399',
-                          'tp_ann_201904_an4_ymazefos_020119_cortex_z200-219']
+    params["val_sets"] = ['jd_ann_201904_an22_ymazefos_020719_midbrain_z150-169',
+                             'dp_ann_201904_an22_ymazefos_020719_cb_z160-179',
+                             'tp_ann_201812_pcdev_lob6_4_forebrain_cortex_z200-219',
+                             'dp_ann_201904_an12_ymazefos_020719_cortex_z371-390',
+                             'dp_ann_201904_an19_ymazefos_020719_cortex_z380-399_02',
+                             'jd_ann_201904_an30_ymazefos_020719_striatum_z416-435',
+                             'tp_ann_201904_an19_ymazefos_020719_pfc_z380-399']
 
     params["patchsz"]	   = (20,32,32)
     params["sampler_spec"] = dict(input=params["patchsz"],
@@ -98,7 +107,7 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
 
     #IO/Record params
     params["expt_name"]  = expt_name
-    params["expt_dir"]   = "/jukebox/wang/zahra/conv_net/training/cfos/experiment_dirs/{}".format(expt_name)
+    params["expt_dir"]   = "/home/wanglab/Documents/cfos_net/experiment_dirs/{}".format(expt_name)
 
     params["model_dir"]  = os.path.join(params["expt_dir"], "models")
     params["log_dir"]    = os.path.join(params["expt_dir"], "logs")
