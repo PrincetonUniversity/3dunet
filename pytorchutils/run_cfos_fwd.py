@@ -62,12 +62,12 @@ def fill_params(expt_name, chkpt_num, gpus,
     params["output_tag"]  = tag
 
     #Dataset params
-    params["data_dir"]    = "/jukebox/wang/zahra/conv_net/annotations/cfos/all/inputs"
+    params["data_dir"]    = "/home/wanglab/Documents/cfos_inputs/screened"
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     params["dsets"]       = dset_names
     params["input_spec"]  = collections.OrderedDict(input=(20,32,32)) #dp dataset spec
     params["scan_spec"]   = collections.OrderedDict(soma=(1,20,32,32))
-    params["scan_params"] = dict(stride=(0.5,0.5,0.5), blend="bump")
+    params["scan_params"] = dict(stride=(0.3,0.3,0.3), blend="bump")
 
     #Use-specific Module imports
     params["model_class"] = utils.load_source(model_fname).Model

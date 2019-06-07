@@ -209,11 +209,11 @@ def generate_precision_recall_curve(precisions, recalls):
 if __name__ == "__main__":
     
     #set relevant paths
-    pth = "/home/wanglab/mounts/wang/zahra/conv_net/training/cfos/experiment_dirs/20190516_zd_train/forward/iters_16750_0d5ovlp"
-    points_dict = load_dictionary("/home/wanglab/mounts/wang/zahra/conv_net/annotations/cfos/all/cfos_points_dictionary.p")
+    pth = "/home/wanglab/Documents/cfos_net/experiment_dirs/20190606_zd_train/forward"
+    points_dict = load_dictionary("/home/wanglab/Documents/cfos_inputs/cfos_points_dictionary.p")
     
     #which thresholds are being evaluated
-    thresholds = np.arange(0.1, 0.6, 0.05)
+    thresholds = np.arange(0.5, 0.8, 0.05)
     cutoff = 5
     f1s = []; precisions = []; recalls = []
     
