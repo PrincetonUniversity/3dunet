@@ -89,7 +89,7 @@ def fill_params(expt_name, chkpt_num, gpus, nobn, model_fname, dset_name, tag, j
     params["dsets"]       = dset_name
     params["input_spec"]  = collections.OrderedDict(input=(20,32,32)) #dp dataset spec
     params["scan_spec"]   = collections.OrderedDict(soma=(1,20,32,32))
-    params["scan_params"] = dict(stride=(0.1,0.1,0.1), blend="bump")
+    params["scan_params"] = dict(stride=(0.5,0.5,0.5), blend="bump")
 
     #Use-specific Module imports
     params["model_class"] = utils.load_source(model_fname).Model

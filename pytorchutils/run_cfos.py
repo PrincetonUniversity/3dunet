@@ -61,7 +61,7 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
     params["batch_size"]  = batch_sz
 
     #Sampling params
-    params["data_dir"]     = "/home/wanglab/Documents/cfos_inputs/screened"
+    params["data_dir"]     = "/tigress/zmd/3dunet_data/cfos/inputs"
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     
     params["train_sets"] = ['tp_ann_201904_an30_ymazefos_020719_striatum_z416-435',
@@ -107,7 +107,7 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
 
     #IO/Record params
     params["expt_name"]  = expt_name
-    params["expt_dir"]   = "/home/wanglab/Documents/cfos_net/experiment_dirs/{}".format(expt_name)
+    params["expt_dir"]   = "/tigress/zmd/3dunet_data/cfos/experiments/{}".format(expt_name)
 
     params["model_dir"]  = os.path.join(params["expt_dir"], "models")
     params["log_dir"]    = os.path.join(params["expt_dir"], "logs")
