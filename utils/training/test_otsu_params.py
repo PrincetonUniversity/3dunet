@@ -76,7 +76,7 @@ def otsu_dilate(arr0, arr1, size=(8,60,60), otsu_factor=0.8):
     for pnt in pnts:
         #print pnt
         vol = np.copy(arr0[np.max((pnt[0]-size[0],0)):pnt[0]+size[0], np.max((pnt[1]-size[1],0)):pnt[1]+size[1], np.max((pnt[2]-size[2],0)):pnt[2]+size[2]])*1.0
-        #vol = filters.gaussian(vol, 1)
+#        vol = filters.gaussian(vol, sigma = 0.4)
         v=filters.threshold_otsu(vol)/float(otsu_factor)
         vol[vol<v]=0
         vol[vol>=v]=1
@@ -90,8 +90,8 @@ def otsu_dilate(arr0, arr1, size=(8,60,60), otsu_factor=0.8):
 if __name__ == "__main__":
     
     #convert firs
-    saveLocation = "/home/wanglab/Documents/dp_memmap"; makedir(saveLocation) #test folder that contains memory mapped arrays will img + lbl points
-    otsufld = "/home/wanglab/Documents/dp_otsu"; makedir(otsufld) #output folder
+    saveLocation = "/home/wanglab/Documents/cfos_inputs/memmap"; makedir(saveLocation) #test folder that contains memory mapped arrays will img + lbl points
+    otsufld = "/home/wanglab/Documents/cfos_inputs/adaptive_thres"; makedir(otsufld) #output folder
     size = (5, 10, 10)
     otsu_factor = 0.8
     

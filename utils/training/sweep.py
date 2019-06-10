@@ -12,9 +12,9 @@ from scipy import ndimage
 from scipy.integrate import simps
 from skimage.external import tifffile
 from scipy.ndimage.morphology import generate_binary_structure
+from tools.utils.io import load_dictionary
 import h5py
 os.chdir("/jukebox/wang/zahra/lightsheet_copy")
-from tools.utils.io import load_dictionary, load_np
 from tools.conv_net.functions.bipartite import pairwise_distance_metrics
 
     
@@ -51,7 +51,7 @@ def probabiltymap_to_centers_thresh(src, threshold = (0.1,1), numZSlicesPerSplit
             src = f['/main'].value
             f.close()
         elif src[-3:] == 'tif': src = tifffile.imread(src)
-        elif src[-3:] == 'npy': src = load_np(src)
+        elif src[-3:] == 'npy': src = np.load(src)
         
     src = np.squeeze(src)    
     zdim, ydim, xdim = src.shape
@@ -209,12 +209,15 @@ def generate_precision_recall_curve(precisions, recalls):
 if __name__ == "__main__":
     
     #set relevant paths
-    pth = "/home/wanglab/Documents/cfos_net/experiment_dirs/20190606_zd_train/forward"
-    points_dict = load_dictionary("/home/wanglab/Documents/cfos_inputs/cfos_points_dictionary.p")
+    pth = "/home/wanglab/Documents/cfos_net/experiment_dirs/20190608_zd_train/forward"
+    import pickle
+    f = open("/home/wanglab/Documents/cfos_inputs/filename_points_dictionary.p", "r")
+    points_dict = pickle.load(f)
+#    points_dict = load_dictionary("/home/wanglab/Documents/cfos_inputs/cfos_points_py2_dictionary.p")
     
     #which thresholds are being evaluated
-    thresholds = np.arange(0.5, 0.8, 0.05)
-    cutoff = 5
+    thresholds = np.arange(0.1, 0.7, 0.1)
+    cutoff = 10
     f1s = []; precisions = []; recalls = []
     
     #generate precision recall list
