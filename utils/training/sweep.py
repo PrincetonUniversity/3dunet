@@ -209,15 +209,15 @@ def generate_precision_recall_curve(precisions, recalls):
 if __name__ == "__main__":
     
     #set relevant paths
-    pth = "/home/wanglab/Documents/cfos_net/experiment_dirs/20190608_zd_train/forward"
+    pth = "/home/wanglab/Documents/cfos_net/experiment_dirs/20190608_zd_train/forward/iters_40000"
     import pickle
     f = open("/home/wanglab/Documents/cfos_inputs/filename_points_dictionary.p", "r")
     points_dict = pickle.load(f)
 #    points_dict = load_dictionary("/home/wanglab/Documents/cfos_inputs/cfos_points_py2_dictionary.p")
     
     #which thresholds are being evaluated
-    thresholds = np.arange(0.1, 0.7, 0.1)
-    cutoff = 10
+    thresholds = np.arange(0.1, 1, 0.1)
+    cutoff = 5
     f1s = []; precisions = []; recalls = []
     
     #generate precision recall list
