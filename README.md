@@ -1,12 +1,11 @@
 ### Three-dimensional CNN with a U-Net architecture (Gornet et al., 2019; K. Lee, Zung, Li, Jain, & Sebastian Seung, 2017) with added packages developed by Kisuk Lee (Massachusetts Institute of Technology), Nick Turner (Princeton University), James Gornet (Columbia University), and Kannan Umadevi Venkatarju (Cold Spring Harbor Laboratories) for the Wang lab cerebellar tracing project and the Princeton BRAIN CoGS histology core.
 
-## Dependencies
+#### Dependencies
 | [DataProvider3](https://github.com/torms3/DataProvider3)  | 
 | [PyTorchUtils](https://github.com/nicholasturner1/PyTorchUtils)  | 
 | [Augmentor](https://github.com/torms3/Augmentor)  | 
 | [DataTools](https://github.com/torms3/DataTools)  | 
 
-- 
 ## Installation:
 
 **NOTE**: preprocessing done using tpisano's lightsheet package (https://github.com/PrincetonUniversity/lightsheet).
