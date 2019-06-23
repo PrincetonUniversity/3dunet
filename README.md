@@ -13,8 +13,7 @@
 **For running inference, make an environment (in python 3+) and install following dependencies**
 
 - `conda create -n 3dunet python=3.5`
-- `pip install numpy scipy h5py matplotlib pandas scikit-image cython torch torchvision` (make sure it is torch 0.4+)
-- `pip install tifffile tensorboardX`
+- `pip install opencv-python scikit-image tifffile numpy pandas h5py SimpleITK matplotlib cython tensorboardX torch torchvision` (make sure it is torch 0.4+)
 
 If installing (locally) on a linux machine, make sure you have all the boost libraries (important for working with torms3's DataTools):
 `sudo apt-get install libboost-all-dev` (this can take time)
