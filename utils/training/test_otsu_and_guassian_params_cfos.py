@@ -11,15 +11,8 @@ Created on Sat Jun  8 13:15:21 2019
 import os, numpy as np, multiprocessing as mp
 from skimage.external import tifffile
 from skimage import filters
+from utils.io import listdirfull
 
-def listdirfull(x, keyword=False):
-    '''might need to modify based on server...i.e. if automatically saving a file called 'thumbs'
-    '''
-    if not keyword:
-        return [os.path.join(x, xx) for xx in os.listdir(x) if xx[0] != '.' and '~' not in xx and 'Thumbs.db' not in xx]
-    else:
-        return [os.path.join(x, xx) for xx in os.listdir(x) if xx[0] != '.' and '~' not in xx and 'Thumbs.db' not in xx and keyword in xx]
-    
 def otsu_par(saveLocation, otsufld, guassian_sigma, otsu_factor):
    
     #otsu

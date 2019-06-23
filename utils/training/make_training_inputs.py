@@ -9,7 +9,7 @@ Created on Mon Dec 10 12:39:16 2018
 import os, numpy as np, sys, multiprocessing as mp
 from skimage.external import tifffile
 from skimage import filters
-from tools.utils.io import listdirfull, load_np, makedir, save_dictionary
+from utils.io import listdirfull, load_np, makedir, save_dictionary
 import matplotlib.pyplot as plt
 import SimpleITK as sitk
 

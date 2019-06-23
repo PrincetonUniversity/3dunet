@@ -14,7 +14,7 @@ from skimage.external import tifffile
 
 
 def generate_patch(**params):
-    '''
+    """
     Function to patch up data and make into memory mapped array
     
     Inputs
@@ -24,13 +24,13 @@ def generate_patch(**params):
     patchlist = list of patches generated from make_indices function
     stridesize = (90,90,30) - stride size in 3d ZYX
     patchsize = (180,180,60) - size of window ZYX
-    mode = 'folder' #'folder' = list of files where each patch is a file, 'memmap' = 4D array of patches by Z by Y by X
+    mode = "folder" #"folder" = list of files where each patch is a file, "memmap" = 4D array of patches by Z by Y by X
 
     Returns
     ------------
     location of patched memory mapped array of shape (patches, patchsize_z, patchsize_y, patchsize_x)
 
-    '''
+    """
     #load array
     input_arr = load_memmap_arr(os.path.join(params["data_dir"], "input_memmap_array.npy"))
     
@@ -38,7 +38,7 @@ def generate_patch(**params):
     patch_dst = os.path.join(params["data_dir"], "input_chnks")    
     
     #set variables
-    if patch_dst[-4:]=='.npy': patch_dst = patch_dst[:-4]
+    if patch_dst[-4:]==".npy": patch_dst = patch_dst[:-4]
     if not os.path.exists(patch_dst): os.mkdir(patch_dst)
     window = params["window"]
     patchsize = params["patchsz"]
@@ -63,25 +63,27 @@ def generate_patch(**params):
                     pad = np.zeros((v.shape[0], v.shape[1], window[2]-v.shape[2]))
                     v = np.append(v, pad, axis = 2)
                 #saving out
-                tifffile.imsave(os.path.join(patch_dst, 'patch_{}.tif'.format(str(i).zfill(10))), v.astype('float32'), compress=1)
-                if params["verbose"]: print('{} of {}'.format(i, len(params["patchlist"])))
+                tifffile.imsave(os.path.join(patch_dst, "patch_{}.tif".format(str(i).zfill(10))), v.astype("float32"), compress=1)
+                if params["verbose"]: print("{} of {}".format(i, len(params["patchlist"])))
     #return
     return patch_dst
    
     
 def get_dims_from_folder(src):    
-    '''Function to get dims from folder (src)
-    '''
+    """
+    Function to get dims from folder (src)
+    """
     
-    fls = listdirfull(src, keyword = '.tif')
+    fls = listdirfull(src, keyword = ".tif")
     y,x = tifffile.imread(fls[0]).shape
     return (len(fls),y,x)
     
 def make_indices(inputshape, stridesize):
-    '''Function to collect indices
+    """
+    Function to collect indices
     inputshape = (500,500,500)
     stridesize = (90,90,30)
-    '''    
+    """    
     zi, yi, xi = inputshape
     zs, ys, xs = stridesize
     
@@ -99,19 +101,20 @@ def make_indices(inputshape, stridesize):
         z+=zs
     return lst
 
-def make_memmap_from_tiff_list(src, dst, cores=8, dtype='float32', verbose=True):
-    '''Function to make a memory mapped array from a list of tiffs
-    '''
+def make_memmap_from_tiff_list(src, dst, cores=8, dtype="float32", verbose=True):
+    """
+    Function to make a memory mapped array from a list of tiffs
+    """
 
     if type(src) == str and os.path.isdir(src): 
-        src = listdirfull(src, keyword = '.tif')
+        src = listdirfull(src, keyword = ".tif")
         src.sort()
     im = tifffile.imread(src[0])
     if not dtype: dtype = im.dtype
     
     #init
-    dst = os.path.join(dst, 'input_memmap_array.npy')
-    memmap=load_memmap_arr(dst, mode='w+', dtype=dtype, shape=tuple([len(src)]+list(im.shape)))
+    dst = os.path.join(dst, "input_memmap_array.npy")
+    memmap=load_memmap_arr(dst, mode="w+", dtype=dtype, shape=tuple([len(src)]+list(im.shape)))
     
     #run
     if cores<=1:
@@ -121,44 +124,47 @@ def make_memmap_from_tiff_list(src, dst, cores=8, dtype='float32', verbose=True)
     else:
         iterlst = [(i,s, dst, verbose) for i,s in enumerate(src)]    
         p = mp.Pool(cores)
-        p.map(make_memmap_from_tiff_list_helper, iterlst)
+        p.starmap(make_memmap_from_tiff_list_helper, iterlst)
         p.terminate
 
     return dst
 
-def make_memmap_from_tiff_list_helper((i, s, memmap_pth, verbose)):
-    '''
-    '''
+def make_memmap_from_tiff_list_helper(i, s, memmap_pth, verbose):
+    """
+    """
     #load
-    arr = load_memmap_arr(memmap_pth, mode='r+')
+    arr = load_memmap_arr(memmap_pth, mode="r+")
     arr[i,...] = tifffile.imread(s)
     arr.flush(); del arr
-    if verbose: sys.stdout.write('\ncompleted plane {}'.format(i)); sys.stdout.flush()
+    if verbose: sys.stdout.write("\ncompleted plane {}".format(i)); sys.stdout.flush()
     return
 
 def listdirfull(x, keyword=False):
-    '''might need to modify based on server...i.e. if automatically saving a file called 'thumbs'
-    '''
+    """ 
+    might need to modify based on server...i.e. if automatically saving a file called "thumbs"
+    """
     if not keyword:
-        return [os.path.join(x, xx) for xx in os.listdir(x) if xx[0] != '.' and '~' not in xx and 'Thumbs.db' not in xx]
+        return [os.path.join(x, xx) for xx in os.listdir(x) if xx[0] != "." and "~" not in xx and "Thumbs.db" not in xx]
     else:
-        return [os.path.join(x, xx) for xx in os.listdir(x) if xx[0] != '.' and '~' not in xx and 'Thumbs.db' not in xx and keyword in xx]
+        return [os.path.join(x, xx) for xx in os.listdir(x) if xx[0] != "." and "~" not in xx and "Thumbs.db" not in xx and keyword in xx]
 
-def load_memmap_arr(pth, mode='r', dtype = 'float32', shape = False):
-    '''Function to load memmaped array.
+def load_memmap_arr(pth, mode="r", dtype = "float32", shape = False):
+    """
+    Function to load memmaped array.
     
     by @tpisano
 
-    '''
+    """
     if shape:
-        assert mode =='w+', 'Do not pass a shape input into this function unless initializing a new array'
+        assert mode =="w+", "Do not pass a shape input into this function unless initializing a new array"
         arr = np.lib.format.open_memmap(pth, dtype = dtype, mode = mode, shape = shape)
     else:
         arr = np.lib.format.open_memmap(pth, dtype = dtype, mode = mode)
     return arr
     
 def reconstruct_memmap_array_from_tif_dir(**params):
-    '''Function to take CNN probablity map tifs (patches, patchsize_z, patchsize_y, patchsize_x) and build into single 3d volume
+    """
+    Function to take CNN probablity map tifs (patches, patchsize_z, patchsize_y, patchsize_x) and build into single 3d volume
     
     Inputs
     ---------------
@@ -172,7 +178,7 @@ def reconstruct_memmap_array_from_tif_dir(**params):
     Returns
     ------------
     location of memory mapped array of inputshape
-    '''
+    """
     
     #load
     cnn_fls = os.listdir(params["cnn_dir"]); cnn_fls.sort()

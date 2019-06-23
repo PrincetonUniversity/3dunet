@@ -6,13 +6,10 @@ Created on Mon Mar 18 17:58:26 2019
 @author: wanglab
 """
 
-import os, numpy as np, sys, multiprocessing as mp
-os.chdir("/jukebox/wang/zahra/lightsheet_copy")
+import os, numpy as np, multiprocessing as mp
 from skimage.external import tifffile
 from skimage import filters
-from tools.utils.io import listdirfull, load_np, makedir, save_dictionary
-import matplotlib.pyplot as plt
-import SimpleITK as sitk
+from utils.io import listdirfull, load_np, makedir
 
 def otsu_par(saveLocation, otsufld, size, otsu_factor):
     """
@@ -41,11 +38,11 @@ def otsu_par(saveLocation, otsufld, size, otsu_factor):
     #otsu
     p = mp.Pool(12)
     iterlst = [(otsufld, inn, size, otsu_factor) for inn in listdirfull(saveLocation, "npy")]
-    p.map(otsu_helper, iterlst)
+    p.starmap(otsu_helper, iterlst)
     p.terminate()
     return
             
-def otsu_helper((otsufld, inn, size, otsu_factor)):
+def otsu_helper(otsufld, inn, size, otsu_factor):
     
     #load
     arr = load_np(inn)

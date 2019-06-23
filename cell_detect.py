@@ -13,7 +13,6 @@ from utils.postprocessing.cell_stats import calculate_cell_measures, consolidate
 from utils.preprocessing.check import check_patchlist_length_equals_patches    
 import pandas as pd, numpy as np
 
-
 def main(**args):
     
     #args should be the info you need to specify the params
