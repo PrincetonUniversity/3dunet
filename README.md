@@ -12,7 +12,7 @@
 
 **For running inference, make an environment (in python 3+) and install following dependencies**
 
-- `conda create -n 3dunet python=3.5`
+- `conda create -n 3dunet python=3.7`
 - `pip install opencv-python scikit-image tifffile numpy pandas h5py SimpleITK matplotlib cython tensorboardX torch torchvision` (make sure it is torch 0.4+)
 
 If installing (locally) on a linux machine, make sure you have all the boost libraries (important for working with torms3's DataTools):
