@@ -6,7 +6,6 @@ Created on Thu Dec 20 15:38:18 2018
 @author: wanglab
 """
 
-from __future__ import division
 import numpy as np
 from utils.io import pairwise_distance_metrics, load_dictionary, read_roi_zip
 
