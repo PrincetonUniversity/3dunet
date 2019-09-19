@@ -116,8 +116,11 @@ def fill_params(expt_name, stepid, jobid):
     params["inputshape"]    = get_dims_from_folder(src)
     params["patchlist"]     = make_indices(params["inputshape"], params["stridesz"])
     
+    #model params - useful to save for referenece
+    params["model_name"] = "20190502_zd_transfer_learning_all_inputs"
+    params["checkpoint"] = 410000
     #post-processing params
-    params["threshold"]     = (0.85,1) #h129 = 0.6; prv = 0.85
+    params["threshold"]     = (0.85,1) #h129 = 0.6; prv = 0.85; this depends on model
     params["zsplt"]         = 30
     params["ovlp_plns"]     = 30
         
@@ -132,7 +135,7 @@ def save_params(params, dst):
                             header = False))
     sys.stdout.write("\nparameters saved in: {}".format(os.path.join(dst, "cnn_param_dict.csv"))); sys.stdout.flush()
     
-#%%
+
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description=__doc__)
