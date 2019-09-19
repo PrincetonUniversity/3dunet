@@ -61,7 +61,11 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
     params["batch_size"]  = batch_sz
 
     #Sampling params
+<<<<<<< HEAD
+    params["data_dir"]     = "/tigress/zmd/3dunet_data/cfos/inputs"
+=======
     params["data_dir"]     = "/home/wanglab/Documents/cfos_inputs/otsu_and_guassian_screened"
+>>>>>>> df79bb0094f30878ef03d8b9b872729c74475be2
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     
     params["train_sets"] = ['dp_ann_201812_pcdev_lob6_4_forebrain_cortex_z200-219',
@@ -108,7 +112,7 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
 
     #IO/Record params
     params["expt_name"]  = expt_name
-    params["expt_dir"]   = "/home/wanglab/Documents/cfos_net/experiment_dirs/{}".format(expt_name)
+    params["expt_dir"]   = "/tigress/zmd/3dunet_data/cfos/experiments/{}".format(expt_name)
 
     params["model_dir"]  = os.path.join(params["expt_dir"], "models")
     params["log_dir"]    = os.path.join(params["expt_dir"], "logs")

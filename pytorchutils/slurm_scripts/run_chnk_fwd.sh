@@ -16,4 +16,4 @@ module load cudatoolkit/10.0 cudnn/cuda-10.0/7.3.1 anaconda3/5.3.1
 . activate 3dunet
 
 cd pytorchutils/
-python run_chnk_fwd.py 20190130_zd_transfer_learning models/RSUNet.py 299000 20170115_tp_bl6_lob6a_rpv_03 --gpus 0 --noeval --tag noeval ${SLURM_ARRAY_TASK_ID}
+python run_chnk_fwd.py 20190516_zd_train models/RSUNet.py 16750 20170115_tp_bl6_lob6a_rpv_03 --gpus 0 --noeval --tag noeval ${SLURM_ARRAY_TASK_ID}
