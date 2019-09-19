@@ -9,10 +9,9 @@ Created on Thu Nov 15 15:01:52 2018
 import tifffile as tif
 import numpy as np
 import time
-import os
 
 def pad(src, start):
-    img = tif.imread(src).astype('float32')
+    img = tif.imread(src).astype("float32")
     
     print(img.shape, img.dtype)
     
@@ -29,18 +28,18 @@ def pad(src, start):
         pad = np.zeros((imgshp[0], imgshp[1], (ptchsz[2]-1) - (imgshp[2]-1)))
         img = np.append(img, pad, axis = 2)
     
-    tif.imsave(src, img.astype('float32'), compress = 1)
+    tif.imsave(src, img.astype("float32"), compress = 1)
     
     #sanity check
-    img = tif.imread(src).astype('float32')
+    img = tif.imread(src).astype("float32")
     print(img.shape, img.dtype)
           
-    print('took {} secs'.format(round((time.time()-start),3)))    
+    print("took {} secs".format(round((time.time()-start),3)))    
 
 #%%    
-if __name__ == '__main__':
+if __name__ == "__main__":
     
-#    pth = '/home/wanglab/mounts/scratch/20180327_jg40_bl6_sim_03/patches'
+#    pth = "/home/wanglab/mounts/scratch/20180327_jg40_bl6_sim_03/patches"
 #    fls = os.listdir(pth); fls.sort()
 #    
 #    for i in range(32, len(fls), 3):
@@ -48,6 +47,6 @@ if __name__ == '__main__':
 #        start = time.time()    
 #        pad(src, start)
     
-    src = '/home/wanglab/mounts/scratch/bad/20170308_tp_bl6_lob8_lat_05/input_chnks/patch_0000000095.tif'
+    src = "/jukebox/scratch/zmd/bad/20170308_tp_bl6_lob8_lat_05/input_chnks/patch_0000000095.tif"
     start = time.time() 
     pad(src, start)

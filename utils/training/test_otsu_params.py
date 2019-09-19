@@ -6,13 +6,10 @@ Created on Mon Mar 18 17:58:26 2019
 @author: wanglab
 """
 
-import os, numpy as np, sys, multiprocessing as mp
-os.chdir("/jukebox/wang/zahra/lightsheet_copy")
+import os, numpy as np, multiprocessing as mp
 from skimage.external import tifffile
 from skimage import filters
-from tools.utils.io import listdirfull, load_np, makedir, save_dictionary
-import matplotlib.pyplot as plt
-import SimpleITK as sitk
+from utils.io import listdirfull, load_np, makedir
 
 def otsu_par(saveLocation, otsufld, size, otsu_factor):
     """
@@ -41,11 +38,11 @@ def otsu_par(saveLocation, otsufld, size, otsu_factor):
     #otsu
     p = mp.Pool(12)
     iterlst = [(otsufld, inn, size, otsu_factor) for inn in listdirfull(saveLocation, "npy")]
-    p.map(otsu_helper, iterlst)
+    p.starmap(otsu_helper, iterlst)
     p.terminate()
     return
             
-def otsu_helper((otsufld, inn, size, otsu_factor)):
+def otsu_helper(otsufld, inn, size, otsu_factor):
     
     #load
     arr = load_np(inn)
@@ -76,7 +73,7 @@ def otsu_dilate(arr0, arr1, size=(8,60,60), otsu_factor=0.8):
     for pnt in pnts:
         #print pnt
         vol = np.copy(arr0[np.max((pnt[0]-size[0],0)):pnt[0]+size[0], np.max((pnt[1]-size[1],0)):pnt[1]+size[1], np.max((pnt[2]-size[2],0)):pnt[2]+size[2]])*1.0
-        #vol = filters.gaussian(vol, 1)
+#        vol = filters.gaussian(vol, sigma = 0.4)
         v=filters.threshold_otsu(vol)/float(otsu_factor)
         vol[vol<v]=0
         vol[vol>=v]=1
@@ -90,8 +87,8 @@ def otsu_dilate(arr0, arr1, size=(8,60,60), otsu_factor=0.8):
 if __name__ == "__main__":
     
     #convert firs
-    saveLocation = "/home/wanglab/Documents/dp_memmap"; makedir(saveLocation) #test folder that contains memory mapped arrays will img + lbl points
-    otsufld = "/home/wanglab/Documents/dp_otsu"; makedir(otsufld) #output folder
+    saveLocation = "/home/wanglab/Documents/cfos_inputs/memmap"; makedir(saveLocation) #test folder that contains memory mapped arrays will img + lbl points
+    otsufld = "/home/wanglab/Documents/cfos_inputs/adaptive_thres"; makedir(otsufld) #output folder
     size = (5, 10, 10)
     otsu_factor = 0.8
     

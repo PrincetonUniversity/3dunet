@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Dec 10 12:39:16 2018
+Created on Sat Jun  8 13:55:37 2019
 
 @author: wanglab
 """
@@ -9,23 +9,30 @@ Created on Mon Dec 10 12:39:16 2018
 import os, numpy as np, sys, multiprocessing as mp
 from skimage.external import tifffile
 from skimage import filters
-from utils.io import listdirfull, load_np, makedir, save_dictionary
-import matplotlib.pyplot as plt
-import SimpleITK as sitk
+import pickle
 
-def otsu_par(saveLocation, otsufld, size, otsu_factor):
+def listdirfull(x, keyword=False):
+    '''might need to modify based on server...i.e. if automatically saving a file called 'thumbs'
+    '''
+    if not keyword:
+        return [os.path.join(x, xx) for xx in os.listdir(x) if xx[0] != '.' and '~' not in xx and 'Thumbs.db' not in xx]
+    else:
+        return [os.path.join(x, xx) for xx in os.listdir(x) if xx[0] != '.' and '~' not in xx and 'Thumbs.db' not in xx and keyword in xx]
+    
+    
+def otsu_par(saveLocation, otsufld, guassian_sigma, otsu_factor):
    
     #otsu
     p = mp.Pool(12)
-    iterlst = [(otsufld, inn, size, otsu_factor) for inn in listdirfull(saveLocation, "npy")]
-    p.starmap(otsu_helper, iterlst)
+    iterlst = [(otsufld, inn, guassian_sigma, otsu_factor) for inn in listdirfull(saveLocation, "npy")]
+    p.map(otsu_helper, iterlst)
     p.terminate()
     return
             
-def otsu_helper(otsufld, inn, size, otsu_factor):
+def otsu_helper((otsufld, inn, guassian_sigma, otsu_factor)):
     
     #load
-    arr = load_np(inn)
+    arr = np.load(inn)
     raw = np.copy(arr[0])
     lbl = np.copy(arr[1])
     
@@ -33,35 +40,26 @@ def otsu_helper(otsufld, inn, size, otsu_factor):
     tifffile.imsave(os.path.join(otsufld, "{}_img.tif".format(os.path.basename(inn)[:-4])), raw.astype("float32"))
     
     #save input
-    otsu = otsu_dilate(raw, lbl, size=size, otsu_factor=otsu_factor)
+    otsu = otsu_dilate(raw, lbl, sigma = guassian_sigma, otsu_factor=otsu_factor)
     tifffile.imsave(os.path.join(otsufld, "{}_lbl.tif".format(os.path.basename(inn)[:-4])), otsu.astype("float32"))
 
     print(inn)
     
     return
 
-def otsu_dilate(arr0, arr1, size=(8,60,60), otsu_factor=0.8):
+def otsu_dilate(arr0, arr1, sigma, otsu_factor=0.8):
     """4d arr
     arr0=raw data
     arr1=points
     size=(z,y,x)
     otsu_factor - scaling of the otsu value, >1 is less stringent, <1 remove more pixels
     """
-    #get points
-    pnts = np.asarray(np.nonzero(arr1)).T.astype("int64")
-    outarr = np.zeros_like(arr1)
+    vol = filters.gaussian(arr1, sigma = sigma)
+    v = filters.threshold_otsu(vol)/float(otsu_factor)
+    vol[vol < v] = 0
+    vol[vol >= v] = 1
     
-    for pnt in pnts:
-        #print pnt
-        vol = np.copy(arr0[np.max((pnt[0]-size[0],0)):pnt[0]+size[0], np.max((pnt[1]-size[1],0)):pnt[1]+size[1], np.max((pnt[2]-size[2],0)):pnt[2]+size[2]])*1.0
-        #vol = filters.gaussian(vol, 1)
-        v=filters.threshold_otsu(vol)/float(otsu_factor)
-        vol[vol<v]=0
-        vol[vol>=v]=1
-        nvol = np.maximum(outarr[np.max((pnt[0]-size[0],0)):pnt[0]+size[0], np.max((pnt[1]-size[1],0)):pnt[1]+size[1], np.max((pnt[2]-size[2],0)):pnt[2]+size[2]], vol)
-        outarr[np.max((pnt[0]-size[0],0)):pnt[0]+size[0], np.max((pnt[1]-size[1],0)):pnt[1]+size[1], np.max((pnt[2]-size[2],0)):pnt[2]+size[2]]=nvol
-    
-    return outarr
+    return vol.astype("uint16")
 
 def convert_input(inputFolder, saveLocation, remove_bad=True):
     """Function for converting data from imageJ ROIs + data to mem_mapped arrays for preprocessing + batch generation to pass to cnn
@@ -70,14 +68,11 @@ def convert_input(inputFolder, saveLocation, remove_bad=True):
     tfs = listdirfull(inputFolder,keyword=".tif")
     zps = [xx for xx in listdirfull(inputFolder) if ".tif" not in xx]
     pairs = [[tf,zp] for tf in tfs for zp in zps if tf[:-4] in zp]
-    
-    #make saveLocation if doesn"t exist:
-    makedir(saveLocation)
-    
+
     #make mem_mapped arrays once, to be more cluster friendly
     import multiprocessing as mp
     print("Starting conversion...")
-    p = mp.Pool(12)
+    p = mp.Pool(1)
     iterlst = [(pair[0], pair[1], saveLocation) for pair in pairs]
     bad = p.map(basic_convert, iterlst)
     p.terminate()
@@ -87,7 +82,7 @@ def convert_input(inputFolder, saveLocation, remove_bad=True):
     file_points_dct = {}
     print("Checking all files have valid input and anns...")
     for a in listdirfull(saveLocation, "npy"):
-        arr = load_np(a)
+        arr = np.load(a)
         sh = np.nonzero(arr[0])[0].shape[0]
         pnts = np.nonzero(arr[1])
         shh = pnts[0].shape[0]
@@ -100,7 +95,11 @@ def convert_input(inputFolder, saveLocation, remove_bad=True):
             file_points_dct[os.path.basename(a)] = zip(*pnts)
             
     #save out points
-    save_dictionary(os.path.join(os.path.dirname(saveLocation), "filename_points_dictionary.p"), file_points_dct)
+    dst = os.path.join(os.path.dirname(saveLocation), "filename_points_dictionary.p")
+    
+    with open(dst, 'wb') as fl:    
+        pickle.dump(file_points_dct, fl, protocol=pickle.HIGHEST_PROTOCOL)
+        
     print("Saved dictionary as {}".format(os.path.join(os.path.dirname(saveLocation), "filename_points_dictionary.p")))
         
     return
@@ -166,7 +165,7 @@ def generate_mem_mapped_array_for_net_training(impth, roipth, dst, verbose=True)
             rois = zf.namelist()
         if verbose: sys.stdout.write("done"); sys.stdout.flush()
         #format ZYX, and remove any rois missaved
-        rois_formatted = zip(*[map(int, xx.replace(".roi","").split("-")[0:3]) for xx in rois if len(xx.split("-"))==3])
+        rois_formatted = list(zip(*[map(int, xx.replace(".roi","").split("-")[0:3]) for xx in rois if len(xx.split("-"))==3]))
     else:
         from tools.conv_net.input.read_roi import read_roi
         with open(roipth, "rb") as fl:
@@ -189,20 +188,22 @@ def generate_mem_mapped_array_for_net_training(impth, roipth, dst, verbose=True)
 #%%
     
 if __name__ == "__main__":
+    
     #convert first
     inputFolder = "/home/wanglab/Documents/cfos_raw_inputs/"
-    saveLocation = "/home/wanglab/Documents/cfos_inputs/memmap"; makedir(saveLocation)
-    otsufld = "/home/wanglab/Documents/cfos_inputs/otsu"; makedir(otsufld)  
-    size = (5,10,10)    
-    otsu_factor = 0.8
-    
+    saveLocation = "/home/wanglab/Documents/cfos_inputs/memmap"
+    if not os.path.exists(saveLocation): os.mkdir(saveLocation) #test folder that contains memory mapped arrays will img + lbl points
+    thresfld = "/home/wanglab/Documents/cfos_inputs/otsu_and_guassian"
+    if not os.path.exists(thresfld): os.mkdir(thresfld) #output folder
+    otsu_factor = 4
+    guassian_sigma = 1
     #convert
     convert_input(inputFolder, saveLocation, remove_bad=True)
     
     #check all
     for a in listdirfull(saveLocation, "npy"):
-        sh = np.nonzero(load_np(a))[0].shape[0]
+        sh = np.nonzero(np.load(a))[0].shape[0]
         if sh==0: print(a,sh)
-#%%                
+        
     #otsu_par
-    otsu_par(saveLocation, otsufld, size, otsu_factor)   
+    otsu_par(saveLocation, thresfld, guassian_sigma, otsu_factor)  
