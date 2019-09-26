@@ -23,7 +23,7 @@ def consolidate_cell_measures(ignore_jobid_count = False, **params):
     
     #grab csv output folder
     unet_output_dir = os.path.join(params["output_dir"], "3dunet_output")
-    jobs = [xx for xx in os.listdir(unet_output_dir) if not xx == "pooled_cell_measures"]
+    jobs = [xx for xx in os.listdir(unet_output_dir) if not xx == "pooled_cell_measures" and not xx == "cnn_param_dict.csv"]
     
     #check
     if len(jobs) == int((params["inputshape"][0]/params["zsplt"]))+1 or ignore_jobid_count: #+1 to account for job number 0      
