@@ -11,17 +11,18 @@ import argparse
 from utils.preprocessing.preprocess import get_dims_from_folder, make_indices, make_memmap_from_tiff_list, generate_patch, reconstruct_memmap_array_from_tif_dir
 from utils.postprocessing.cell_stats import calculate_cell_measures, consolidate_cell_measures
 from utils.preprocessing.check import check_patchlist_length_equals_patches    
+from utils.io import csv_to_dict
 import pandas as pd, numpy as np
 
 def main(**args):
     
     #args should be the info you need to specify the params
     # for a given experiment, but only params should be used below
-    params = fill_params(**args)
+    params = fill_params(**args)    
     
-    if params["stepid"] == 0:
+    if args["stepid"] == 0:
         #######################################PRE-PROCESSING FOR CNN INPUT --> MAKING INPUT ARRAY######################################################
-        
+
         #make directory to store patches
         if not os.path.exists(params["data_dir"]): os.mkdir(params["data_dir"])
     	#save params to .csv file
@@ -31,28 +32,28 @@ def main(**args):
         make_memmap_from_tiff_list(params["cellch_dir"], params["data_dir"], 
                                                params["cores"], params["dtype"], params["verbose"])
             
-    elif params["stepid"] == 1:
+    elif args["stepid"] == 1:
         #######################################PRE-PROCESSING FOR CNN INPUT --> PATCHING###################################################
         
         #generate memmap array of patches
         patch_dst = generate_patch(**params)
         sys.stdout.write("\nmade patches in {}\n".format(patch_dst)); sys.stdout.flush()
         
-    elif params["stepid"] == 11:
+    elif args["stepid"] == 11:
         #######################################CHECK TO SEE WHETHER PATCHING WAS SUCCESSFUL###################################################
         
         #run checker
         check_patchlist_length_equals_patches(**params)
         sys.stdout.write("\nready for inference!"); sys.stdout.flush()
 
-    elif params["stepid"] == 21:
+    elif args["stepid"] == 21:
         ####################################POST CNN --> INITIALISING RECONSTRUCTED ARRAY FOR ARRAY JOB####################################
         
         sys.stdout.write("\ninitialising reconstructed array...\n"); sys.stdout.flush()
         np.lib.format.open_memmap(params["reconstr_arr"], mode="w+", shape = params["inputshape"], dtype = params["dtype"])
         sys.stdout.write("done :]\n"); sys.stdout.flush()
 
-    elif params["stepid"] == 2:
+    elif args["stepid"] == 2:
         #####################################POST CNN --> RECONSTRUCTION AFTER RUNNING INFERENCE ON TIGER2#################################
         
         #reconstruct
@@ -60,7 +61,7 @@ def main(**args):
         reconstruct_memmap_array_from_tif_dir(**params)
         if params["cleanup"]: shutil.rmtree(params["cnn_dir"])
 
-    elif params["stepid"] == 3:
+    elif args["stepid"] == 3:
         ##############################################POST CNN --> FINDING CELL CENTERS#####################################################   
         
         save_params(params, params["data_dir"])
@@ -69,7 +70,7 @@ def main(**args):
         csv_dst = calculate_cell_measures(**params)
         sys.stdout.write("\ncell coordinates and measures saved in {}\n".format(csv_dst)); sys.stdout.flush()
         
-    elif params["stepid"] == 4:
+    elif args["stepid"] == 4:
         ##################################POST CNN --> CONSOLIDATE CELL CENTERS FROM ARRAY JOB##############################################
         
         #part 1 - check to make sure all jobs that needed to run have completed; part 2 - make pooled results
@@ -113,8 +114,15 @@ def fill_params(expt_name, stepid, jobid):
     params["stridesz"]      = (40, 3648, 3136)
     params["window"]        = (20, 192, 192)
     
-    params["inputshape"]    = get_dims_from_folder(src)
-    params["patchlist"]     = make_indices(params["inputshape"], params["stridesz"])
+    #way to get aroundn not having to access lightsheet processed directory in later steps
+    try:
+        params["inputshape"]    = get_dims_from_folder(src)
+        params["patchlist"]     = make_indices(params["inputshape"], params["stridesz"])
+    except:
+        dct = csv_to_dict(os.path.join(params["cnn_data_dir"], "cnn_param_dict.csv"))
+        params["inputshape"] = dct["inputshape"]
+        params["patchlist"] = dct["patchlist"]
+        
     
     #model params - useful to save for referenece; need to alter per experimental cohort
     params["model_name"] = "20190502_zd_transfer_learning_all_inputs"
