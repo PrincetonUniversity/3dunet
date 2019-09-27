@@ -88,13 +88,6 @@ def fill_params(expt_name, stepid, jobid):
     #experiment params
     params["expt_name"]     = os.path.basename(os.path.abspath(expt_name))
         
-    #find cell channel tiff directory
-    fsz = os.path.join(expt_name, "full_sizedatafld")
-    vols = os.listdir(fsz); vols.sort()
-    src = os.path.join(fsz, vols[len(vols)-1]) #hack - try to load param_dict instead?
-    if not os.path.isdir(src): src = os.path.join(fsz, vols[len(vols)-2]) 
-    
-    params["cellch_dir"]    = src
     params["scratch_dir"]   = "/jukebox/scratch/zmd"
     params["data_dir"]      = os.path.join(params["scratch_dir"], params["expt_name"])
     
@@ -114,14 +107,22 @@ def fill_params(expt_name, stepid, jobid):
     params["stridesz"]      = (40, 3648, 3136)
     params["window"]        = (20, 192, 192)
     
-    #way to get aroundn not having to access lightsheet processed directory in later steps
+    #way to get around not having to access lightsheet processed directory in later steps
     try:
+        #find cell channel tiff directory
+        fsz                     = os.path.join(expt_name, "full_sizedatafld")
+        vols                    = os.listdir(fsz); vols.sort()
+        src                     = os.path.join(fsz, vols[len(vols)-1]) #hack - try to load param_dict instead?
+        if not os.path.isdir(src): 
+            src                 = os.path.join(fsz, vols[len(vols)-2])     
+        params["cellch_dir"]    = src
         params["inputshape"]    = get_dims_from_folder(src)
         params["patchlist"]     = make_indices(params["inputshape"], params["stridesz"])
     except:
         dct = csv_to_dict(os.path.join(params["cnn_data_dir"], "cnn_param_dict.csv"))
-        params["inputshape"] = dct["inputshape"]
-        params["patchlist"] = dct["patchlist"]
+        params["cellch_dir"]    = dct["cellch_dir"]
+        params["inputshape"]    = dct["inputshape"]
+        params["patchlist"]     = dct["patchlist"]
         
     
     #model params - useful to save for referenece; need to alter per experimental cohort
