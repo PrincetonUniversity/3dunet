@@ -116,7 +116,7 @@ def fill_params(expt_name, stepid, jobid):
     params["inputshape"]    = get_dims_from_folder(src)
     params["patchlist"]     = make_indices(params["inputshape"], params["stridesz"])
     
-    #model params - useful to save for referenece
+    #model params - useful to save for referenece; need to alter per experimental cohort
     params["model_name"] = "20190502_zd_transfer_learning_all_inputs"
     params["checkpoint"] = 410000
     #post-processing params
