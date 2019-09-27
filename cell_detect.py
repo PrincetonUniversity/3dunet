@@ -88,14 +88,25 @@ def fill_params(expt_name, stepid, jobid):
     #experiment params
     params["expt_name"]     = os.path.basename(os.path.abspath(expt_name))
         
+<<<<<<< HEAD
+    #find cell channel tiff directory
+    fsz = os.path.join(expt_name, "full_sizedatafld")
+    vols = os.listdir(fsz); vols.sort()
+    src = os.path.join(fsz, vols[len(vols)-1]) #hack - try to load param_dict instead?
+    if not os.path.isdir(src): src = os.path.join(fsz, vols[len(vols)-2]) 
+    
+    params["cellch_dir"]    = src
+    params["scratch_dir"]   = "/scratch/gpfs/zmd"
+=======
     params["scratch_dir"]   = "/jukebox/scratch/zmd"
+>>>>>>> 7ff2331dc62b9670cb676ef6f5cb9cb4598e4d2f
     params["data_dir"]      = os.path.join(params["scratch_dir"], params["expt_name"])
     
     #changed paths after cnn run
     params["cnn_data_dir"]  = os.path.join(params["scratch_dir"], params["expt_name"])
     params["cnn_dir"]       = os.path.join(params["cnn_data_dir"], "output_chnks") #set cnn patch directory
     params["reconstr_arr"]  = os.path.join(params["cnn_data_dir"], "reconstructed_array.npy")
-    params["output_dir"]    = expt_name
+    params["output_dir"]    = params["cnn_data_dir"]
     
     #pre-processing params
     params["dtype"]         = "float32"
