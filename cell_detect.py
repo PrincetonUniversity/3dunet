@@ -113,8 +113,8 @@ def fill_params(expt_name, stepid, jobid):
         fsz                     = os.path.join(expt_name, "full_sizedatafld")
         vols                    = os.listdir(fsz); vols.sort()
         src                     = os.path.join(fsz, vols[len(vols)-1]) #hack - try to load param_dict instead?
-        if not os.path.isdir(src): 
-            src                 = os.path.join(fsz, vols[len(vols)-2])     
+        if not os.path.isdir(src): src = os.path.join(fsz, vols[len(vols)-2])     
+            
         params["cellch_dir"]    = src
         params["inputshape"]    = get_dims_from_folder(src)
         params["patchlist"]     = make_indices(params["inputshape"], params["stridesz"])
