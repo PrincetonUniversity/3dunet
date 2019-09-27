@@ -88,13 +88,6 @@ def fill_params(expt_name, stepid, jobid):
     #experiment params
     params["expt_name"]     = os.path.basename(os.path.abspath(expt_name))
         
-    #find cell channel tiff directory
-    fsz = os.path.join(expt_name, "full_sizedatafld")
-    vols = os.listdir(fsz); vols.sort()
-    src = os.path.join(fsz, vols[len(vols)-1]) #hack - try to load param_dict instead?
-    if not os.path.isdir(src): src = os.path.join(fsz, vols[len(vols)-2]) 
-    
-    params["cellch_dir"]    = src
     params["scratch_dir"]   = "/scratch/gpfs/zmd"
     params["data_dir"]      = os.path.join(params["scratch_dir"], params["expt_name"])
     
@@ -116,6 +109,13 @@ def fill_params(expt_name, stepid, jobid):
     
     #way to get aroundn not having to access lightsheet processed directory in later steps
     try:
+	#find cell channel tiff directory
+        fsz                     = os.path.join(expt_name, "full_sizedatafld")
+        vols                    = os.listdir(fsz); vols.sort()
+        src                     = os.path.join(fsz, vols[len(vols)-1]) #hack - try to load param_dict instead?
+        if not os.path.isdir(src): src = os.path.join(fsz, vols[len(vols)-2])     
+
+        params["cellch_dir"]    = src
         params["inputshape"]    = get_dims_from_folder(src)
         params["patchlist"]     = make_indices(params["inputshape"], params["stridesz"])
     except:
