@@ -94,14 +94,14 @@ def fill_params(expt_name, stepid, jobid):
     if not os.path.isdir(src): src = os.path.join(fsz, vols[len(vols)-2]) 
     
     params["cellch_dir"]    = src
-    params["scratch_dir"]   = "/jukebox/scratch/zmd"
+    params["scratch_dir"]   = "/scratch/gpfs/zmd"
     params["data_dir"]      = os.path.join(params["scratch_dir"], params["expt_name"])
     
     #changed paths after cnn run
     params["cnn_data_dir"]  = os.path.join(params["scratch_dir"], params["expt_name"])
     params["cnn_dir"]       = os.path.join(params["cnn_data_dir"], "output_chnks") #set cnn patch directory
     params["reconstr_arr"]  = os.path.join(params["cnn_data_dir"], "reconstructed_array.npy")
-    params["output_dir"]    = expt_name
+    params["output_dir"]    = params["cnn_data_dir"]
     
     #pre-processing params
     params["dtype"]         = "float32"
