@@ -20,5 +20,5 @@ module load anacondapy/5.3.1
 echo "Experiment name:" "$1"
 echo "Storage directory:" "$2"
 
-python cell_detect.py 0 0 "$1", "$2"
+python cell_detect.py 0 0 "$1" "$2"
 

@@ -21,4 +21,4 @@ echo "Experiment name:" "$1"
 echo "Storage directory:" "$2"
 echo "Array Index: $SLURM_ARRAY_TASK_ID"
 
-python cell_detect.py 1 ${SLURM_ARRAY_TASK_ID} "$1", "$2"
+python cell_detect.py 1 ${SLURM_ARRAY_TASK_ID} "$1" "$2"
