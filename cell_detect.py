@@ -119,7 +119,9 @@ def fill_params(scratch_dir, expt_name, stepid, jobid):
         params["patchlist"]     = make_indices(params["inputshape"], params["stridesz"])
     except:
         dct = csv_to_dict(os.path.join(params["cnn_data_dir"], "cnn_param_dict.csv"))
-        params["cellch_dir"]    = dct["cellch_dir"]
+        if "cellch_dir" in dct.keys():
+            params["cellch_dir"]    = dct["cellch_dir"]
+            
         params["inputshape"]    = dct["inputshape"]
         params["patchlist"]     = dct["patchlist"]
         
