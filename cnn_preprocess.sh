@@ -13,21 +13,22 @@ echo "on host: `hostname` "
 cat /proc/$$/status | grep Cpus_allowed_list
 cat /proc/meminfo
 
-module load anacondapy/5.1.0
+module load anacondapy/5.3.1
 . activate lightsheet
 
-echo "Experiment name:" "$@"
+echo "Experiment name:" "$1"
+echo "Storage directory:" "$2"
 
 #generate memmap array of full size cell channel data
-OUT0=$(sbatch slurm_scripts/cnn_step0.sh "$@") 
+OUT0=$(sbatch slurm_scripts/cnn_step0.sh "$1", "$2") 
 echo $OUT0
 
 #generate chunks for cnn input
-OUT1=$(sbatch --dependency=afterany:${OUT0##* } --array=0-130 slurm_scripts/cnn_step1.sh "$@") 
+OUT1=$(sbatch --dependency=afterany:${OUT0##* } --array=0-130 slurm_scripts/cnn_step1.sh "$1", "$2") 
 echo $OUT1
 
 #check if correct number of patches were made
-OUT2=$(sbatch --dependency=afterany:${OUT1##* } slurm_scripts/cnn_step1_check.sh "$@") 
+OUT2=$(sbatch --dependency=afterany:${OUT1##* } slurm_scripts/cnn_step1_check.sh "$1", "$2") 
 echo $OUT2
 
 #functionality

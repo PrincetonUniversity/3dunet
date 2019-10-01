@@ -77,7 +77,7 @@ def main(**args):
         consolidate_cell_measures(**params)
 
 
-def fill_params(expt_name, stepid, jobid):
+def fill_params(scratch_dir, expt_name, stepid, jobid):
 
     params = {}
 
@@ -88,7 +88,7 @@ def fill_params(expt_name, stepid, jobid):
     #experiment params
     params["expt_name"]     = os.path.basename(os.path.abspath(expt_name))
         
-    params["scratch_dir"]   = "/scratch/gpfs/zmd"
+    params["scratch_dir"]   = scratch_dir
     params["data_dir"]      = os.path.join(params["scratch_dir"], params["expt_name"])
     
     #changed paths after cnn run
@@ -154,6 +154,8 @@ if __name__ == "__main__":
                         help="Job ID to run as an array job")
     parser.add_argument("expt_name",
                         help="Tracing output directory (aka registration output)")
+    parser.add_argument("scratch_dir",
+                        help="Scratch directory to store image chunks/memory mapped arrays")
     
     args = parser.parse_args()
     

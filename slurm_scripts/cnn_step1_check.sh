@@ -14,10 +14,11 @@ echo "on host: `hostname` "
 
 cat /proc/$$/status | grep Cpus_allowed_list
 
-module load anacondapy/5.1.0
+module load anacondapy/5.3.1
 . activate lightsheet
 
-echo "Experiment name:" "$@"
+echo "Experiment name:" "$1"
+echo "Storage directory:" "$2"
 echo "Array Index: $SLURM_ARRAY_TASK_ID"
 
-python cell_detect.py 11 0 "$@" 
+python cell_detect.py 11 0 "$1", "$2"
