@@ -88,11 +88,7 @@ def fill_params(scratch_dir, expt_name, stepid, jobid):
     #experiment params
     params["expt_name"]     = os.path.basename(os.path.abspath(expt_name))
         
-<<<<<<< HEAD
-    params["scratch_dir"]   = "/jukebox/scratch/zmd"
-=======
     params["scratch_dir"]   = scratch_dir
->>>>>>> tiger
     params["data_dir"]      = os.path.join(params["scratch_dir"], params["expt_name"])
     
     #changed paths after cnn run
@@ -113,20 +109,11 @@ def fill_params(scratch_dir, expt_name, stepid, jobid):
     
     #way to get around not having to access lightsheet processed directory in later steps
     try:
-<<<<<<< HEAD
-        #find cell channel tiff directory
-=======
 	#find cell channel tiff directory
->>>>>>> tiger
         fsz                     = os.path.join(expt_name, "full_sizedatafld")
         vols                    = os.listdir(fsz); vols.sort()
         src                     = os.path.join(fsz, vols[len(vols)-1]) #hack - try to load param_dict instead?
         if not os.path.isdir(src): src = os.path.join(fsz, vols[len(vols)-2])     
-<<<<<<< HEAD
-            
-=======
-
->>>>>>> tiger
         params["cellch_dir"]    = src
         params["inputshape"]    = get_dims_from_folder(src)
         params["patchlist"]     = make_indices(params["inputshape"], params["stridesz"])
