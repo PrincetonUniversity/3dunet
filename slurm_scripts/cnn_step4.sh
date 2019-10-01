@@ -17,6 +17,7 @@ cat /proc/$$/status | grep Cpus_allowed_list
 module load anaconda3/5.3.1
 . activate 3dunet
 
-echo "Experiment name:" "$@"
+echo "Experiment name:" "$1"
+echo "Storage directory:" "$2"
 
-python cell_detect.py 4 0 "$@" 
+python cell_detect.py 4 0 "$1" "$2" 

@@ -32,4 +32,4 @@ OUT2=$(sbatch --dependency=afterany:${OUT1##* } slurm_scripts/cnn_step1_check.sh
 echo $OUT2
 
 #functionality
-#go to 3dunet main directory and type sbatch cnn_preprocess.sh [path to lightsheet package output directory]
+#go to 3dunet main directory and type sbatch cnn_postprocess.sh [path to lightsheet package output directory] [path to scratch directory in file system]
