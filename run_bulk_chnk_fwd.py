@@ -19,7 +19,9 @@ def sp_call(call):
 
 
 #loop
-paths = [xx for xx in os.listdir(out) if "chck_errs.sh" not in xx and "save" not in xx and "logs" not in xx and "slurm_scripts" not in xx]
+paths = [xx for xx in os.listdir(out) if "chck_errs.sh" not in xx and "logs" not in xx and "slurm_scripts" not in xx]
+paths = [xx for xx in paths if not "output_chnks" in os.listdir(os.path.join(out, xx))]
+
 paths_to_call = []
 for pth in paths:
     
