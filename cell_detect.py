@@ -103,8 +103,6 @@ def fill_params(scratch_dir, expt_name, stepid, jobid):
     params["verbose"]       = True
     params["cleanup"]       = False
     
-    params["patchsz"]       = (60, 3840, 3328) #cnn window size for lightsheet = typically 20, 192, 192 for 4x, 20, 32, 32 for 1.3x
-    params["stridesz"]      = (40, 3648, 3136)
     params["window"]        = (20, 192, 192)
     
     #way to get around not having to access lightsheet processed directory in later steps
@@ -116,13 +114,18 @@ def fill_params(scratch_dir, expt_name, stepid, jobid):
         if not os.path.isdir(src): src = os.path.join(fsz, vols[len(vols)-2])     
         params["cellch_dir"]    = src
         params["inputshape"]    = get_dims_from_folder(src)
+        params["patchsz"]       = (60, int((params["inputshape"][1]/2)+320), int((params["inputshape"][2]/2)+320)) #cnn window size for lightsheet = typically 20, 192, 192 for 4x, 20, 32, 32 for 1.3x
+        params["stridesz"]      = (params["patchsz"][0]-params["window"][0], params["patchsz"][1]-params["window"][1],
+                                   params["patchsz"][2]-params["window"][2])
         params["patchlist"]     = make_indices(params["inputshape"], params["stridesz"])
     except:
         dct = csv_to_dict(os.path.join(params["cnn_data_dir"], "cnn_param_dict.csv"))
         if "cellch_dir" in dct.keys():
             params["cellch_dir"]    = dct["cellch_dir"]
-            
+        
         params["inputshape"]    = dct["inputshape"]
+        params["patchsz"]       = dct["patchsz"] 
+        params["stridesz"]      = dct["stridesz"]
         params["patchlist"]     = dct["patchlist"]
         
     
