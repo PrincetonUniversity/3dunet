@@ -6,13 +6,16 @@ Created on Wed Oct  3 11:39:37 2018
 @author: wanglab
 """
 
-import os, numpy as np, sys, multiprocessing as mp, time, matplotlib.pyplot as plt, pandas as pd, pickle
+import os, numpy as np, sys, multiprocessing as mp, time, matplotlib.pyplot as plt, pandas as pd, pickle, matplotlib as mpl
 from scipy import ndimage
 from skimage.external import tifffile
 from scipy.ndimage.morphology import generate_binary_structure
 from utils.io import pairwise_distance_metrics
 import h5py
     
+mpl.rcParams["pdf.fonttype"] = 42
+mpl.rcParams["ps.fonttype"] = 42
+
 def probabiltymap_to_centers_thresh(src, threshold = (0.1,1), numZSlicesPerSplit = 200, overlapping_planes = 40, cores = 4, return_pixels = False, verbose = False, structure_rank_order = 2):
     """
     by tpisano
@@ -181,22 +184,23 @@ def calculate_f1_score(pth, points_dict, threshold = 0.6, cutoff = 30, verbose =
     
     return f1, precision, recall
 
-def generate_precision_recall_curve(precisions, recalls):
+def generate_precision_recall_curve(precisions, recalls, dst):
     """ plots ROC curve based on contingency table measures obtained from calculate_f1_scores function """
 #    
     #calculate
     roc_auc = np.trapz(precisions, x = [1-xx for xx in recalls])
     
     plt.figure()
-    plt.plot([1-xx for xx in recalls], precisions, color="darkorange", lw=1 , label="Precision-Recall curve (area = %0.3f)" % roc_auc)
-    plt.plot([0, 1], [0, 1], color="navy", linestyle="--")
+    plt.plot([1-xx for xx in recalls], precisions, color="darkorange", lw=1 , label="AUC = %0.2f" % roc_auc)
+    plt.plot([0, 1], [0, 1], color="black", linestyle="--")
     plt.xlim([0, 1])
     plt.ylim([0, 1.05])
     plt.xlabel("1 - Recall") 
     plt.ylabel("Precision")
     plt.title("Precision-Recall curve")
     plt.legend(loc="lower right")
-    plt.savefig("/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/precision_recall_curve.pdf")
+    plt.tick_params(length=6)
+    plt.savefig(os.path.join(dst, "precision_recall_curve.pdf"))
     
 #    return roc_auc
 
@@ -221,11 +225,12 @@ if __name__ == "__main__":
         f1s.append(f1); precisions.append(precision); recalls.append(recall)
 #%%    
     #save
-    src = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/20181115_zd_train/precision_recall_curve_295590.csv"
+    src = r"Z:\zahra\conv_net\training\h129\experiment_dirs\20181115_zd_train\precision_recall_curve_295590.csv"
     df = pd.read_csv(src)
     precisions = df["precision"].values
     recalls = df["recall"].values
-    generate_precision_recall_curve(precisions, recalls)
+    dst = r"C:\Users\wanglab\Desktop\zahra"
+    generate_precision_recall_curve(precisions, recalls, dst)
 #    stats_dict = {}
 #    stats_dict["threshold"] = [(xx, 1) for xx in thresholds]
 #    stats_dict["f1 score"] = f1s
