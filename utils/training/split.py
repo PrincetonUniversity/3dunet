@@ -11,10 +11,10 @@ import os, shutil
 
 #doing this so i can remember which datasets are in which category - makes it easier to have physical copies
 
-data_pth = "/home/wanglab/mounts/wang/zahra/conv_net/annotations/cfos/split_inputs"
+data_pth = "/home/wanglab/LightSheetData/rat-brody/processed/201910_tracing/training/inputs"
 if not os.path.exists(data_pth): os.mkdir(data_pth)
 
-pth = "/home/wanglab/mounts/wang/zahra/conv_net/annotations/cfos/inputs"
+pth = "/home/wanglab/LightSheetData/rat-brody/processed/201910_tracing/training/otsu"
 
 #split into train, val, and test data
 raw = [xx[:-8] for xx in os.listdir(pth) if xx[-8:] == "_img.tif"] #cutoff extension coz will add it later with labels
