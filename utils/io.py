@@ -250,7 +250,6 @@ def load_dictionary(pth):
     
 def save_dictionary(dst, dct):
     
-    import cPickle as pickle
     if dst[-2:]!=".p": dst=dst+".p"
     
     with open(dst, "wb") as fl:    
