@@ -6,10 +6,11 @@
 #SBATCH --gres=gpu:4
 #SBATCH --contiguous
 #SBATCH --mem=14000 #14gbs
-#SBATCH -t 8500                 # time (minutes)
-#SBATCH -o cnn_train.out
-#SBATCH -e cnn_train.err
+#SBATCH -t 900                 # time (minutes)
+#SBATCH -o /scratch/gpfs/zmd/logs/cnn_train.out
+#SBATCH -e /scratch/gpfs/zmd/logs/cnn_train.err
 
 module load cudatoolkit/10.0 cudnn/cuda-10.0/7.3.1 anaconda3/5.3.1
 . activate 3dunet
-python run_exp.py 20190520_zd_transfer_learning_hypothal models/RSUNet.py samplers/soma.py augmentors/flip_rotate.py --batch_sz 18 --chkpt_num 587740 --gpus 0,1,2,3
+python run_exp.py 20200309_peterb_zd_train models/RSUNet.py samplers/soma.py augmentors/flip_rotate.py --batch_sz 18 --chkpt_num 37000 --gpus 0
+
