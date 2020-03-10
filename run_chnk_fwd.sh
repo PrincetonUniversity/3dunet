@@ -1,4 +1,4 @@
-#!/bin/bash
+l#!/bin/bash
 #SBATCH -p all                # partition (queue)
 #SBATCH -N 2
 #SBATCH --ntasks-per-node=2
