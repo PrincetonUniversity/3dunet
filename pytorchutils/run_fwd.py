@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
-import os, imp
+import os
 import collections
 
-import torch
 from torch import sigmoid
 import dataprovider3 as dp
 
@@ -54,7 +53,7 @@ def fill_params(expt_name, chkpt_num, gpus,
 
     #IO/Record params
     params["expt_name"]   = expt_name
-    params["expt_dir"]    = "/jukebox/wang/zahra/conv_net/training/h129/experiment_dirs/{}".format(expt_name)
+    params["expt_dir"]    = "/jukebox/LightSheetData/rat-brody/processed/201910_tracing/network/{}".format(expt_name)
     params["model_dir"]   = os.path.join(params["expt_dir"], "models")
     params["log_dir"]     = os.path.join(params["expt_dir"], "logs")
     params["fwd_dir"]     = os.path.join(params["expt_dir"], "forward")
@@ -62,7 +61,7 @@ def fill_params(expt_name, chkpt_num, gpus,
     params["output_tag"]  = tag
 
     #Dataset params
-    params["data_dir"]    = "/jukebox/wang/zahra/tracing_projects/mapping_paper/figure_data"
+    params["data_dir"]    = "/jukebox/LightSheetData/rat-brody/processed/201910_tracing/training/inputs/val/raw"
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     params["dsets"]       = dset_names
     params["input_spec"]  = collections.OrderedDict(input=(20,192,192)) #dp dataset spec

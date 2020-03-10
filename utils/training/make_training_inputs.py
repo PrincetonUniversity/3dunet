@@ -6,7 +6,7 @@ Created on Mon Dec 10 12:39:16 2018
 @author: wanglab
 """
 
-import os, numpy as np, sys, multiprocessing as mp
+import os, numpy as np, sys, multiprocessing as mp, zipfile
 from skimage.external import tifffile
 from skimage import filters
 from utils.io import listdirfull, load_np, makedir, save_dictionary
@@ -69,6 +69,15 @@ def convert_input(inputFolder, saveLocation, remove_bad=True):
     #get pairs
     tfs = listdirfull(inputFolder,keyword=".tif")
     zps = [xx for xx in listdirfull(inputFolder) if ".tif" not in xx]
+    
+    #make empty zip files if no labels (useful to train on negative data?)
+    for tf in tfs:
+        if tf[:-4]+"RoiSet.zip" not in zps:
+            print(tf)
+            nm = tf[:-4]+"RoiSet.zip"    
+            with zipfile.ZipFile(os.path.join(inputFolder, nm), "w") as file:
+                pass
+    
     pairs = [[tf,zp] for tf in tfs for zp in zps if tf[:-4] in zp]
     
     #make saveLocation if doesn"t exist:
@@ -96,11 +105,11 @@ def convert_input(inputFolder, saveLocation, remove_bad=True):
                 os.remove(a)
                 print ("removing")
         else:
-            file_points_dct[os.path.basename(a)] = zip(*pnts)
+            file_points_dct[os.path.basename(a)] = list(zip(*pnts))
             
     #save out points
     save_dictionary(os.path.join(os.path.dirname(saveLocation), "points_dictionary.p"), file_points_dct)
-    print("Saved dictionary as {}".format(os.path.join(os.path.dirname(saveLocation), "filename_points_dictionary.p")))
+    print("Saved dictionary in {}".format(saveLocation))
         
     return
     
@@ -175,13 +184,13 @@ def generate_mem_mapped_array_for_net_training(impth, roipth, dst, verbose=True)
     
     if len(rois_formatted)==0:
         print ("*************Error {}- likely ROIS were mis-saved. Trying to fix, this should be checked.".format(os.path.basename(impth)))
-        rois_formatted = zip(*[map(int, xx.replace(".roi","").split("-")[0:3]) for xx in rois if len(xx.split("-"))==4])
+        rois_formatted = list(zip(*[map(int, xx.replace(".roi","").split("-")[0:3]) for xx in rois if len(xx.split("-"))==4]))
     #populate arr; (NOTE: ImageJ has one-based numerics FOR Z but 0 for YX vs np w zero-based numerics for ZYX)
-    if verbose: sys.stdout.write("\nPopulating ROIS..."); sys.stdout.flush()
-    arr[1,[xx-1 for xx in rois_formatted[0]], rois_formatted[1], rois_formatted[2]] = 255
-
+    else:
+        if verbose: sys.stdout.write("\nPopulating ROIS..."); sys.stdout.flush()
+        arr[1,[xx-1 for xx in rois_formatted[0]], rois_formatted[1], rois_formatted[2]] = 255
+        arr.flush()        
     
-    arr.flush()        
     if verbose: sys.stdout.write("done.\n\n***Memmapped array generated successfully***\n\n"); sys.stdout.flush()
     
     return arr
@@ -197,7 +206,7 @@ if __name__ == "__main__":
     otsu_factor = 0.8
     
     #convert
-    convert_input(inputFolder, saveLocation, remove_bad=True)
+    convert_input(inputFolder, saveLocation, remove_bad=False)
     
     #check all
     for a in listdirfull(saveLocation, "npy"):
