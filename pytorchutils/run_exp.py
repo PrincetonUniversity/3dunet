@@ -64,13 +64,15 @@ def fill_params(expt_name, chkpt_num, batch_sz, gpus,
     params["data_dir"]     = "/tigress/zmd/3dunet_data/ctb/training_inputs"
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     
-    params["train_sets"] = ["z265_zpln315-340_x4923_y1687", "z265_zpln165-191_x2096_y3381",
-                             "z269stackstart475", "z269stackstart50",
-                             "z266stackstart250", "z265_zpln165-191_x1528_y6753",
-                             "z268stackstart300", "z269stackstart150",
-                             "z266stackstart150"]
+    params["train_sets"] = ["z269stackstart150",
+                             "z269stackstart475",
+                             "z266stackstart350",
+                             "z266stackstart250",
+                             "z268stackstart300",
+                             "z265_zpln165-191_x6325_y4458",
+                             "z265_zpln315-340_x4785_y3793"]
 
-    params["val_sets"] = ["z265_zpln315-340_x4785_y3793", "z269stackstart100"]
+    params["val_sets"] = ["z269stackstart100"]
 
     params["patchsz"]	   = (20,192,192)
     params["sampler_spec"] = dict(input=params["patchsz"],

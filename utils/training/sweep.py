@@ -208,15 +208,16 @@ def generate_precision_recall_curve(precisions, recalls, dst):
 if __name__ == "__main__":
     
     #set relevant paths
-    pth = "/home/wanglab/LightSheetData/rat-brody/processed/201910_tracing/network/20200309_peterb_zd_train/forward"
+    src = "/jukebox/LightSheetData/rat-brody/processed/201910_tracing"
+    pth = os.path.join(src, "network/20200309_peterb_zd_train/forward/iter_88000")
 
-    f = "/home/wanglab/LightSheetData/rat-brody/processed/201910_tracing/training/points_dictionary.p"
+    f = os.path.join(src,  "training/points_dictionary.p")
     points_dict = pickle.load(open(f, "rb"), encoding = "latin1")
 #    points_dict = load_dictionary("/home/wanglab/Documents/cfos_inputs/cfos_points_py2_dictionary.p")
     
     #which thresholds are being evaluated
     thresholds = np.arange(0.1, 1, 0.1)
-    cutoff = 20
+    cutoff = 30
     f1s = []; precisions = []; recalls = []
     
     #generate precision recall list
