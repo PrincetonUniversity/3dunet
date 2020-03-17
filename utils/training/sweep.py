@@ -208,10 +208,10 @@ def generate_precision_recall_curve(precisions, recalls, dst):
 if __name__ == "__main__":
     
     #set relevant paths
-    src = "/jukebox/LightSheetData/rat-brody/processed/201910_tracing"
-    pth = os.path.join(src, "network/20200309_peterb_zd_train/forward/iter_88000")
+    src = "/tigress/zmd/3dunet_data/ctb"
+    pth = os.path.join(src, "network/20200316_peterb_zd_train/forward")
 
-    f = os.path.join(src,  "training/points_dictionary.p")
+    f = os.path.join(src,  "points_dictionary.p")
     points_dict = pickle.load(open(f, "rb"), encoding = "latin1")
 #    points_dict = load_dictionary("/home/wanglab/Documents/cfos_inputs/cfos_points_py2_dictionary.p")
     
@@ -224,18 +224,4 @@ if __name__ == "__main__":
     for threshold in thresholds:
         f1, precision, recall = calculate_f1_score(pth, points_dict, threshold, cutoff, verbose = True)
         f1s.append(f1); precisions.append(precision); recalls.append(recall)
-#%%    
-    #save
-    src = r"Z:\zahra\conv_net\training\h129\experiment_dirs\20181115_zd_train\precision_recall_curve_295590.csv"
-    df = pd.read_csv(src)
-    precisions = df["precision"].values
-    recalls = df["recall"].values
-    dst = r"C:\Users\wanglab\Desktop\zahra"
-    generate_precision_recall_curve(precisions, recalls, dst)
-#    stats_dict = {}
-#    stats_dict["threshold"] = [(xx, 1) for xx in thresholds]
-#    stats_dict["f1 score"] = f1s
-#    stats_dict["precision"] = precisions
-#    stats_dict["recall"] = recalls
-#    pd.DataFrame(stats_dict, index = None).to_csv(pth)
-#    
+
