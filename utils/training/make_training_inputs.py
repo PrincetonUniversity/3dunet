@@ -6,7 +6,8 @@ Created on Mon Dec 10 12:39:16 2018
 @author: wanglab
 """
 
-import os, numpy as np, sys, multiprocessing as mp, zipfile
+import os, numpy as np, sys, multiprocessing as mp, zipfile, sys
+sys.path.append("/jukebox/wang/zahra/python/3dunet")
 from skimage.external import tifffile
 from skimage import filters
 from utils.io import listdirfull, load_np, makedir, save_dictionary

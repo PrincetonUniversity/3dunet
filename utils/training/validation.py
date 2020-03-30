@@ -26,7 +26,7 @@ def save_stats_h5(fname):
     return test_loss_arr, train_loss_arr
 
 
-def plot_val_curve(loss, start_iter = 0, end_iter = 15000, m = 10):
+def plot_val_curve(loss, dst, start_iter = 0, end_iter = 15000, m = 10):
     '''Function to plot validation data loss value from h5 file from training on tiger2
     Inputs:
         loss = array of loss values
@@ -62,4 +62,19 @@ def plot_val_curve(loss, start_iter = 0, end_iter = 15000, m = 10):
     plt.title('Linear regression of loss values')  
     plt.show()
     
+    #save out
+    plt.savefig(os.path.join(dst, "loss_values.pdf"), bbox_inches = "tight")
+    
     return linreg_stats
+
+#%%
+    
+if __name__ == "__main__":
+    
+    fname = "/tigress/zmd/3dunet_data/ctb/network/20200316_peterb_zd_train/logs/stats130000.h5"
+    test, train = save_stats_h5(fname)
+    
+    #set dst
+    dst = "/tigress/zmd/3dunet_data/ctb/network/20200316_peterb_zd_train/"
+    plot_val_curve(test, dst)
+    
