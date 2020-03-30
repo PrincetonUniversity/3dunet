@@ -53,7 +53,7 @@ def fill_params(expt_name, chkpt_num, gpus,
 
     #IO/Record params
     params["expt_name"]   = expt_name
-    params["expt_dir"]    = "/jukebox/LightSheetData/rat-brody/processed/201910_tracing/network/{}".format(expt_name)
+    params["expt_dir"]    = "/tigress/zmd/3dunet_data/ctb/network/{}".format(expt_name)
     params["model_dir"]   = os.path.join(params["expt_dir"], "models")
     params["log_dir"]     = os.path.join(params["expt_dir"], "logs")
     params["fwd_dir"]     = os.path.join(params["expt_dir"], "forward")
@@ -61,7 +61,7 @@ def fill_params(expt_name, chkpt_num, gpus,
     params["output_tag"]  = tag
 
     #Dataset params
-    params["data_dir"]    = "/jukebox/LightSheetData/rat-brody/processed/201910_tracing/training/otsu"
+    params["data_dir"]    = "/tigress/zmd/3dunet_data/ctb/training_inputs"
     assert os.path.isdir(params["data_dir"]),"nonexistent data directory"
     params["dsets"]       = dset_names
     params["input_spec"]  = collections.OrderedDict(input=(20,192,192)) #dp dataset spec

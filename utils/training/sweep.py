@@ -10,6 +10,7 @@ import os, numpy as np, sys, multiprocessing as mp, time, matplotlib.pyplot as p
 from scipy import ndimage
 from skimage.external import tifffile
 from scipy.ndimage.morphology import generate_binary_structure
+sys.path.append("/tigress/zmd/3dunet")
 from utils.io import pairwise_distance_metrics
 import h5py
     
@@ -165,7 +166,7 @@ def calculate_f1_score(pth, points_dict, threshold = 0.6, cutoff = 30, verbose =
         impth = os.path.join(pth, dset)
         predicted = probabiltymap_to_centers_thresh(impth, threshold = (threshold, 1))        
         if verbose: print("\n   Finished finding centers for {}, calculating statistics\n".format(dset))        
-        ground_truth = points_dict[dset[:-22]+".npy"] #modifying file names so they match with original data        
+        ground_truth = points_dict[dset[:-23]+".npy"] #modifying file names so they match with original data        
         paired, tp, fp, fn = pairwise_distance_metrics(list(ground_truth), predicted, cutoff = cutoff, verbose = False) #returns true positive = tp; false positive = fp; false negative = fn        
         
         tps.append(tp); fps.append(fp); fns.append(fn)#append matrix to save all values to calculate f1 score and roc curve
@@ -209,15 +210,14 @@ if __name__ == "__main__":
     
     #set relevant paths
     src = "/tigress/zmd/3dunet_data/ctb"
-    pth = os.path.join(src, "network/20200316_peterb_zd_train/forward")
+    pth = os.path.join(src, "network/20200316_peterb_zd_train/forward/iter_130000")
 
     f = os.path.join(src,  "points_dictionary.p")
     points_dict = pickle.load(open(f, "rb"), encoding = "latin1")
-#    points_dict = load_dictionary("/home/wanglab/Documents/cfos_inputs/cfos_points_py2_dictionary.p")
     
     #which thresholds are being evaluated
-    thresholds = np.arange(0.1, 1, 0.1)
-    cutoff = 30
+    thresholds = np.arange(0.5, 1, 0.05)
+    cutoff = 20
     f1s = []; precisions = []; recalls = []
     
     #generate precision recall list
