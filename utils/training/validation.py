@@ -15,13 +15,13 @@ def save_stats_h5(fname):
 
     with h5py.File(fname) as f:
         print('keys of file:\n {}'.format(list(f.keys())))
-        print('base lr value: {}'.format(f['base_lr'].value))
+        print('base lr value: {}'.format(f['base_lr'].[()]))
         test = list(f['test'].keys())
         print('contents of test dict: \n {}'.format(test))
         train = list(f['train'].keys())
         print('contents of train dict: \n {}'.format(train))
-        test_loss_arr = f['test'][test[2]].value
-        train_loss_arr = f['train'][train[2]].value
+        test_loss_arr = f['test'][test[2]][()] 
+        train_loss_arr = f['train'][train[2]][()]
         
     return test_loss_arr, train_loss_arr
 
