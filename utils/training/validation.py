@@ -15,7 +15,7 @@ def save_stats_h5(fname):
 
     with h5py.File(fname) as f:
         print('keys of file:\n {}'.format(list(f.keys())))
-        print('base lr value: {}'.format(f['base_lr'].[()]))
+        print('base lr value: {}'.format(f['base_lr'][()]))
         test = list(f['test'].keys())
         print('contents of test dict: \n {}'.format(test))
         train = list(f['train'].keys())
