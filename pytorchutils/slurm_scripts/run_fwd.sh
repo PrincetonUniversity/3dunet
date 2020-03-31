@@ -13,4 +13,4 @@
 module load cudatoolkit/10.0 cudnn/cuda-10.0/7.3.1 anaconda3/5.3.1
 . activate 3dunet
 
-python run_fwd.py 20200316_peterb_zd_train models/RSUNet.py 130000 z269stackstart100 --gpus 0 --noeval --tag noeval
+python run_fwd.py 20200316_peterb_zd_train models/RSUNet.py 12000 z269stackstart100 --gpus 0 --noeval --tag noeval
