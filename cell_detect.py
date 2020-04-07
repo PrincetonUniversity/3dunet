@@ -130,10 +130,10 @@ def fill_params(scratch_dir, expt_name, stepid, jobid):
         
     
     #model params - useful to save for referenece; need to alter per experimental cohort
-    params["model_name"] = "20190502_zd_transfer_learning_all_inputs"
-    params["checkpoint"] = 410000
+    params["model_name"] = "20200316_peterb_zd_train"
+    params["checkpoint"] = 12000
     #post-processing params
-    params["threshold"]     = (0.85,1) #h129 = 0.6; prv = 0.85; this depends on model
+    params["threshold"]     = (0.80,1) #h129 = 0.6; prv = 0.85; this depends on model
     params["zsplt"]         = 30
     params["ovlp_plns"]     = 30
         
