@@ -52,7 +52,7 @@ def plot_val_curve(loss, dst, start_iter = 0, end_iter = 15000, m = 10):
     plt.plot(loss[start_iter:end_iter], 'ro')
     plt.xlabel('# of iterations in thousands')
     plt.ylabel('loss value')
-    plt.title('3D U-net validation curve for C-FOS')          
+    plt.title('3D U-net validation curve for CTB tracing')          
     plt.show()
     
     plt.figure()
@@ -76,5 +76,5 @@ if __name__ == "__main__":
     
     #set dst
     dst = "/tigress/zmd/3dunet_data/ctb/network/20200316_peterb_zd_train/"
-    plot_val_curve(test, dst)
+    plot_val_curve(train, dst, m=5)
     

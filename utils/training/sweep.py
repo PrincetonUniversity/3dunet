@@ -166,7 +166,7 @@ def calculate_f1_score(pth, points_dict, threshold = 0.6, cutoff = 30, verbose =
         impth = os.path.join(pth, dset)
         predicted = probabiltymap_to_centers_thresh(impth, threshold = (threshold, 1))        
         if verbose: print("\n   Finished finding centers for {}, calculating statistics\n".format(dset))        
-        ground_truth = points_dict[dset[:-23]+".npy"] #modifying file names so they match with original data        
+        ground_truth = points_dict[dset[:-22]+".npy"] #modifying file names so they match with original data        
         paired, tp, fp, fn = pairwise_distance_metrics(list(ground_truth), predicted, cutoff = cutoff, verbose = False) #returns true positive = tp; false positive = fp; false negative = fn        
         
         tps.append(tp); fps.append(fp); fns.append(fn)#append matrix to save all values to calculate f1 score and roc curve
@@ -210,7 +210,7 @@ if __name__ == "__main__":
     
     #set relevant paths
     src = "/tigress/zmd/3dunet_data/ctb"
-    pth = os.path.join(src, "network/20200316_peterb_zd_train/forward/iter_130000")
+    pth = os.path.join(src, "network/20200316_peterb_zd_train/forward/iter_12000")
 
     f = os.path.join(src,  "points_dictionary.p")
     points_dict = pickle.load(open(f, "rb"), encoding = "latin1")
